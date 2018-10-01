@@ -12,10 +12,11 @@ def attempt(url):
     while True:
         try:
             r = requests.get(url, timeout=10)
+            r.raise_for_status()
             print(r.url)
             return r
         except:
-            if attempts < 4:
+            if attempts < 3:
                 attempts += 1
                 continue
             raise
@@ -69,14 +70,22 @@ def get_downloads(dataverse):
     with open(dataverse + '_files.csv') as f:
         r = csv.DictReader(f)
         for row in r:
-            id = row['file_href'].split('?')[-1].split('&')[0]
-            dir = dataverse + '/' + id.split('/')[2]
+            id = row['file_href'].split('&')[0]            
+            try:
+                id = id.split('?')[-1]
+                url = '/api/access/datafile/:persistentId?' + id
+                id = id.split('/')[2]
+            except:
+                url = '/api/access/datafile/' + id.split('fileId=')[-1]
+                id = row['href'].split('&')[0].split('/')[-1]            
+
+            dir = dataverse + '/' + id            
             os.makedirs(dir, exist_ok=True)
             fname = dir + '/' + row['filename']
             if os.path.isfile(fname):
                 continue
 
-            r = attempt(base_url + '/api/access/datafile/:persistentId?' + id)
+            r = attempt(base_url + url)
             with open(fname, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=128):
                     f.write(chunk)
