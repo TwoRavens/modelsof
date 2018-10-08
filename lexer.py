@@ -1,5 +1,5 @@
 import collections
-import  json
+import json
 import re
 import sys
 
