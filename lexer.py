@@ -31,11 +31,7 @@ def curly_right(s):
     return match(s, 'curly right', r'}')
 
 def id(s):
-    m = match(s, 'operator', '[\*]+')
-    if m:
-        return m
-
-    pattern = r"[a-zA-Z_\*.]+[\w_\*.]*"
+    pattern = r"\*?[a-zA-Z_.]+[\w_\*.]*"
     return match(s, 'id', pattern) or match(s, 'id', '`' + pattern + "'")
 
 def number(s):
