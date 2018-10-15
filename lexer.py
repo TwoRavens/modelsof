@@ -31,7 +31,12 @@ def curly_right(s):
     return match(s, 'curly right', r'}')
 
 def id(s):
-    return match(s, 'id', r"[a-zA-Z`'_\*.]+[\w`'_\*.]*")
+    m = match(s, 'operator', '[\*]+')
+    if m:
+        return m
+
+    pattern = r"[a-zA-Z_\*.]+[\w_\*.]*"
+    return match(s, 'id', pattern) or match(s, 'id', '`' + pattern + "'")
 
 def number(s):
     return match(s, 'number', r'-?\d*\.?\d+')
@@ -62,8 +67,8 @@ lexers = [
     paren_right,
     number, 
     comment,
-    operator, 
     id, 
+    operator, 
     string, 
     whitespace
 ]
@@ -86,7 +91,7 @@ def lex(input):
                 break
             
         if input and not tkn:
-            raise NameError(pos)
+            raise NameError(input[pos])
 
 tokens = []
 
