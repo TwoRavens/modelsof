@@ -175,7 +175,8 @@ def get_stats(path):
     with open('%s_stats.csv' % journal, 'w') as f:
         w = csv.writer(f)
         w.writerow([journal, '%s datasets' % len(datasets)])
-        w.writerow(['1', do_cnts['1'], '>1', do_cnts['>1']])
+        w.writerow(['1', do_cnts['1']])
+        w.writerow(['>1', do_cnts['>1']])
         for ext in sorted(totals):
             w.writerow([ext, totals[ext]])
 
