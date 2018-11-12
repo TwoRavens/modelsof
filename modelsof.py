@@ -99,6 +99,65 @@ def get_downloads(dataverse):
                 for chunk in r.iter_content(chunk_size=128):
                     f.write(chunk)
 
+def unzip(path):
+    try:
+        with zipfile.ZipFile(path, allowZip64=False) as zip:
+            path = path.rstrip('.zip')
+            namelist = zip.namelist()
+            zip.extractall(path)
+            zip.close()
+            for file in namelist:
+                if file.lower().endswith('.zip'):
+                    unzip(path + '/' + file)
+    except Exception as e:
+        print(path, e)
+
+def stat(command_cnts, cnt, path):
+    _, ext = os.path.splitext(path)
+    ext = ext.lower()
+    if ext == '.zip':
+        return
+
+    if not os.path.isfile(path):
+        for file in os.listdir(path):
+            if file != '__MACOSX':
+                stat(command_cnts, cnt, path + '/' + file)
+        return 
+
+    cnt[ext] += 1
+    if ext == '.do':
+        delimit = 'cr'
+        commands = []
+        n_reg_cmds = 0
+        with open(path, encoding='latin-1') as f:
+            try:
+                data = f.read()
+            except:
+                print('error', path)
+                pass
+
+            while data:
+                index = data.find('\n' if delimit == 'cr' else ';')
+                if index == -1:
+                    break
+
+                command = data[:index]
+                data = data[index + 1:]
+                if command.strip():
+                    if '/*' in command:
+                        index = data.find('*/')
+                        command += data[:index + 1]
+                        data = data[index + 2:]
+                    else:
+                        for cmd in regression_cmds:
+                            if cmd in command.split():
+                                n_reg_cmds += 1
+                    commands.append(command)
+                if '#delimit' in command:
+                    delimit = command.split('#delimit')[1].strip()
+
+        command_cnts.append([path, len(commands), n_reg_cmds])
+
 def get_stats(path):
     datasets = os.listdir(path)
     cnts = {}
@@ -106,67 +165,29 @@ def get_stats(path):
     command_cnts = []
     for ds in datasets:
         dspath = path + '/' + ds
-        files = os.listdir(dspath)
-        cnt = collections.Counter()
-        for file in files:
+        for file in os.listdir(dspath):
             filepath = dspath + '/' + file
             _, ext = os.path.splitext(file)
-            if ext == '.zip':
-                try:
-                    with zipfile.ZipFile(filepath, allowZip64=False) as zip:
-                        for file in zip.namelist():
-                            _, ext = os.path.splitext(file)
-                            cnt['.zip/' + ext] += 1
-                except:
-                    print('bad zip:', filepath)
-                    cnt['.zip'] += 1
-            else:
-                cnt[ext] += 1
-                if ext == '.do':
-                    delimit = 'cr'
-                    commands = []
-                    n_reg_cmds = 0
-                    with open(filepath, encoding='latin-1') as f:
-                        try:
-                            data = f.read()
-                        except:
-                            pass
+            if ext.lower() == '.zip':
+                unzip(filepath)
 
-                        while data:
-                            index = data.find('\n' if delimit == 'cr' else ';')
-                            if index == -1:
-                                break
-
-                            command = data[:index]
-                            data = data[index + 1:]
-                            if command.strip():
-                                if '/*' in command:
-                                    index = data.find('*/')
-                                    command += data[:index + 1]
-                                    data = data[index + 2:]
-                                else:
-                                    for cmd in regression_cmds:
-                                        if cmd in command.split():
-                                            n_reg_cmds += 1
-                                commands.append(command)
-                            if '#delimit' in command:
-                                delimit = command.split('#delimit')[1].strip()
-
-                    command_cnts.append([ds + '/' + file, len(commands), n_reg_cmds])
+        cnt = collections.Counter()
+        for file in os.listdir(dspath):
+            stat(command_cnts, cnt, dspath + '/' + file)
 
         cnts[ds] = cnt
         totals.update(cnt)
 
     journal = path.split('/')[-1]
-    do_cnts = collections.Counter(['1', '>1'])
+    do_cnts = collections.Counter(['=1', '>1'])
     with open('%s_counts.csv' % journal, 'w') as f:
         w = csv.writer(f)
         header = sorted(totals)
         w.writerow(['dataset'] + header)
         for ds in sorted(cnts):
-            do_cnt = cnts[ds].get('.do', 0) + cnts[ds].get('.zip.do', 0)
+            do_cnt = cnts[ds].get('.do', 0)
             if do_cnt == 1:
-                do_cnts['1'] += 1
+                do_cnts['=1'] += 1
             elif do_cnt > 1:
                 do_cnts['>1'] += 1
 
@@ -175,7 +196,7 @@ def get_stats(path):
     with open('%s_stats.csv' % journal, 'w') as f:
         w = csv.writer(f)
         w.writerow([journal, '%s datasets' % len(datasets)])
-        w.writerow(['1', do_cnts['1']])
+        w.writerow(['=1', do_cnts['=1']])
         w.writerow(['>1', do_cnts['>1']])
         for ext in sorted(totals):
             w.writerow([ext, totals[ext]])
