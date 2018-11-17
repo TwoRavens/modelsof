@@ -1,37 +1,33 @@
-import sys
+from arpeggio import *
 
-from lark import Lark
+_ = RegExMatch
 
-l = Lark(r"""
-    start: commands 
-    commands: command | (command "\n"+)*
-    command: by? name varlist? block? if? options?
-    by: name* ":"
-    varlist: value* vars?
-    vars: "[" var* "]"
-    var: name "=" value*
-    block: "{" "\n"* commands "}"
-    if: "if" value*
-    options: "," value*
-    ?value: ESCAPED_STRING
-        | name 
-        | "`" name "'"
-        | number
-        | operator
-        | call
-    operator: ("="|"/"|"-"|"&"|"<"|">"|"+"|"*"|"!"|"|"|":,")*
-    call: name? "(" value* ")"
-    ?name: "*"? /[a-zA-Z_.]+[0-9a-zA-Z_.]*/ "*"?
-    ?number: "%"? SIGNED_NUMBER
+def comment():
+    return [_(r'\*.*'), _(r'/\*.*\*/')], OneOrMore("\n")
 
-    %import common (ESCAPED_STRING, SIGNED_NUMBER, WORD)
+def var():
+    return _(r'[\w.]+')
 
-    COMMENT: /#.*/ "\n"+ | "//" /.*/ "\n"+ | "\n"+ WS* /\*.*/
-    WS: " "|"\t"
-    %ignore COMMENT 
-    %ignore WS 
-""")
+def num():
+    return _(r'\d+')
 
+def weight():
+    return "[", var, "=", var, "]"
 
-with open(sys.argv[1]) as f:
-    print(l.parse(f.read()).pretty())
+def varlist():
+    return OneOrMore(var)
+
+def option():
+    return var, "(", OneOrMore([var, num]), ")"
+
+def options():
+    return ",", OneOrMore([option, var])
+
+def command():
+    return Optional((var, ":")), var, Optional(varlist), Optional(weight), Optional(options), OneOrMore("\n")
+
+def stata():
+    return OneOrMore(command), EOF
+
+parser = ParserPython(stata, comment, ws='\t\r ')
+parse = parser.parse

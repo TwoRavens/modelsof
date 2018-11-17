@@ -1,13 +1,15 @@
 import collections
 import csv
 import os, os.path
+import re
 import sys
 import zipfile
 
 from bs4 import BeautifulSoup
 import requests
 
-import parse
+
+from parser import parse
 
 base_url = 'https://dataverse.harvard.edu'
 
@@ -112,6 +114,25 @@ def unzip(path):
     except Exception as e:
         print(path, e)
 
+parser = r"""
+    start: (command | comment)+
+    command: var (op | item)* if? options? end 
+    if: "if" logical_exp
+    logical_exp: "(" logical_exp ")" | (logical_exp | op) ("|" | "&") op
+    options: "," (var | option)+
+    option: var "(" item+ ")"
+    op: var operator ("." | "(" op ")" | item)
+    operator: "-" | "=" | "/" | "==" | "<"
+    item: var | ESCAPED_STRING | SIGNED_NUMBER | "///"
+    var: /[a-z]\w*/i "*"?
+    comment: "*" /.+/? end 
+    end: "\n"+
+
+    %import common (ESCAPED_STRING, SIGNED_NUMBER)
+    WS: /[ \t]/
+    %ignore WS 
+"""
+
 def stat(command_cnts, cnt, path):
     _, ext = os.path.splitext(path)
     ext = ext.lower()
@@ -136,27 +157,25 @@ def stat(command_cnts, cnt, path):
                 print('error', path)
                 pass
 
-            while data:
-                index = data.find('\n' if delimit == 'cr' else ';')
-                if index == -1:
-                    break
+            delims = [(match[0], match[1], match.end()) for match in re.finditer(r'#delimit\s*(cr|;)?', data)]
+            delims = delims if delims else [('delim cr', 'cr', 0)]
+            for (cmd, delim, end) in delims:
+                commands.append(cmd)
+                data = data[end:]
+                try:
+                    ast = parse(data)
+                except:
+                    print(path)
+                    raise
 
-                command = data[:index]
-                data = data[index + 1:]
-                if command.strip():
-                    if '/*' in command:
-                        index = data.find('*/')
-                        command += data[:index + 1]
-                        data = data[index + 2:]
-                    else:
-                        for cmd in regression_cmds:
-                            if cmd in command.split():
-                                n_reg_cmds += 1
-                    commands.append(command)
-                if '#delimit' in command:
-                    delimit = command.split('#delimit')[1].strip()
+        for cmd in commands:
+            for reg in regression_cmds:
+                if reg in cmd.split():
+                    n_reg_cmds += 1
 
         command_cnts.append([path, len(commands), n_reg_cmds])
+        for cmd in commands:
+            pass#print('CMD:', cmd)
 
 def get_stats(path):
     datasets = os.listdir(path)
@@ -174,6 +193,7 @@ def get_stats(path):
         cnt = collections.Counter()
         for file in os.listdir(dspath):
             stat(command_cnts, cnt, dspath + '/' + file)
+            break
 
         cnts[ds] = cnt
         totals.update(cnt)
