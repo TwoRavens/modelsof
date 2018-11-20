@@ -8,8 +8,7 @@ import zipfile
 from bs4 import BeautifulSoup
 import requests
 
-
-from parser import parse
+from parse import parse
 
 base_url = 'https://dataverse.harvard.edu'
 
@@ -114,25 +113,6 @@ def unzip(path):
     except Exception as e:
         print(path, e)
 
-parser = r"""
-    start: (command | comment)+
-    command: var (op | item)* if? options? end 
-    if: "if" logical_exp
-    logical_exp: "(" logical_exp ")" | (logical_exp | op) ("|" | "&") op
-    options: "," (var | option)+
-    option: var "(" item+ ")"
-    op: var operator ("." | "(" op ")" | item)
-    operator: "-" | "=" | "/" | "==" | "<"
-    item: var | ESCAPED_STRING | SIGNED_NUMBER | "///"
-    var: /[a-z]\w*/i "*"?
-    comment: "*" /.+/? end 
-    end: "\n"+
-
-    %import common (ESCAPED_STRING, SIGNED_NUMBER)
-    WS: /[ \t]/
-    %ignore WS 
-"""
-
 def stat(command_cnts, cnt, path):
     _, ext = os.path.splitext(path)
     ext = ext.lower()
@@ -143,7 +123,7 @@ def stat(command_cnts, cnt, path):
         for file in os.listdir(path):
             if file != '__MACOSX':
                 stat(command_cnts, cnt, path + '/' + file)
-        return 
+        return
 
     cnt[ext] += 1
     if ext == '.do':
@@ -155,7 +135,6 @@ def stat(command_cnts, cnt, path):
                 data = f.read()
             except:
                 print('error', path)
-                pass
 
             delims = [(match[0], match[1], match.end()) for match in re.finditer(r'#delimit\s*(cr|;)?', data)]
             delims = delims if delims else [('delim cr', 'cr', 0)]
@@ -163,10 +142,9 @@ def stat(command_cnts, cnt, path):
                 commands.append(cmd)
                 data = data[end:]
                 try:
-                    ast = parse(data)
-                except:
-                    print(path)
-                    raise
+                    parse(data)
+                except Exception as e:
+                    print(path, e)
 
         for cmd in commands:
             for reg in regression_cmds:
@@ -194,6 +172,7 @@ def get_stats(path):
         for file in os.listdir(dspath):
             stat(command_cnts, cnt, dspath + '/' + file)
             break
+        break
 
         cnts[ds] = cnt
         totals.update(cnt)
