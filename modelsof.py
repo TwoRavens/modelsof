@@ -1,5 +1,6 @@
 import collections
 import csv
+import json
 import os, os.path
 import re
 import sys
@@ -8,7 +9,9 @@ import zipfile
 from bs4 import BeautifulSoup
 import requests
 
-from parse import parse
+from grammar import parser
+
+isfile, join, splitext = [getattr(os.path, a) for a in 'isfile join splitext'.split()]
 
 base_url = 'https://dataverse.harvard.edu'
 
@@ -32,11 +35,11 @@ def attempt(url):
             raise
 
 def get_datasets(dataverse):
-    fname = dataverse + '.csv'
-    if os.path.isfile(fname):
-        return print(fname + ' already exists')
+    file = f'{dataverse}.csv'
+    if isfile(file):
+        return print(f'{file} already exists')
 
-    url = '/'.join([base_url, 'dataverse', dataverse])
+    url = join(base_url, 'dataverse', dataverse)
     datasets = []
     while True:
         r = attempt(url)
@@ -44,22 +47,21 @@ def get_datasets(dataverse):
         for ds in soup.find_all(class_='datasetResult'):
             datasets.append(dict(title=ds.a.span.text, href=ds.a['href']))
 
-        next_page = soup.find('a', text='Next >')
-        if next_page['href'].split('=')[-1] == url.split('=')[-1]:
+        next_page = soup.find('a', text='Next >')['href']
+        if next_page.split('=')[-1] == url.split('=')[-1]:
             break
+        url = base_url + next_page
 
-        url = base_url + next_page['href']
-
-    with open(fname, 'w') as f:
+    with open(file, 'w') as f:
         w = csv.DictWriter(f, ['title', 'href'])
         w.writeheader()
         w.writerows(datasets)
 
 def get_files(dataverse):
     get_datasets(dataverse)
-    fname = dataverse + '_files.csv'
-    if os.path.isfile(fname):
-        return print(fname + ' already exists')
+    fname = f'{dataverse}_files.csv'
+    if isfile(fname):
+        return print(f'{fname} already exists')
 
     files = []
     with open(dataverse + '.csv') as f:
@@ -77,22 +79,22 @@ def get_files(dataverse):
 
 def get_downloads(dataverse):
     get_files(dataverse)
-    with open(dataverse + '_files.csv') as f:
+    with open(f'{datataverse}_files.csv') as f:
         r = csv.DictReader(f)
         for row in r:
             id = row['file_href'].split('&')[0]
             try:
                 id = id.split('?')[-1]
-                url = '/api/access/datafile/:persistentId?' + id
+                url = f'/api/access/datafile/:persistentId?{id}'
                 id = id.split('/')[2]
             except:
-                url = '/api/access/datafile/' + id.split('fileId=')[-1]
+                url = join('/api/access/datafile', id.split('fileId=')[-1])
                 id = row['href'].split('&')[0].split('/')[-1]
 
-            dir = dataverse + '/' + id
+            dir = join(dataverse, id)
             os.makedirs(dir, exist_ok=True)
-            fname = dir + '/' + row['filename']
-            if os.path.isfile(fname):
+            fname = join(dir, row['filename'])
+            if isfile(fname):
                 continue
 
             r = attempt(base_url + url)
@@ -109,51 +111,56 @@ def unzip(path):
             zip.close()
             for file in namelist:
                 if file.lower().endswith('.zip'):
-                    unzip(path + '/' + file)
+                    unzip(join(path, file))
     except Exception as e:
-        print(path, e)
+        print(path)
+        print(e)
 
 def stat(command_cnts, cnt, path):
-    _, ext = os.path.splitext(path)
+    _, ext = splitext(path)
     ext = ext.lower()
     if ext == '.zip':
         return
 
-    if not os.path.isfile(path):
+    if not isfile(path):
         for file in os.listdir(path):
             if file != '__MACOSX':
-                stat(command_cnts, cnt, path + '/' + file)
+                stat(command_cnts, cnt, join(path, file))
         return
 
     cnt[ext] += 1
     if ext == '.do':
         delimit = 'cr'
-        commands = []
+        comments, commands = [], []
         n_reg_cmds = 0
         with open(path, encoding='latin-1') as f:
-            try:
-                data = f.read()
-            except:
-                print('error', path)
+            command = ''
+            for line in f:
+                line = line.strip()
+                if line.startswith('*'):
+                    comments.append(line)
+                    continue
 
-            delims = [(match[0], match[1], match.end()) for match in re.finditer(r'#delimit\s*(cr|;)?', data)]
-            delims = delims if delims else [('delim cr', 'cr', 0)]
-            for (cmd, delim, end) in delims:
-                commands.append(cmd)
-                data = data[end:]
-                try:
-                    parse(data)
-                except Exception as e:
-                    print(path, e)
+                ind = line.find('/*')
+                if ind > -1:
+                    comment = ''
+                    if ind:
+                        commands.append(command + line[:ind])
+                        command = ''
+                        comment += line[ind + 1:]
+                        while True:
+                            line = f.readline()
+                            comment += line
+                            if line.find('*/') > -1:
+                                comments.append(comment)
+                                break 
+                elif line and line != '}':
+                    command += line
+                    if not line.endswith('///'):
+                        commands.append(command)
+                        command = ''
 
-        for cmd in commands:
-            for reg in regression_cmds:
-                if reg in cmd.split():
-                    n_reg_cmds += 1
-
-        command_cnts.append([path, len(commands), n_reg_cmds])
-        for cmd in commands:
-            pass#print('CMD:', cmd)
+        command_cnts.append((path, len(comments), collections.Counter(x.split()[0] for x in commands)))
 
 def get_stats(path):
     datasets = os.listdir(path)
@@ -161,25 +168,23 @@ def get_stats(path):
     totals = collections.Counter()
     command_cnts = []
     for ds in datasets:
-        dspath = path + '/' + ds
+        dspath = join(path, ds)
         for file in os.listdir(dspath):
-            filepath = dspath + '/' + file
-            _, ext = os.path.splitext(file)
+            filepath = join(dspath, file)
+            _, ext = splitext(file)
             if ext.lower() == '.zip':
                 unzip(filepath)
 
         cnt = collections.Counter()
         for file in os.listdir(dspath):
-            stat(command_cnts, cnt, dspath + '/' + file)
-            break
-        break
+            stat(command_cnts, cnt, join(dspath, file))
 
         cnts[ds] = cnt
         totals.update(cnt)
 
     journal = path.split('/')[-1]
     do_cnts = collections.Counter(['=1', '>1'])
-    with open('%s_counts.csv' % journal, 'w') as f:
+    with open(f'{journal}_counts.csv', 'w') as f:
         w = csv.writer(f)
         header = sorted(totals)
         w.writerow(['dataset'] + header)
@@ -192,19 +197,24 @@ def get_stats(path):
 
             w.writerow([ds] + [cnts[ds].get(h, '') for h in header])
 
-    with open('%s_stats.csv' % journal, 'w') as f:
+    with open(f'{journal}_stats.csv', 'w') as f:
         w = csv.writer(f)
-        w.writerow([journal, '%s datasets' % len(datasets)])
+        w.writerow([journal, f'{len(datasets)} datasets'])
         w.writerow(['=1', do_cnts['=1']])
         w.writerow(['>1', do_cnts['>1']])
         for ext in sorted(totals):
             w.writerow([ext, totals[ext]])
 
-    with open('%s_commands.csv' % journal, 'w') as f:
-        w = csv.writer(f)
-        w.writerow(['file', '#', '# reg'])
-        for cnt in command_cnts:
-            w.writerow(cnt)
+    with open(f'{journal}_commands.json', 'w') as f:
+        for path, comments, commands in command_cnts:
+            regression, other = [], []
+            for k in sorted(commands):
+                v = commands[k]
+                if k in regression_cmds:
+                    regression.append((k, v))
+                else:
+                    other.append((k, v))
+            json.dump(dict(path=path, comments=comments, regression=regression, other=other), f, indent=2)
 
 cmd = {'get_datasets': get_datasets,
        'get_files': get_files,
