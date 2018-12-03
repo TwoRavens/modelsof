@@ -9,16 +9,24 @@ import zipfile
 from bs4 import BeautifulSoup
 import requests
 
-from grammar import parser
-
 isfile, join, splitext = [getattr(os.path, a) for a in 'isfile join splitext'.split()]
 
 base_url = 'https://dataverse.harvard.edu'
 
-regression_cmds = []
-with open('regression.txt') as f:
-    for line in f.readlines():
-        regression_cmds.append(line.split()[0])
+categories = {}
+with open('categories.txt') as f:
+    cat = ''
+    for line in f:
+        line = line.strip()
+        if not line:
+            continue
+
+        item = line.split()[0]
+        if item.startswith('@'):
+            cat = item[1:]
+            categories[cat] = []
+        else:
+            categories[cat].append(item)
 
 def attempt(url):
     attempts = 0
@@ -121,46 +129,50 @@ def stat(command_cnts, cnt, path):
     ext = ext.lower()
     if ext == '.zip':
         return
-
     if not isfile(path):
         for file in os.listdir(path):
             if file != '__MACOSX':
                 stat(command_cnts, cnt, join(path, file))
         return
 
+    both, comments, commands = [], [], []
+    def append(lst, item):
+        lst.append(item)
+        both.append(item)
+
     cnt[ext] += 1
     if ext == '.do':
         delimit = 'cr'
-        comments, commands = [], []
-        n_reg_cmds = 0
-        with open(path, encoding='latin-1') as f:
+        with open(path, encoding='utf-8') as f:
             command = ''
             for line in f:
                 line = line.strip()
                 if line.startswith('*'):
-                    comments.append(line)
+                    append(comments, line)
                     continue
 
                 ind = line.find('/*')
                 if ind > -1:
                     comment = ''
                     if ind:
-                        commands.append(command + line[:ind])
+                        append(commands, command + line[:ind])
                         command = ''
                         comment += line[ind + 1:]
                         while True:
                             line = f.readline()
                             comment += line
                             if line.find('*/') > -1:
-                                comments.append(comment)
+                                append(comments, comment)
                                 break 
                 elif line and line != '}':
                     command += line
                     if not line.endswith('///'):
-                        commands.append(command)
+                        append(commands, command)
                         command = ''
+        with open(f'{path}.json', 'w') as f:
+            json.dump(both, f, indent=2)
 
-        command_cnts.append((path, len(comments), collections.Counter(x.split()[0] for x in commands)))
+        command_cnts.append((path, both, comments))
 
 def get_stats(path):
     datasets = os.listdir(path)
@@ -206,15 +218,39 @@ def get_stats(path):
             w.writerow([ext, totals[ext]])
 
     with open(f'{journal}_commands.json', 'w') as f:
-        for path, comments, commands in command_cnts:
-            regression, other = [], []
-            for k in sorted(commands):
-                v = commands[k]
-                if k in regression_cmds:
-                    regression.append((k, v))
-                else:
-                    other.append((k, v))
-            json.dump(dict(path=path, comments=comments, regression=regression, other=other), f, indent=2)
+        for path, both, comments in command_cnts:
+            obj = dict(path=path, len=len(both), len_comments=len(comments), len_other=0)
+            for cat in categories:
+                obj[f'len_{cat}'] = 0
+
+            obj['comments'] = []
+            obj['other'] = {}
+            for cat in categories:
+                obj[cat] = {}
+
+            for n, item in enumerate(both): 
+                if item in comments:
+                    obj['comments'].append(n)
+                    continue
+                
+                parts = item.split()
+                cmd = parts[0]
+                other = True
+                for cat, cmds in categories.items():
+                    if cmd in cmds:
+                        obj[f'len_{cat}'] += 1
+                        if not obj[cat].get(cmd):
+                            obj[cat][cmd] = [] 
+                        obj[cat][cmd].append(n)
+                        other = False
+
+                if other:
+                    obj['len_other'] += 1
+                    if not obj['other'].get(cmd):
+                        obj['other'][cmd] = [] 
+                    obj['other'][cmd].append(n)
+
+            json.dump({k: v for k, v in obj.items() if v}, f, indent=2)
 
 cmd = {'get_datasets': get_datasets,
        'get_files': get_files,
