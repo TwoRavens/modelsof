@@ -13,20 +13,8 @@ isfile, join, splitext = [getattr(os.path, a) for a in 'isfile join splitext'.sp
 
 base_url = 'https://dataverse.harvard.edu'
 
-categories = {}
-with open('categories.txt') as f:
-    cat = ''
-    for line in f:
-        line = line.strip()
-        if not line:
-            continue
-
-        item = line.split()[0]
-        if item.startswith('@'):
-            cat = item[1:]
-            categories[cat] = []
-        else:
-            categories[cat].append(item)
+with open('categories.json') as f:
+    categories = json.load(f)
 
 def attempt(url):
     attempts = 0
@@ -174,6 +162,26 @@ def stat(command_cnts, cnt, path):
 
         command_cnts.append((path, both, comments))
 
+def get_index(item, parens=False):
+    quote, compound_quote, paren, ind = 0, 0, 0, 0
+    for n, char in enumerate(item):
+        if char == '"' and not compound_quote:
+            quote += -1 if quote else 1
+        elif char == '`' and not quote:
+            compound_quote += 1
+        elif char == "'" and not quote:
+            compound_quote -= 1
+        elif char == '(' and not (quote or compound_quote):
+            if not paren:
+                ind = n
+            paren += 1
+        elif char == ')' and not (quote or compound_quote):
+            paren -= 1
+            if not paren and parens:
+                return ind, n
+        elif char == ',' and not (parens or quote or compound_quote or paren):
+            return n + 1
+
 def get_stats(path):
     datasets = os.listdir(path)
     cnts = {}
@@ -232,16 +240,33 @@ def get_stats(path):
                 if item in comments:
                     obj['comments'].append(n)
                     continue
-                
-                parts = item.split()
-                cmd = parts[0]
+
+                cmd = item.split()[0]
+                opt_ind = get_index(item)
+                opts = ''
+                if not cmd in ('by:', 'sort') and opt_ind:
+                    opts = item[opt_ind:].strip()
+                    parens = get_index(opts, True)
+                    while parens:
+                        opts = opts[:parens[0]] + opts[parens[1] + 1:]
+                        parens = get_index(opts, True)
+
+                opts = opts.split()
                 other = True
                 for cat, cmds in categories.items():
+                    if not obj[cat].get('opts'):
+                        obj[cat]['opts'] = {}
                     if cmd in cmds:
                         obj[f'len_{cat}'] += 1
                         if not obj[cat].get(cmd):
-                            obj[cat][cmd] = [] 
+                            obj[cat][cmd] = []
+
                         obj[cat][cmd].append(n)
+                        for opt in opts:
+                            if not obj[cat]['opts'].get(opt):
+                                obj[cat]['opts'][opt] = []
+                            obj[cat]['opts'][opt].append(n)
+
                         other = False
 
                 if other:
