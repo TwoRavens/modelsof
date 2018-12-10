@@ -21,8 +21,10 @@ def attempt(url):
     while True:
         try:
             r = requests.get(url, timeout=10)
-            r.raise_for_status()
             print(r.url)
+            if r.status_code == 403:
+                return r
+            r.raise_for_status()
             return r
         except:
             if attempts < 3:
@@ -75,7 +77,7 @@ def get_files(dataverse):
 
 def get_downloads(dataverse):
     get_files(dataverse)
-    with open(f'{datataverse}_files.csv') as f:
+    with open(f'{dataverse}_files.csv') as f:
         r = csv.DictReader(f)
         for row in r:
             id = row['file_href'].split('&')[0]
@@ -94,6 +96,8 @@ def get_downloads(dataverse):
                 continue
 
             r = attempt(base_url + url)
+            if r.status_code != 200:
+                continue
             with open(fname, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=128):
                     f.write(chunk)
