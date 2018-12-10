@@ -266,7 +266,6 @@ def get_stats(path):
                         parens = get_index(opts, True)
 
                 opts = opts.replace('///', '').split()
-                print(opts)
                 other = True
                 for cat, cmds in categories.items():
                     if not obj[cat].get('opts'):
