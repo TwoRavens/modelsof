@@ -9,7 +9,7 @@ import zipfile
 from bs4 import BeautifulSoup
 import requests
 
-isfile, join, splitext = [getattr(os.path, a) for a in 'isfile join splitext'.split()]
+dirname, isfile, join, splitext = [getattr(os.path, a) for a in 'dirname isfile join splitext'.split()]
 
 base_url = 'https://dataverse.harvard.edu'
 
@@ -163,7 +163,9 @@ def stat(command_cnts, cnt, path):
                     if not line.endswith('///'):
                         append(commands, command)
                         command = ''
-        with open(f'{path}.json', 'w') as f:
+
+        os.makedirs('out/' + dirname(path), exist_ok=True)
+        with open(f'out/{path}.json', 'w') as f:
             json.dump(both, f, indent=2)
 
         command_cnts.append((path, both, comments))
@@ -194,6 +196,9 @@ def get_stats(path):
     totals = collections.Counter()
     command_cnts = []
     for ds in datasets:
+        if sys.argv[3] and sys.argv[3] != ds:
+            continue
+
         dspath = join(path, ds)
         for file in os.listdir(dspath):
             filepath = join(dspath, file)
