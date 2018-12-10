@@ -154,7 +154,7 @@ def stat(command_cnts, cnt, path):
                     while True:
                         comment += line[ind:]
                         if line.find('*/') > -1:
-                            append(comments, comment)
+                            append(comments, comment.strip())
                             break 
                         line = f.readline()
                 elif line and line != '}':
