@@ -141,7 +141,7 @@ def stat(command_cnts, cnt, path):
             command = ''
             for line in f:
                 line = line.strip()
-                if line.startswith('*'):
+                if line.startswith('*') or line.startswith('///'):
                     append(comments, line)
                     continue
 
@@ -151,13 +151,12 @@ def stat(command_cnts, cnt, path):
                     if ind:
                         append(commands, command + line[:ind])
                         command = ''
-                        comment += line[ind + 1:]
-                        while True:
-                            line = f.readline()
-                            comment += line
-                            if line.find('*/') > -1:
-                                append(comments, comment)
-                                break 
+                    while True:
+                        comment += line[ind:]
+                        if line.find('*/') > -1:
+                            append(comments, comment)
+                            break 
+                        line = f.readline()
                 elif line and line != '}':
                     command += line
                     if not line.endswith('///'):
@@ -171,7 +170,7 @@ def stat(command_cnts, cnt, path):
         command_cnts.append((path, both, comments))
 
 def get_index(item, parens=False):
-    quote, compound_quote, paren, ind = 0, 0, 0, 0
+    quote, compound_quote, bracket, paren, ind = 0, 0, 0, 0, 0
     for n, char in enumerate(item):
         if char == '"' and not compound_quote:
             quote += -1 if quote else 1
@@ -179,6 +178,10 @@ def get_index(item, parens=False):
             compound_quote += 1
         elif char == "'" and not quote:
             compound_quote -= 1
+        elif char == '[' and not (quote or compound_quote):
+            bracket += 1
+        elif char == ']' and not (quote or compound_quote):
+            bracket -= 1
         elif char == '(' and not (quote or compound_quote):
             if not paren:
                 ind = n
@@ -187,7 +190,7 @@ def get_index(item, parens=False):
             paren -= 1
             if not paren and parens:
                 return ind, n
-        elif char == ',' and not (parens or quote or compound_quote or paren):
+        elif char == ',' and not (parens or quote or compound_quote or bracket or paren):
             return n + 1
 
 def get_stats(path):
@@ -262,7 +265,8 @@ def get_stats(path):
                         opts = opts[:parens[0]] + opts[parens[1] + 1:]
                         parens = get_index(opts, True)
 
-                opts = opts.split()
+                opts = opts.replace('///', '').split()
+                print(opts)
                 other = True
                 for cat, cmds in categories.items():
                     if not obj[cat].get('opts'):
