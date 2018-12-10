@@ -77,8 +77,8 @@ def get_files(dataverse):
 
 def get_downloads(dataverse):
     get_files(dataverse)
-    with open(f'{dataverse}_files.csv') as f:
-        r = csv.DictReader(f)
+    with open(f'{dataverse}_files.csv') as f, open('download_errors.csv', 'a') as f1:
+        r, w = csv.DictReader(f), csv.DictWriter(f1, ['title', 'href', 'filename', 'file_href', 'error'])
         for row in r:
             id = row['file_href'].split('&')[0]
             try:
@@ -97,6 +97,8 @@ def get_downloads(dataverse):
 
             r = attempt(base_url + url)
             if r.status_code != 200:
+                row['error'] = r.status_code
+                w.writerow(row)
                 continue
             with open(fname, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=128):
