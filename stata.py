@@ -1,4 +1,6 @@
 import collections
+import json
+import os, os.path
 import sys
 
 Token = collections.namedtuple('Token', 'type value line column')
@@ -27,6 +29,7 @@ class Lexer:
         ch = self.ch
         if ch == '\0':
             raise StopIteration
+
         if ch in '\n\\,(){}[]<>|&+-:%':
             tok = self.token() 
         elif ch == '/':
@@ -93,6 +96,7 @@ class Lexer:
             return self.token('number', self.input[pos:self.position], line, col) 
         else:
             raise InputError(ch, self.line, self.column) 
+
         self.read_char()
         return tok
 
@@ -125,7 +129,18 @@ class Lexer:
          return Token(type or self.ch, value or self.ch, line or self.line, column or self.column) 
 
 if __name__ == '__main__':
-    with open(sys.argv[1]) as f:
-        l = Lexer(f.read())
-    for tok in l:
-        print(tok)
+    file = sys.argv[1]
+    with open(file) as f:
+        lexer = Lexer(f.read())
+
+    lines, line = [], []
+    for tok in lexer:
+        if tok.type == '\n':
+            line and lines.append(line)
+            line = []
+        else:
+            line.append(dict(type=tok.type, value=tok.value, line=tok.line, column=tok.column))
+
+    os.makedirs('out/' + os.path.dirname(file), exist_ok=True)
+    with open(f'out/{file}.json', 'w') as f:
+        json.dump(lines, f, indent=2)
