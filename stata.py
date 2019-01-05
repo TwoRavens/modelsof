@@ -53,7 +53,7 @@ class Lexer:
                 tok = self.token('comment', self.input[pos:self.position], line, col)
         elif ch == '*':
             tok = self.token() 
-            if self.last_token and self.last_token.type == '\n':
+            if not self.last_token or self.last_token.type == '\n':
                 pos, line, col = self.get_current()
                 while not self.peek_char() in '\n\0':
                     self.read_char()
