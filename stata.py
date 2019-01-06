@@ -38,87 +38,34 @@ class Lexer:
         elif ch == '/':
             tok = self.token() 
             if self.peek_char() == '*':
-                pos, line, col = self.get_current()
-                while self.input[self.position - 1:self.position + 1] != '*/':
-                    self.read_char()
-                    if self.ch == '\0':
-                        raise InputError(ch, line, col, self.input[pos - col + 1:pos + 10]) 
-                tok = self.token('comment', self.input[pos:self.position + 1], line, col) 
+                tok = self.read_until('*/', 'comment', ch)
             elif self.peek_char() == '/':
-                pos, line, col = self.get_current()
-                while True:
-                    self.read_char()
-                    if self.ch in '\n\0':
-                        break
-                tok = self.token('comment', self.input[pos:self.position], line, col)
+                cur = self.get_current()
+                self.read_char()
+                tok = self.read_to_end('///' if self.peek_char() == '/' else 'comment', cur) 
         elif ch == '*':
             tok = self.token() 
             if not self.last_token or self.last_token.type == '\n':
-                pos, line, col = self.get_current()
-                while not self.peek_char() in '\n\0':
-                    self.read_char()
-                tok = self.token('comment', self.input[pos:self.position + 1], line, col) 
+                tok = self.read_to_end('comment') 
         elif ch == '#':
-            pos, line, col = self.get_current()
-            while not self.peek_char() in '\n\0':
-                self.read_char()
-            tok = self.token('comment', self.input[pos:self.position + 1], line, col) 
+            tok = self.read_to_end('comment') 
         elif ch == '~':
-            tok = self.token() 
-            if self.peek_char() == '=':
-                pos, line, col = self.get_current()
-                self.read_char()
-                tok = self.token('~=', self.input[pos:self.position + 1], line, col) 
+            tok = self.maybe('~=') 
         elif ch == '!':
-            tok = self.token() 
-            if self.peek_char() == '=':
-                pos, line, col = self.get_current()
-                self.read_char()
-                tok = self.token('!=', self.input[pos:self.position + 1], line, col) 
+            tok = self.maybe('!=') 
         elif ch == '=':
-            tok = self.token() 
-            if self.peek_char() == '=':
-                pos, line, col = self.get_current()
-                self.read_char()
-                tok = self.token('==', self.input[pos:self.position + 1], line, col) 
+            tok = self.maybe('==') 
         elif ch == '"':
-            pos, line, col = self.get_current()
-            pos += 1
-            while True:
-                self.read_char()
-                if self.ch == '"':
-                    break
-                elif self.ch == '\0':
-                    raise InputError(ch, line, col, self.input[pos - col + 1:pos + 10]) 
-            tok = self.token('string', self.input[pos:self.position], line, col) 
+            tok = self.read_until('"', 'string')
         elif ch == '`':
             if self.peek_char() == '"':
-                pos, line, col = self.get_current()
-                while self.input[self.position - 1:self.position + 1] != '"\'':
-                    self.read_char()
-                    if self.ch == '\0':
-                        raise InputError(ch, line, col, self.input[pos - col + 1:pos + 10]) 
-                tok = self.token('string', self.input[pos:self.position + 1], line, col) 
+                tok = self.read_until('"\'', 'string', ch)
             else:
-                pos, line, col = self.get_current()
-                pos += 1
-                while True:
-                    self.read_char()
-                    if self.ch == "'":
-                        break
-                    elif self.ch == '\0':
-                        raise InputError(ch, line, col, self.input[pos - col + 1:pos + 10]) 
-                tok = self.token("`'", self.input[pos:self.position], line, col) 
-        elif self.is_letter():
-            pos, line, col = self.get_current()
-            while self.is_letter() or self.ch == '.' or '0' <= self.ch <= '9':
-                self.read_char()
-            return self.token('identifier', self.input[pos:self.position], line, col) 
-        elif self.is_digit():
-            pos, line, col = self.get_current()
-            while self.is_digit(first=False):
-                self.read_char()
-            return self.token('number', self.input[pos:self.position], line, col) 
+                tok = self.read_until("'", "`'")
+        elif self.is_identifier():
+            return self.get_item('identifier', self.is_identifier) 
+        elif self.is_number():
+            return self.get_item('number', self.is_number) 
         else:
             raise InputError(ch, self.line, self.column, self.input[self.position - self.column + 1:self.position + 10]) 
 
@@ -129,6 +76,30 @@ class Lexer:
     def skip_whitespace(self):
         while self.ch in ' \t':
             self.read_char()
+
+    def read_until(self, end, type_, ch=None):
+        pos, line, col = self.get_current()
+        while not ch or self.input[self.position - 1:self.position + 1] != end:
+            self.read_char()
+            if not ch and self.ch == end:
+                break
+            if self.ch == '\0':
+                raise InputError(ch, line, col, self.input[pos - col + 1:pos + 10]) 
+        return self.token(type_, self.input[pos:self.position + 1], line, col)
+
+    def read_to_end(self, type_, current=None):
+        pos, line, col = current or self.get_current()
+        while not self.peek_char() in '\n\0':
+            self.read_char()
+        return self.token(type_, self.input[pos:self.position + 1], line, col)
+
+    def maybe(self, chars):
+        tok = self.token() 
+        if self.peek_char() == chars[1]: 
+            pos, line, col = self.get_current()
+            self.read_char()
+            tok = self.token(chars, self.input[pos:pos + 1], line, col) 
+        return tok
 
     def read_char(self):
         self.ch = self.peek_char() 
@@ -146,12 +117,18 @@ class Lexer:
     def get_current(self):
         return self.position, self.line, self.column
 
-    def is_letter(self):
-        return 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$'
+    def is_identifier(self, second=False):
+        match = 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$'
+        return match or (second and self.ch == '.' or '0' <= self.ch <= '9')
 
-    def is_digit(self, first=True):
-        ch = self.ch
-        return '0' <= ch <= '9' or ch in '.' or not first and 'a' <= ch <= 'z'
+    def is_number(self, second=False):
+        return '0' <= self.ch <= '9' or self.ch in '.' or (second and 'a' <= self.ch <= 'z')
+
+    def get_item(self, type_, method):
+        pos, line, col = self.get_current()
+        while method(True):
+            self.read_char()
+        return self.token(type_, self.input[pos:self.position], line, col) 
 
     def token(self, type='', value='', line=0, column=0):
         return Token(type or self.ch, value or self.ch, line or self.line, column or self.column) 
