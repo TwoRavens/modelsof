@@ -51,7 +51,13 @@ class Lexer:
             if not self.last_token or self.last_token.id == '\n':
                 tok = self.read_to_end('comment') 
         elif ch == '#':
-            tok = self.read_to_end('comment') 
+                pos, line, col = self.get_current()
+                if self.input[pos:pos + 8]:
+                    while self.position < pos + 8:
+                        self.read_char()
+                        tok = self.token('#delimit', '#delimit', line, col) 
+                else:
+                    tok = self.read_to_end('comment') 
         elif ch == '~':
             tok = self.maybe('~=') 
         elif ch == '!':
@@ -101,7 +107,7 @@ class Lexer:
         if self.peek_char() == chars[1]: 
             pos, line, col = self.get_current()
             self.read_char()
-            tok = self.token(chars, self.input[pos:pos + 1], line, col) 
+            tok = self.token(chars, self.input[pos:pos + 2], line, col) 
         return tok
 
     def read_char(self):
@@ -121,8 +127,8 @@ class Lexer:
         return self.position, self.line, self.column
 
     def is_identifier(self, second=False):
-        match = 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$'
-        return match or second and (self.ch == '.' or '0' <= self.ch <= '9')
+        match = 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$.'
+        return match or second and (self.ch == '#' or '0' <= self.ch <= '9')
 
     def is_number(self, second=False):
         return '0' <= self.ch <= '9' or self.ch in '.' or (second and 'a' <= self.ch <= 'z')
@@ -137,6 +143,12 @@ class Lexer:
     def token(self, id='', value='', line=0, column=0):
         return Token(id or self.ch, value or self.ch, line or self.line, column or self.column) 
 
+def append(line, tok):
+    tok1 = dict(id=tok.id, line=tok.line, column=tok.column)
+    if tok.id != tok.value:
+        tok1['value'] = tok.value
+    line.append(tok1)
+
 def run(file):
     print(file)
     try:
@@ -146,22 +158,29 @@ def run(file):
         with open(file, encoding='cp1252') as f:
             lexer = Lexer(f.read())
 
-    lines, line = [], []
+    delimit, lines, line = '\n', [], []
     for tok in lexer:
-        if tok.id == '\n':
+        if delimit == ';' and tok.id == '\n':
+            continue
+        if tok.id == delimit:
             line and lines.append(line)
             line = []
             continue
         if tok.id == '///':
             while True:
                 tok = next(lexer)
-                if tok.id != '\n':
+                if tok.id != delimit:
                     break
-
-        tok1 = dict(id=tok.id, line=tok.line, column=tok.column)
-        if tok.id != tok.value:
-            tok1['value'] = tok.value
-        line.append(tok1)
+        if tok.id == '#delimit':
+            delimit = tok
+        elif type(delimit) != str:
+            delimit = ';' if tok.id == ';' else '\n'
+            append(line, tok)
+            lines.append(line)
+            line = []
+            continue
+           
+        append(line, tok)
 
     os.makedirs('out/' + os.path.dirname(file), exist_ok=True)
     with open(f'out/{file}.json', 'w') as f:
