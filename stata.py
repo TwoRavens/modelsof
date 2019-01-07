@@ -52,7 +52,7 @@ class Lexer:
                 tok = self.read_to_end('comment') 
         elif ch == '#':
                 pos, line, col = self.get_current()
-                if self.input[pos:pos + 8]:
+                if self.input[pos:pos + 8] == '#delimit':
                     while self.position < pos + 8:
                         self.read_char()
                         tok = self.token('#delimit', '#delimit', line, col) 
@@ -179,7 +179,6 @@ def run(file):
             lines.append(line)
             line = []
             continue
-           
         append(line, tok)
 
     os.makedirs('out/' + os.path.dirname(file), exist_ok=True)
