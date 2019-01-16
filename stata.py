@@ -21,7 +21,7 @@ class Lexer:
         self.ch = '\0' 
         self.line = 1
         self.column = 0
-        self.last_token = None
+        self.last_token = Token('', '', 0, 0)
         self.read_char()
 
     def __iter__(self):
@@ -42,13 +42,13 @@ class Lexer:
             elif self.peek_char() == '/':
                 cur = self.get_current()
                 self.read_char()
-                if self.peek_char() == '/' and self.last_token and self.last_token.id != '\n':
+                if self.peek_char() == '/' and self.last_token.id != '\n':
                     tok = self.read_to_end('///', cur) 
                 else:
                     tok = self.read_to_end('comment', cur) 
         elif ch == '*':
             tok = self.token() 
-            if not self.last_token or self.last_token.id == '\n':
+            if self.last_token.id in ' \n':
                 tok = self.read_to_end('comment') 
         elif ch == '#':
                 pos, line, col = self.get_current()
@@ -80,6 +80,9 @@ class Lexer:
 
         self.read_char()
         self.last_token = tok
+        if tok.id == '\n':
+            self.line += 1
+            self.column = 1
         return tok
 
     def skip_whitespace(self):
@@ -115,9 +118,6 @@ class Lexer:
         self.position = self.read_position
         self.read_position += 1
         self.column += 1
-        if self.ch == '\n':
-            self.line += 1
-            self.column = 0
         return self.ch
 
     def peek_char(self):
@@ -143,11 +143,114 @@ class Lexer:
     def token(self, id='', value='', line=0, column=0):
         return Token(id or self.ch, value or self.ch, line or self.line, column or self.column) 
 
-def append(line, tok):
-    tok1 = dict(id=tok.id, line=tok.line, column=tok.column)
-    if tok.id != tok.value:
-        tok1['value'] = tok.value
-    line.append(tok1)
+class Node(object):
+    lbp = 0 
+
+    def __init__(self, token):
+        self.id = token.id
+        self.value = token.value
+        self.line = token.line
+        self.column = token.column
+
+class End(Node):
+    def __init__(self):
+        pass 
+
+class Literal(Node):
+    def __repr__(self):
+        return repr(self.value)
+
+    def null(self, parser):
+        return self
+
+class Operator(Node):
+    lbp = 20
+
+    def __init__(self, token):
+        super().__init__(token)
+        if self.value in '*/%':
+            self.lbp = 21
+        elif self.value == '&&':
+            self.lbp = 22
+        elif self.value == '||':
+            self.lbp = 23
+
+    def null(self, parser):
+        return parser.expression()
+
+    def left(self, left, parser):
+        self.args = [left, parser.expression(self.lbp)]
+        return self
+
+class Id(Node):
+    lbp = 30 
+
+    def null(self, parser):
+        self.args = ['self']
+        return self
+
+    def left(self, left, parser):
+        self.args = [left]
+        return self
+
+class Parser(object):
+    def __init__(self, lexer):
+        self.lexer = lexer
+        next(self)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            t = next(self.lexer)
+        except StopIteration:
+            self.token = End()
+        else:
+            Node = dict(
+            ).get(t.id, Literal)
+            self.token = Node(t)
+        return self.token
+
+    def expression(self, rbp=0):
+        t = self.token
+        left = t.null(next(self))
+        while rbp < self.token.lbp:
+            t = self.token
+            left = t.left(left, next(self))
+        return left
+
+    def statements(self):
+        statements = []
+        while 1:
+            if isinstance(self.token, End) or self.token.value == '}':
+                next(self)
+                break
+            statement = self.statement()
+            if statement:
+                statements.append(statement)
+        return statements
+
+    def statement(self):
+        statement = []
+        while 1:
+            if isinstance(self.token, End) or self.token.value == '\n':
+                next(self)
+                if statement and statement[-1].value == '///':
+                    statement.pop()
+                else:
+                    break
+            statement.append(self.expression())
+        return statement
+
+def parse(lexer):
+    return Parser(lexer).statements()
+
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Node):
+            return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
+        return json.JSONEncoder.default(self, obj)
 
 def run(file):
     print(file)
@@ -158,33 +261,39 @@ def run(file):
         with open(file, encoding='cp1252') as f:
             lexer = Lexer(f.read())
 
-    delimit, lines, line = '\n', [], []
-    for tok in lexer:
-        if delimit == ';' and tok.id == '\n':
-            continue
-        if tok.id == delimit:
-            line and lines.append(line)
-            line = []
-            continue
-        if tok.id == '///':
-            while True:
-                tok = next(lexer)
-                if tok.id != delimit:
-                    break
-        if tok.id == '#delimit':
-            delimit = tok
-        elif type(delimit) != str:
-            delimit = ';' if tok.id == ';' else '\n'
-            append(line, tok)
-            lines.append(line)
-            line = []
-            continue
-        append(line, tok)
-
+    commands = parse(lexer)
     os.makedirs('out/' + os.path.dirname(file), exist_ok=True)
     with open(f'out/{file}.json', 'w') as f:
-       json.dump(lines, f, indent=2)
+       json.dump(commands, f, indent=2, cls=Encoder)
+
+    with open('categories.json') as f:
+        categories = json.load(f)
+    with open(f'ajps_commands.json', 'w') as f:
+        obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other={})
+        for cat in categories:
+            obj[cat] = {}
+            obj[f'len_{cat}'] = 0
+
+        for command in commands: 
+            command = command[0]
+            if command.id == 'comment':
+                obj['len_comments'] += 1
+                continue
+            cmd = command.value 
+            other = True
+            for cat, cmds in categories.items():
+                if cmd in cmds:
+                    obj[f'len_{cat}'] += 1
+                    other = False
+            if other:
+                obj['len_other'] += 1
+                if not obj['other'].get(cmd):
+                    obj['other'][cmd] = {} 
+
+        json.dump({k: v for k, v in obj.items() if v}, f, indent=2)
+
 
 if __name__ == '__main__':
     for file in glob.glob(sys.argv[1], recursive=True):
         run(file)
+        break
