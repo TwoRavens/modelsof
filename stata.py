@@ -307,9 +307,15 @@ def run(file, categories):
             obj['len_comments'] += 1
             continue
 
-        for cmd in [command.value] + ([pre[0].value] if pre else []):
+        for cmd in [command] + ([pre[0]] if pre else []):
+            if cmd.id != 'identifier':
+                continue
+            else:
+                cmd = cmd.value
             other = True
             for cat, cmds in categories.items():
+                if cat == 'no category':
+                    continue
                 if cmd in cmds:
                     obj[f'len_{cat}'] += 1
                     other = False
