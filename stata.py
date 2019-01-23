@@ -158,7 +158,7 @@ class End(Node):
 
 class Literal(Node):
     def __repr__(self):
-        return repr(self.value)
+        return f'{self.value}'
 
     def null(self, parser):
         return self
@@ -220,24 +220,35 @@ class Parser(object):
             left = t.left(left, next(self))
         return left
 
-    def statements(self):
-        statements = []
+    def commands(self):
+        commands = []
         while 1:
             if isinstance(self.token, End) or self.token.value == '}':
                 next(self)
                 break
-            statement = self.statement()
-            if statement:
-                statements.append(statement)
-        return statements
+            command = self.command()
+            if command and command[-1].id == 'comment':
+                commands.append(command.pop())
+            if command:
+                if command[0].value in 'bs bootstrap by bys bysort graph mi nestreg permute svy xi'.split():
+                    try:
+                        i = [t.id for t in command].index(':')
+                        pre, command = command[:i], command[i + 1:]
+                        command = dict(pre=pre, command=command) if command else dict(command=pre)
+                    except ValueError:
+                        command = dict(command=command)
+                else:
+                    command = dict(command=command)
+                commands.append(command)
+        return commands
 
-    def statement(self):
-        statement = []
+    def command(self):
+        command = []
         while 1:
-            if isinstance(self.token, End) or self.token.value == self.delimiter:
+            if isinstance(self.token, End) or self.token.value == self.delimiter and not (command and command[0].id == '#delimit'):
                 next(self)
-                if statement and statement[-1].value == '///':
-                    statement.pop()
+                if command and command[-1].value == '///':
+                    command.pop()
                 else:
                     break
 
@@ -245,26 +256,31 @@ class Parser(object):
                 next(self)
                 continue
             else:
-                statement.append(self.expression())
+                command.append(self.expression())
 
-            if len(statement) == 2 and statement[0].id == '#delimit':
-                self.delimiter = ';' if statement[1].id == ';' else '\n'
+            if command[-1].id == 'comment':
                 break
 
-        if len(statement) == 1 and statement[0].id == '#delimit':
+            if len(command) == 2 and command[0].id == '#delimit':
+                self.delimiter = ';' if command[1].id == ';' else '\n'
+                break
+
+        if len(command) == 1 and command[0].id == '#delimit':
             self.delimiter = '\n'
-        return statement
+        return command
 
 def parse(lexer):
-    return Parser(lexer).statements()
+    return Parser(lexer).commands()
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Node):
             return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
+        if isinstance(obj, set):
+            return list(obj)
         return json.JSONEncoder.default(self, obj)
 
-def run(file):
+def run(file, categories):
     print(file)
     try:
         with open(file) as f:
@@ -278,20 +294,20 @@ def run(file):
     with open(f'out/{file}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    with open('categories.json') as f:
-        categories = json.load(f)
-    with open(f'ajps_commands.json', 'w') as f:
-        obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other={})
-        for cat in categories:
-            obj[cat] = {}
-            obj[f'len_{cat}'] = 0
+    obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other=set())
+    for cat in categories:
+        obj[cat] = {}
+        obj[f'len_{cat}'] = 0
 
-        for command in commands: 
-            command = command[0]
-            if command.id == 'comment':
-                obj['len_comments'] += 1
-                continue
-            cmd = command.value 
+    for command in commands: 
+        if isinstance(command, dict):
+            pre = command.get('pre')
+            command = command['command'][0]
+        if command.id == 'comment':
+            obj['len_comments'] += 1
+            continue
+
+        for cmd in [command.value] + ([pre[0].value] if pre else []):
             other = True
             for cat, cmds in categories.items():
                 if cmd in cmds:
@@ -299,13 +315,24 @@ def run(file):
                     other = False
             if other:
                 obj['len_other'] += 1
-                if not obj['other'].get(cmd):
-                    obj['other'][cmd] = {} 
+                obj['other'].add(cmd)
 
-        json.dump({k: v for k, v in obj.items() if v}, f, indent=2)
+    return {k: v for k, v in obj.items() if v}
 
 
 if __name__ == '__main__':
+    with open('categories.json') as f:
+        categories = json.load(f)
+
+    stats, others = [], set()
     for file in glob.glob(sys.argv[1], recursive=True):
-        run(file)
-        #break
+        stat = run(file, categories)
+        stats.append(stat)
+        others.update(stat.get('other', set()))
+    with open(f'stats.json', 'w') as f:
+        json.dump(stats, f, indent=2, cls=Encoder)
+
+    categories['no category'] = {k: {} for k in others} 
+    with open('categories.json', 'w') as f:
+        json.dump(categories, f, indent=2)
+
