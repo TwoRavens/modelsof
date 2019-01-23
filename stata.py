@@ -52,8 +52,8 @@ class Lexer:
                 tok = self.read_to_end('comment') 
         elif ch == '#':
                 pos, line, col = self.get_current()
-                if self.input[pos:pos + 8] == '#delimit':
-                    while self.position < pos + 8:
+                if self.input[pos + 1:].lstrip(' \t').startswith('delimit'):
+                    while self.position < pos + self.input[pos:].index('delimit') + 6:
                         self.read_char()
                         tok = self.token('#delimit', '#delimit', line, col) 
                 else:
@@ -196,6 +196,7 @@ class Id(Node):
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
+        self.delimiter = '\n'
         next(self)
 
     def __iter__(self):
@@ -207,8 +208,7 @@ class Parser(object):
         except StopIteration:
             self.token = End()
         else:
-            Node = dict(
-            ).get(t.id, Literal)
+            Node = dict().get(t.id, Literal)
             self.token = Node(t)
         return self.token
 
@@ -234,13 +234,25 @@ class Parser(object):
     def statement(self):
         statement = []
         while 1:
-            if isinstance(self.token, End) or self.token.value == '\n':
+            if isinstance(self.token, End) or self.token.value == self.delimiter:
                 next(self)
                 if statement and statement[-1].value == '///':
                     statement.pop()
                 else:
                     break
-            statement.append(self.expression())
+
+            if self.token.id == '\n' and self.delimiter != '\n':
+                next(self)
+                continue
+            else:
+                statement.append(self.expression())
+
+            if len(statement) == 2 and statement[0].id == '#delimit':
+                self.delimiter = ';' if statement[1].id == ';' else '\n'
+                break
+
+        if len(statement) == 1 and statement[0].id == '#delimit':
+            self.delimiter = '\n'
         return statement
 
 def parse(lexer):
@@ -296,4 +308,4 @@ def run(file):
 if __name__ == '__main__':
     for file in glob.glob(sys.argv[1], recursive=True):
         run(file)
-        break
+        #break
