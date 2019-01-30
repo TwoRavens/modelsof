@@ -236,11 +236,15 @@ class Parser(object):
                     try:
                         i = [t.id for t in command].index(':')
                         pre, command = command[:i], command[i + 1:]
-                        command = dict(pre=pre, command=command) if command else dict(command=pre)
+                        if command:
+                            command = self.parse_command(command)
+                            command['pre'] = self.parse_command(pre)
+                        else:
+                            command = self.parse_command(pre)
                     except ValueError:
-                        command = dict(command=command)
+                        command = self.parse_command(command)
                 else:
-                    command = dict(command=command)
+                    command = self.parse_command(command)
                 commands.append(command)
         return commands
 
@@ -270,6 +274,47 @@ class Parser(object):
         if len(command) == 1 and command[0].id == '#delimit':
             self.delimiter = '\n'
         return command
+
+    def parse_command(self, command):
+        res = dict(command=command[0])
+        varlist, if_, eq, in_, weight, options = [], [], [], [], [], []
+        cur = varlist 
+        parens = 0
+        for token in command[1:]:
+            if token.id == '(':
+                parens += 1
+            if token.id == ')':
+                parens -= 1
+            if not parens and token.value == '=':
+                cur = eq
+                continue
+            if not parens and token.value == 'if':
+                cur = if_ 
+                continue
+            if not parens and token.value == 'in':
+                cur = in_ 
+                continue
+            if not parens and token.value == '[':
+                cur = weight 
+                continue
+            if not parens and token.value == ',':
+                cur = options 
+                continue
+            cur.append(token)
+        if varlist:
+            res['varlist'] = varlist
+        if eq:
+            res['='] = eq
+        if if_:
+            res['if'] = if_
+        if in_:
+            res['in'] = in_
+        if weight:
+            res['weight'] = weight
+        if options:
+            res['options'] = options
+        return res 
+         
 
 def parse(lexer):
     return Parser(lexer).commands()
@@ -302,12 +347,12 @@ def run(file, categories):
     for command in commands: 
         if isinstance(command, dict):
             pre = command.get('pre')
-            command = command['command'][0]
-        if command.id == 'comment':
+            command = command['command']
+        elif command.id == 'comment':
             obj['len_comments'] += 1
             continue
 
-        for cmd in [command] + ([pre[0]] if pre else []):
+        for cmd in [command] + ([pre['command']] if pre else []):
             if cmd.id != 'identifier':
                 continue
             else:
