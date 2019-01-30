@@ -1,10 +1,10 @@
-import collections
+from collections import Counter, namedtuple
 import glob
 import json
 import os, os.path
 import sys
 
-Token = collections.namedtuple('Token', 'id value line column')
+Token = namedtuple('Token', 'id value line column')
 
 class InputError(Exception):
     def __init__(self, char, line, column, text):
@@ -278,8 +278,6 @@ class Encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Node):
             return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
-        if isinstance(obj, set):
-            return list(obj)
         return json.JSONEncoder.default(self, obj)
 
 def run(file, categories):
@@ -296,7 +294,7 @@ def run(file, categories):
     with open(f'out/{file}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other=set())
+    obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other=Counter())
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
@@ -323,22 +321,22 @@ def run(file, categories):
                     other = False
             if other:
                 obj['len_other'] += 1
-                obj['other'].add(cmd)
+                obj['other'][cmd] += 1
 
     return {k: v for k, v in obj.items() if v}
 
 if __name__ == '__main__':
     with open('categories.json') as f:
         categories = json.load(f)
-    stats, others = [], set()
+    stats, others = [], Counter()
     for file in glob.glob(sys.argv[1], recursive=True):
         stat = run(file, categories)
         stats.append(stat)
-        others.update(stat.get('other', set()))
+        others.update(stat.get('other'))
     with open(f'stats.json', 'w') as f:
-        json.dump(stats, f, indent=2, cls=Encoder)
+        json.dump(stats, f, indent=2)
 
-    categories['no category'] = {k: {} for k in others} 
+    categories['no category'] = others.most_common()
     with open('categories.json', 'w') as f:
         json.dump(categories, f, indent=2)
 
