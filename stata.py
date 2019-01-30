@@ -72,6 +72,8 @@ class Lexer:
             else:
                 tok = self.read_until("'", "`'")
         elif self.is_identifier():
+            if ch == '.' and '0' <= self.peek_char() <= '9':
+                return self.get_item('number', self.is_number) 
             return self.get_item('identifier', self.is_identifier) 
         elif self.is_number():
             return self.get_item('number', self.is_number) 
@@ -325,11 +327,9 @@ def run(file, categories):
 
     return {k: v for k, v in obj.items() if v}
 
-
 if __name__ == '__main__':
     with open('categories.json') as f:
         categories = json.load(f)
-
     stats, others = [], set()
     for file in glob.glob(sys.argv[1], recursive=True):
         stat = run(file, categories)
