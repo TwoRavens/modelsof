@@ -253,7 +253,7 @@ class Parser(object):
         while 1:
             if isinstance(self.token, End) or self.token.value == self.delimiter and not (command and command[0].id == '#delimit'):
                 next(self)
-                if command and command[-1].value == '///':
+                if command and command[-1].id == '///':
                     command.pop()
                 else:
                     break
