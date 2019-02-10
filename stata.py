@@ -264,7 +264,7 @@ class Parser(object):
             else:
                 command.append(self.expression())
 
-            if command[-1].id == 'comment':
+            if command[-1].id == 'comment' and not '\n' in command[-1].value:
                 break
 
             if len(command) == 2 and command[0].id == '#delimit':
