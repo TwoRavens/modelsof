@@ -33,7 +33,12 @@ class Lexer:
         if ch == '\0':
             raise StopIteration
 
-        if ch in "\n\\,(){}[]<>|&+-:%;'^" or ord(ch) > 127:
+        if ch == '\n':
+            pos, line, col = self.get_current()
+            while self.peek_char() == ' ':
+                self.read_char()
+            tok = self.token('\n', '\n', line, col) 
+        elif ch in "\\,(){}[]<>|&+-:%;'^" or ord(ch) > 127:
             tok = self.token() 
         elif ch == '/':
             tok = self.token() 
@@ -103,7 +108,7 @@ class Lexer:
 
     def read_to_end(self, id, current=None):
         pos, line, col = current or self.get_current()
-        while not self.peek_char() in '\n\0':
+        while not self.peek_char() in '\n\0' or (id == 'comment' and self.input[self.position - 2:self.position + 1] == '///'):
             self.read_char()
         return self.token(id, self.input[pos:self.position + 1], line, col)
 
