@@ -358,24 +358,27 @@ def run(file):
             lexer = Lexer(f.read())
 
     commands = parse(lexer)
-    os.makedirs('out/' + os.path.dirname(file), exist_ok=True)
+    os.makedirs(f'out/{os.path.dirname(file)}', exist_ok=True)
     with open(f'out/{file}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other=Counter())
+    obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other=Counter(), regressions=Counter())
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
 
     for command in commands: 
-        if isinstance(command, dict):
-            pre = command.get('pre', [])
-            command = command['command']
-        elif command.id == 'comment':
+        if isinstance(command, Literal) and command.id == 'comment':
             obj['len_comments'] += 1
             continue
-
-        for cmd in [command] + [p['command'] for p in pre]:
+        pre = [p['command'] for p in command.get('pre', [])]
+        command = command['command']
+        val = command.value
+        if val in categories['regression']:
+            obj['regressions'][val] += 1
+            if pre:
+                obj['regressions'][':'.join(sorted(x.value for x in pre) + [val])] += 1
+        for cmd in [command] + pre:
             if cmd.id != 'identifier':
                 continue
             else:
@@ -394,13 +397,14 @@ def run(file):
     return {k: v for k, v in obj.items() if v}
 
 if __name__ == '__main__':
-    stats, others = [], Counter()
+    stats, regs, others = [], Counter(), Counter()
     for file in glob.glob(sys.argv[1], recursive=True):
         stat = run(file)
         stats.append(stat)
+        regs.update(stat.get('regressions'))
         others.update(stat.get('other'))
     with open(f'stats.json', 'w') as f:
-        json.dump(stats, f, indent=2)
+        json.dump([regs] + stats, f, indent=2)
 
     categories['no category'] = others.most_common()
     with open('categories.json', 'w') as f:
