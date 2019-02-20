@@ -4,6 +4,9 @@ import json
 import os, os.path
 import sys
 
+with open('categories.json') as f:
+    categories = json.load(f)
+
 Token = namedtuple('Token', 'id value line column')
 
 class InputError(Exception):
@@ -242,25 +245,30 @@ class Parser(object):
             if command and command[-1].id == 'comment':
                 commands.append(command.pop())
             if command:
-                if command[0].value in prefix:
-                    pre = command[:1]
-                    if command[1] and command[1].value == ':':
-                        del command[1]
-                    command = self.parse_command(command[1:])
-                    command['pre'] = self.parse_command(pre)
-                elif command[0].value in 'bs bootstrap by bys bysort graph mi nestreg permute svy xi'.split():
-                    try:
-                        i = [t.id for t in command].index(':')
-                        pre, command = command[:i], command[i + 1:]
-                        if command:
-                            command = self.parse_command(command)
-                            command['pre'] = self.parse_command(pre)
-                        else:
-                            command = self.parse_command(pre)
-                    except ValueError:
-                        command = self.parse_command(command)
-                else:
-                    command = self.parse_command(command)
+                pre = []
+                while command[0].value in prefix + list(categories['prefix']):
+                    head = command[0].value
+                    if head in prefix:
+                        pre.append(self.parse_command(command[:1]))
+                        if command[1] and command[1].value == ':':
+                            del command[1]
+                        command = command[1:]
+                        continue
+                    if head in categories['prefix']:
+                        buf = []
+                        for i, x in enumerate(command):
+                            if x.value != ':':
+                                buf.append(x)
+                            else:
+                                break
+                        if buf == command:
+                            break
+                        pre.append(self.parse_command(buf))
+                        command = command[i + 1:]
+                        continue
+                command = self.parse_command(command)
+                if pre:
+                    command['pre'] = pre
                 commands.append(command)
         return commands
 
@@ -340,7 +348,7 @@ class Encoder(json.JSONEncoder):
             return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
         return json.JSONEncoder.default(self, obj)
 
-def run(file, categories):
+def run(file):
     print(file)
     try:
         with open(file) as f:
@@ -361,13 +369,13 @@ def run(file, categories):
 
     for command in commands: 
         if isinstance(command, dict):
-            pre = command.get('pre')
+            pre = command.get('pre', [])
             command = command['command']
         elif command.id == 'comment':
             obj['len_comments'] += 1
             continue
 
-        for cmd in [command] + ([pre['command']] if pre else []):
+        for cmd in [command] + [p['command'] for p in pre]:
             if cmd.id != 'identifier':
                 continue
             else:
@@ -386,11 +394,9 @@ def run(file, categories):
     return {k: v for k, v in obj.items() if v}
 
 if __name__ == '__main__':
-    with open('categories.json') as f:
-        categories = json.load(f)
     stats, others = [], Counter()
     for file in glob.glob(sys.argv[1], recursive=True):
-        stat = run(file, categories)
+        stat = run(file)
         stats.append(stat)
         others.update(stat.get('other'))
     with open(f'stats.json', 'w') as f:
