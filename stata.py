@@ -228,6 +228,11 @@ class Parser(object):
         return left
 
     def commands(self):
+        cap, n, qui, vers = 'capture noisily quietly version'.split()
+        prefix = []
+        for pre, ln in ((cap, 3), (n, 1), (qui, 3), (vers, 4)):
+            prefix += [pre[:i] for i in range(ln, len(pre) + 1)]
+
         commands = []
         while 1:
             if isinstance(self.token, End) or self.token.value == '}':
@@ -237,7 +242,13 @@ class Parser(object):
             if command and command[-1].id == 'comment':
                 commands.append(command.pop())
             if command:
-                if command[0].value in 'bs bootstrap by bys bysort graph mi nestreg permute svy xi'.split():
+                if command[0].value in prefix:
+                    pre = command[:1]
+                    if command[1] and command[1].value == ':':
+                        del command[1]
+                    command = self.parse_command(command[1:])
+                    command['pre'] = self.parse_command(pre)
+                elif command[0].value in 'bs bootstrap by bys bysort graph mi nestreg permute svy xi'.split():
                     try:
                         i = [t.id for t in command].index(':')
                         pre, command = command[:i], command[i + 1:]
@@ -319,7 +330,6 @@ class Parser(object):
         if options:
             res['options'] = options
         return res 
-         
 
 def parse(lexer):
     return Parser(lexer).commands()
