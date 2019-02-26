@@ -375,9 +375,8 @@ def run(file):
         command = command['command']
         val = command.value
         if val in categories['regression']:
-            obj['regressions'][val] += 1
-            if pre:
-                obj['regressions'][':'.join(sorted(x.value for x in pre) + [val])] += 1
+            key = ':'.join(sorted(x.value for x in pre) + [val]) if pre else val
+            obj['regressions'][key] += 1
         for cmd in [command] + pre:
             if cmd.id != 'identifier':
                 continue
@@ -393,8 +392,7 @@ def run(file):
             if other:
                 obj['len_other'] += 1
                 obj['other'][cmd] += 1
-
-    return {k: v for k, v in obj.items() if v}
+    return obj
 
 if __name__ == '__main__':
     stats, regs, others = [], Counter(), Counter()
@@ -404,7 +402,7 @@ if __name__ == '__main__':
         regs.update(stat.get('regressions'))
         others.update(stat.get('other'))
     with open(f'stats.json', 'w') as f:
-        json.dump([regs] + stats, f, indent=2)
+        json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
     categories['no category'] = others.most_common()
     with open('categories.json', 'w') as f:
