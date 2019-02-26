@@ -3,6 +3,7 @@ import glob
 import json
 import os, os.path
 import sys
+import zipfile
 
 with open('categories.json') as f:
     categories = json.load(f)
@@ -395,16 +396,31 @@ def run(file):
     return obj
 
 if __name__ == '__main__':
-    stats, regs, others = [], Counter(), Counter()
-    for file in glob.glob(sys.argv[1], recursive=True):
-        stat = run(file)
-        stats.append(stat)
-        regs.update(stat.get('regressions'))
-        others.update(stat.get('other'))
-    with open(f'stats.json', 'w') as f:
-        json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
+    if len(sys.argv) > 2 and sys.argv[2] == 'count':
+        exts = Counter()
+        for file in glob.glob(sys.argv[1], recursive=True):
+            exts[os.path.splitext(file)[1]] += 1
+        print(exts)
+    elif len(sys.argv) > 2 and sys.argv[2] == 'unzip':
+        for file in glob.glob(sys.argv[1], recursive=True):
+            if os.path.splitext(file)[1] == '.zip':
+                with zipfile.ZipFile(file) as f:
+                    try:
+                        f.extractall(os.path.split(file)[0])
+                        os.remove(file)
+                    except:
+                        pass 
+    else:
+        stats, regs, others = [], Counter(), Counter()
+        for file in glob.glob(sys.argv[1], recursive=True):
+            stat = run(file)
+            stats.append(stat)
+            regs.update(stat.get('regressions'))
+            others.update(stat.get('other'))
+        with open(f'stats.json', 'w') as f:
+            json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
-    categories['no category'] = others.most_common()
-    with open('categories.json', 'w') as f:
-        json.dump(categories, f, indent=2)
+        categories['no category'] = others.most_common()
+        with open('categories.json', 'w') as f:
+            json.dump(categories, f, indent=2)
 
