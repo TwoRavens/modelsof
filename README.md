@@ -19,3 +19,5 @@ The remaining items (counts per file) count prefix and "command" (regression or 
     python3 stata.py * unzip
 
 is destructive (it destroys zip files as it unzips) and may need to be run several times to get deeply nested zips.
+
+unzip also requires 7z for rar and 7z files. This is `p7zip-full` and `pzip-rar` on Ubuntu.
