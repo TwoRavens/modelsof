@@ -363,7 +363,7 @@ def run(file):
     with open(f'out/{file}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    obj = dict(path=file, len=len(commands), len_comments=0, len_other=0, other=Counter(), regressions=Counter())
+    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix_as_prefix=0, len_other=0, other=Counter(), regressions=Counter())
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
@@ -388,7 +388,7 @@ def run(file):
                 if cat == 'no category':
                     continue
                 if cmd in cmds:
-                    obj[f'len_{cat}'] += 1
+                    obj['len_prefix_as_prefix' if pre and cat == 'prefix' else f'len_{cat}'] += 1
                     other = False
             if other:
                 obj['len_other'] += 1
