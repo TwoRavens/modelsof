@@ -105,10 +105,10 @@ class Lexer:
         pos, line, col = self.get_current()
         while not ch or self.input[self.position - 1:self.position + 1] != end:
             self.read_char()
-            if not ch and self.ch == end:
+            if not ch and self.ch == end and not (end == "'" and self.peek_char() == '"'):
                 break
             if self.ch == '\0':
-                raise InputError(ch, line, col, self.input[pos - col + 1:pos + 10]) 
+                raise InputError(ch or f'no closing {end}', line, col, self.input[pos - col + 1:pos + 10]) 
         return self.token(id, self.input[pos:self.position + 1], line, col)
 
     def read_to_end(self, id, current=None):
@@ -139,7 +139,7 @@ class Lexer:
         return self.position, self.line, self.column
 
     def is_identifier(self, second=False):
-        match = 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$.'
+        match = 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$.?'
         return match or second and (self.ch == '#' or '0' <= self.ch <= '9')
 
     def is_number(self, second=False):
@@ -358,7 +358,6 @@ def run(file):
     except UnicodeError:
         with open(file, encoding='cp1252') as f:
             lexer = Lexer(f.read())
-
     commands = parse(lexer)
     os.makedirs(f'out/{os.path.dirname(file)}', exist_ok=True)
     with open(f'out/{file}.json', 'w') as f:
@@ -418,11 +417,16 @@ if __name__ == '__main__':
                 print('error:', file, e)
     else:
         stats, regs, others = [], Counter(), Counter()
-        for file in glob.glob(pattern, recursive=True):
-            stat = run(file)
+        for file in glob.glob(f'{pattern}.do', recursive=True):
+            try:
+                stat = run(file)
+            except Exception as e:
+                print('error:', e)
+                input('ENTER TO CONTINUE')
+                stat = dict(file=file, error=str(e))
             stats.append(stat)
-            regs.update(stat.get('regressions'))
-            others.update(stat.get('other'))
+            regs.update(stat.get('regressions', []))
+            others.update(stat.get('other', []))
         with open(f'stats.json', 'w') as f:
             json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
