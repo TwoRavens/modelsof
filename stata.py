@@ -397,13 +397,15 @@ def run(file):
     return obj
 
 if __name__ == '__main__':
+    journal = sys.argv[1]
+    pattern = f'{journal}/**/*'
     if len(sys.argv) > 2 and sys.argv[2] == 'count':
         exts = Counter()
-        for file in glob.glob(sys.argv[1], recursive=True):
+        for file in glob.glob(pattern, recursive=True):
             exts[os.path.splitext(file)[1]] += 1
         print(exts)
     elif len(sys.argv) > 2 and sys.argv[2] == 'unzip':
-        for file in glob.glob(sys.argv[1], recursive=True):
+        for file in glob.glob(pattern, recursive=True):
             ext = os.path.splitext(file)[1]
             dir = os.path.split(file)[0]
             try:
@@ -416,7 +418,7 @@ if __name__ == '__main__':
                 print('error:', file, e)
     else:
         stats, regs, others = [], Counter(), Counter()
-        for file in glob.glob(sys.argv[1], recursive=True):
+        for file in glob.glob(pattern, recursive=True):
             stat = run(file)
             stats.append(stat)
             regs.update(stat.get('regressions'))
