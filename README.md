@@ -12,7 +12,7 @@ the count will be:
     svy:reg = 1
     reg = 1
 
-The remaining items (counts per file) count prefix and "command" (regression or otherwise) separately.
+The remaining items (counts per file) count prefix and "command" (regression or otherwise) separately except for the 'regressions' key, which works the same as the previous section.
 
 ## notes
 

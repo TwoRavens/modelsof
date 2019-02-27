@@ -411,7 +411,7 @@ if __name__ == '__main__':
                     shutil.unpack_archive(file, dir)
                     os.remove(file)
                 if ext in '.7z .rar'.split():
-                    subprocess.run(['7z', 'x', file], check=True) and os.remove(file)
+                    subprocess.run(['7z', 'x', file, f'-o{dir}', '-r'], check=True) and os.remove(file)
             except Exception as e:
                 print('error:', file, e)
     else:
