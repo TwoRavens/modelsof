@@ -430,7 +430,7 @@ if __name__ == '__main__':
             stats.append(stat)
             regs.update(stat.get('regressions', []))
             others.update(stat.get('other', []))
-        with open(f'stats.json', 'w') as f:
+        with open(f'out/{journal}/stats.json', 'w') as f:
             json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
         categories['no category'] = dict(others.most_common())
