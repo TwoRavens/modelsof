@@ -2,6 +2,8 @@
 
 ## stats.json counts
 
+Some prefix commands are run in isolation (not as a prefix). they are counted as `len_prefix`. Those prefix commands that are used as a prefix to another command are counted as `len_prefix_as_prefix`. The latter do not show up in overall counts (`len`).
+
 The first item is a count of regression commands in all files. Given two commands:
 
     svy: reg ...

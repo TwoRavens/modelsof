@@ -240,9 +240,12 @@ class Parser(object):
 
         commands = []
         while 1:
-            if isinstance(self.token, End) or self.token.value == '}':
+            if isinstance(self.token, End):
                 next(self)
-                break
+                break          
+            if self.token.value == '}':
+                next(self)
+
             command = self.command()
             if command and command[-1].id == 'comment':
                 commands.append(command.pop())
