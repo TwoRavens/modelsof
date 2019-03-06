@@ -353,6 +353,12 @@ class Encoder(json.JSONEncoder):
             return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
         return json.JSONEncoder.default(self, obj)
 
+def count(pattern):
+    exts = Counter()
+    for file in glob.glob(pattern, recursive=True):
+        exts[os.path.splitext(file)[1]] += 1
+    return dict(exts.most_common())
+
 def run(file):
     print(file)
     try:
@@ -402,10 +408,7 @@ if __name__ == '__main__':
     journal = sys.argv[1]
     pattern = f'{journal}/**/*'
     if len(sys.argv) > 2 and sys.argv[2] == 'count':
-        exts = Counter()
-        for file in glob.glob(pattern, recursive=True):
-            exts[os.path.splitext(file)[1]] += 1
-        print(exts)
+        print(count(pattern))
     elif len(sys.argv) > 2 and sys.argv[2] == 'unzip':
         for file in glob.glob(pattern, recursive=True):
             ext = os.path.splitext(file)[1]
@@ -430,6 +433,9 @@ if __name__ == '__main__':
             stats.append(stat)
             regs.update(stat.get('regressions', []))
             others.update(stat.get('other', []))
+
+        with open(f'out/{journal}/files.json', 'w') as f:
+            json.dump(count(pattern), f, indent=2)
         with open(f'out/{journal}/stats.json', 'w') as f:
             json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
