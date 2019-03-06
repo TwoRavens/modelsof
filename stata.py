@@ -433,7 +433,6 @@ if __name__ == '__main__':
         with open(f'stats.json', 'w') as f:
             json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
-        categories['no category'] = others.most_common()
+        categories['no category'] = dict(others.most_common())
         with open('categories.json', 'w') as f:
             json.dump(categories, f, indent=2)
-
