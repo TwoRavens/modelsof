@@ -64,7 +64,7 @@ def get_files(dataverse):
                 files.append(dict(row, filename=md.a.text.strip(), file_href=md.a['href']))
 
     with open(file, 'w') as f:
-        w = csv.DictWriter(f, 'title href filename file_href'.split())
+        w = csv.DictWriter(f, 'title href date filename file_href'.split())
         w.writeheader()
         w.writerows(files)
 

@@ -1,8 +1,12 @@
 # modelsof
 
-1. `python3 models.py jop get_datasets`
+1. `python3 modelsof.py jop get_datasets`
 
 Scrapes Dataverse for all articles. Produces `out/jop/datasets.csv` with `title, href, date`.
+
+2. `python3 modelsof.py jop getfiles`
+
+Scrapes Dataverse for all files associated with each article within `datasets.csv`. Produces `out/jop/files.csv` with `title, href, date, filename, href`.
 
 ## stats.json counts
 
