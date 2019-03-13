@@ -1,5 +1,9 @@
 # modelsof
 
+1. `python3 models.py jop get_datasets`
+
+Scrapes Dataverse for all articles. Produces `out/jop/datasets.csv` with `title, href, date`.
+
 ## stats.json counts
 
 Some prefix commands are run in isolation (not as a prefix). they are counted as `len_prefix`. Those prefix commands that are used as a prefix to another command are counted as `len_prefix_as_prefix`. The latter do not show up in overall counts (`len`).
