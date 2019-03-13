@@ -6,7 +6,7 @@ Scrapes Dataverse for all articles. Produces `out/jop/datasets.csv` with `title,
 
 2. `python3 modelsof.py jop get_files`
 
-Scrapes Dataverse for all files associated with each article within `datasets.csv`. Produces `out/jop/files.csv` with `title, href, date, filename, href`.
+Scrapes Dataverse for all files associated with each article within `datasets.csv`. Produces `out/jop/files.csv` with `title, href, date, filename, file_href`.
 
 ## stats.json counts
 
