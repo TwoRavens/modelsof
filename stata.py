@@ -409,18 +409,6 @@ if __name__ == '__main__':
     pattern = f'{journal}/**/*'
     if len(sys.argv) > 2 and sys.argv[2] == 'count':
         print(count(pattern))
-    elif len(sys.argv) > 2 and sys.argv[2] == 'unzip':
-        for file in glob.glob(pattern, recursive=True):
-            ext = os.path.splitext(file)[1]
-            dir = os.path.split(file)[0]
-            try:
-                if ext in '.gz .tar .zip'.split(): 
-                    shutil.unpack_archive(file, dir)
-                    os.remove(file)
-                if ext in '.7z .rar'.split():
-                    subprocess.run(['7z', 'x', file, f'-o{dir}', '-r'], check=True) and os.remove(file)
-            except Exception as e:
-                print('error:', file, e)
     else:
         stats, regs, others = [], Counter(), Counter()
         for file in glob.glob(f'{pattern}.do', recursive=True):

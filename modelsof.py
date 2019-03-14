@@ -1,13 +1,17 @@
 import collections
 import csv
+import glob
 import os
-from os.path import dirname, isfile, join, splitext
+from os.path import dirname, isfile, join, split, splitext
+import shutil
+import subprocess
 import sys
 
 from bs4 import BeautifulSoup
 import requests
 
 base_url = 'https://dataverse.harvard.edu'
+exts = '.do .7z .7zip .gz .rar .tar .zip'.split()
 
 def attempt(url):
     attempts = 0
@@ -24,6 +28,9 @@ def attempt(url):
                 attempts += 1
                 continue
             raise
+
+def get_ext(file):
+    return splitext(file)[1].lower()
 
 def get_datasets(dataverse):
     file = f'out/{dataverse}/datasets.csv'
@@ -72,7 +79,7 @@ def get_files(dataverse):
 def get_ext_counts(dataverse, year):
     with open(f'out/{dataverse}/files.csv') as f:
         r = csv.DictReader(f)
-        cnt = collections.Counter(splitext(row['filename'])[1].lower() for row in r if row['date'].endswith(year))
+        cnt = collections.Counter(get_ext(row['filename']) for row in r if row['date'].endswith(year))
     print(cnt)
 
 def get_downloads(dataverse, year=None):
@@ -84,7 +91,7 @@ def get_downloads(dataverse, year=None):
             row_year = row['date'].strip()[-4:]
             if year and not year == row_year:
                 continue
-            if not splitext(row['filename'])[1].lower() in '.do .7z .7zip .gz .rar .tar .zip'.split():
+            if not splitext(row['filename'])[1].lower() in exts:
                 continue
             id = row['file_href'].split('&')[0]
             try:
@@ -109,11 +116,44 @@ def get_downloads(dataverse, year=None):
             with open(file, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=128):
                     f.write(chunk)
+        
+def unzip(dataverse):
+    unzipped = []
+    while True:
+        files = glob.glob(f'out/{dataverse}/downloads/**/*', recursive=True)
+        files = [f for f in files if not get_ext(f) in ('.do', '')][1:]
+        if not files:
+            break
+        for file in files:
+            ext = get_ext(file)
+            dir = split(file)[0]
+            try:
+                if ext in '.gz .tar .zip'.split(): 
+                    shutil.unpack_archive(file, dir)
+                    os.remove(file)
+                if ext in '.7z .7zip .rar'.split():
+                    subprocess.run(['7z', 'x', file, f'-o{dir}', '-r'], check=True) and os.remove(file)
+            except Exception as e:
+                print('error:', file, e)
+            files = glob.glob(f'{dir}/*', recursive=True)
+            for file in files:
+                if not get_ext(file) == '.do':
+                    try:
+                        os.remove(file)
+                    except:
+                        pass
+            unzipped += files
+
+    with open(f'out/{dataverse}/unzipped_files.csv', 'w') as f:
+        w = csv.writer(f)
+        w.writerow(['filename'])
+        w.writerows(unzipped)
 
 cmd = {
     'get_datasets': get_datasets, 
     'get_files': get_files, 
     'get_ext_counts': get_ext_counts, 
-    'get_downloads': get_downloads
+    'get_downloads': get_downloads,
+    'unzip': unzip,
 }[sys.argv[1]]
 cmd(*sys.argv[2:])

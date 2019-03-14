@@ -10,9 +10,13 @@ Scrapes Dataverse for all files associated with each article within `datasets.cs
 
 3. `python3 modelsof.py jop get_downloads [2018]`
 
-Downloads all files wtih ext of `.do .7z .7zip .gz .rar .tar .zip` within `files.csv` optionally limited by year. Produces `out/jop/downloads/{year}/{file}`. Errors logged to `out/jop/downloads/errors.csv` with `title, href, date, filename, file_href, error`.
+Downloads all files with ext of `.do .7z .7zip .gz .rar .tar .zip` within `files.csv` optionally limited by year. Produces `out/jop/downloads/{year}/{file}`. Errors logged to `out/jop/downloads/errors.csv` with `title, href, date, filename, file_href, error`.
 
-## stats.json counts
+4. `python3 modelsof.py jop unzip` 
+
+Recursively unzips all files with ext of `.7z .7zip .gz .rar .tar .zip` within `downloads`. Produces `out/jop/unzipped_files.csv` with `filename`. Is destructive (it destroys zip files as it unzips) and requires 7z for 7z and rar files. This is `p7zip-full` and `p7zip-rar` on Ubuntu.
+
+# stats.json counts
 
 Some prefix commands are run in isolation (not as a prefix). they are counted as `len_prefix`. Those prefix commands that are used as a prefix to another command are counted as `len_prefix_as_prefix`. The latter do not show up in overall counts (`len`).
 
@@ -27,16 +31,6 @@ the count will be:
     reg = 1
 
 The remaining items (counts per file) count prefix and "command" (regression or otherwise) separately except for the 'regressions' key, which works the same as the previous section.
-
-## notes
-
-### unzip
-
-    python3 stata.py * unzip
-
-is destructive (it destroys zip files as it unzips) and may need to be run several times to get deeply nested zips.
-
-unzip also requires 7z for 7z and rar files. This is `p7zip-full` and `p7zip-rar` on Ubuntu.
 
 ### errors
 
