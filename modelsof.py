@@ -1,3 +1,4 @@
+import collections
 import csv
 import os
 from os.path import dirname, isfile, join, splitext
@@ -68,11 +69,23 @@ def get_files(dataverse):
         w.writeheader()
         w.writerows(files)
 
-def get_downloads(dataverse):
+def get_ext_counts(dataverse, year):
+    with open(f'out/{dataverse}/files.csv') as f:
+        r = csv.DictReader(f)
+        cnt = collections.Counter(splitext(row['filename'])[1].lower() for row in r if row['date'].endswith(year))
+    print(cnt)
+
+def get_downloads(dataverse, year=None):
     get_files(dataverse)
-    with open(f'out/{dataverse}/files.csv') as f, open(f'out/{dataverse}/download_errors.csv', 'a') as f1:
-        r, w = csv.DictReader(f), csv.DictWriter(f1, ['title', 'href', 'filename', 'file_href', 'error'])
+    os.makedirs(f'out/{dataverse}/downloads', exist_ok=True)
+    with open(f'out/{dataverse}/files.csv') as f, open(f'out/{dataverse}/downloads/errors.csv', 'a') as f1:
+        r, w = csv.DictReader(f), csv.DictWriter(f1, 'title href date filename file_href error'.split())
         for row in r:
+            row_year = row['date'].strip()[-4:]
+            if year and not year == row_year:
+                continue
+            if not splitext(row['filename'])[1].lower() in '.do .7z .7zip .gz .rar .tar .zip'.split():
+                continue
             id = row['file_href'].split('&')[0]
             try:
                 id = id.split('?')[-1]
@@ -82,10 +95,10 @@ def get_downloads(dataverse):
                 url = join('/api/access/datafile', id.split('fileId=')[-1])
                 id = row['href'].split('&')[0].split('/')[-1]
 
-            dir = join(dataverse, id)
+            dir = join('out', dataverse, 'downloads', row_year, id)
             os.makedirs(dir, exist_ok=True)
-            fname = join(dir, row['filename'])
-            if isfile(fname):
+            file = join(dir, row['filename'])
+            if isfile(file):
                 continue
 
             r = attempt(base_url + url)
@@ -93,9 +106,14 @@ def get_downloads(dataverse):
                 row['error'] = r.status_code
                 w.writerow(row)
                 continue
-            with open(fname, 'wb') as f:
+            with open(file, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=128):
                     f.write(chunk)
 
-cmds = {'get_datasets': get_datasets, 'get_files': get_files, 'get_downloads': get_downloads}
-cmds[sys.argv[1]](sys.argv[2])
+cmd = {
+    'get_datasets': get_datasets, 
+    'get_files': get_files, 
+    'get_ext_counts': get_ext_counts, 
+    'get_downloads': get_downloads
+}[sys.argv[1]]
+cmd(*sys.argv[2:])

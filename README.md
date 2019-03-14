@@ -8,6 +8,10 @@ Scrapes Dataverse for all articles. Produces `out/jop/datasets.csv` with `title,
 
 Scrapes Dataverse for all files associated with each article within `datasets.csv`. Produces `out/jop/files.csv` with `title, href, date, filename, file_href`.
 
+3. `python3 modelsof.py jop get_downloads [2018]`
+
+Downloads all files wtih ext of `.do .7z .7zip .gz .rar .tar .zip` within `files.csv` optionally limited by year. Produces `out/jop/downloads/{year}/{file}`. Errors logged to `out/jop/downloads/errors.csv` with `title, href, date, filename, file_href, error`.
+
 ## stats.json counts
 
 Some prefix commands are run in isolation (not as a prefix). they are counted as `len_prefix`. Those prefix commands that are used as a prefix to another command are counted as `len_prefix_as_prefix`. The latter do not show up in overall counts (`len`).
