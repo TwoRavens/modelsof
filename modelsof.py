@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import requests
 
 base_url = 'https://dataverse.harvard.edu'
-exts = '.do .7z .7zip .gz .rar .tar .zip'.split()
+exts = '.7z .7zip .gz .rar .tar .zip'.split()
 
 def attempt(url):
     attempts = 0
@@ -91,7 +91,7 @@ def get_downloads(dataverse, year=None):
             row_year = row['date'].strip()[-4:]
             if year and not year == row_year:
                 continue
-            if not splitext(row['filename'])[1].lower() in exts:
+            if not splitext(row['filename'])[1].lower() in exts + ['.do']:
                 continue
             id = row['file_href'].split('&')[0]
             try:
@@ -118,10 +118,10 @@ def get_downloads(dataverse, year=None):
                     f.write(chunk)
         
 def unzip(dataverse):
-    unzipped = []
+    error = []
     while True:
         files = glob.glob(f'out/{dataverse}/downloads/**/*', recursive=True)
-        files = [f for f in files if not get_ext(f) in ('.do', '')][1:]
+        files = [f for f in files if get_ext(f) in exts and not f in error]
         if not files:
             break
         for file in files:
@@ -135,19 +135,7 @@ def unzip(dataverse):
                     subprocess.run(['7z', 'x', file, f'-o{dir}', '-r'], check=True) and os.remove(file)
             except Exception as e:
                 print('error:', file, e)
-            files = glob.glob(f'{dir}/*', recursive=True)
-            for file in files:
-                if not get_ext(file) == '.do':
-                    try:
-                        os.remove(file)
-                    except:
-                        pass
-            unzipped += files
-
-    with open(f'out/{dataverse}/unzipped_files.csv', 'w') as f:
-        w = csv.writer(f)
-        w.writerow(['filename'])
-        w.writerows(unzipped)
+                error.append(file)
 
 cmd = {
     'get_datasets': get_datasets, 
