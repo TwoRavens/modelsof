@@ -32,6 +32,24 @@ def attempt(url):
 def get_ext(file):
     return splitext(file)[1].lower()
 
+def get_downloads_dir(dataverse):
+    return f'out/{dataverse}/downloads'
+
+def split_row(row, downloads_dir):            
+    year = row['date'].strip()[-4:]
+    id = row['file_href'].split('&')[0]
+    try:
+        id = id.split('?')[-1]
+        url = f'/api/access/datafile/:persistentId?{id}'
+        id = id.split('/')[2]
+    except:
+        url = join('/api/access/datafile', id.split('fileId=')[-1])
+        id = row['href'].split('&')[0].split('/')[-1]
+
+    dir = join(downloads_dir, year, id)
+    file = join(dir, row['filename'])
+    return year, id, url, dir, file
+
 def get_datasets(dataverse):
     file = f'out/{dataverse}/datasets.csv'
     if isfile(file):
@@ -84,27 +102,17 @@ def get_ext_counts(dataverse, year):
 
 def get_downloads(dataverse, year=None):
     get_files(dataverse)
-    os.makedirs(f'out/{dataverse}/downloads', exist_ok=True)
-    with open(f'out/{dataverse}/files.csv') as f, open(f'out/{dataverse}/downloads/errors.csv', 'a') as f1:
+    downloads_dir = get_downloads_dir(dataverse)
+    os.makedirs(get_downloads_dir(dataverse), exist_ok=True)
+    with open(f'out/{dataverse}/files.csv') as f, open(f'{downloads_dir}/errors.csv', 'a') as f1:
         r, w = csv.DictReader(f), csv.DictWriter(f1, 'title href date filename file_href error'.split())
         for row in r:
-            row_year = row['date'].strip()[-4:]
+            row_year, id, url, dir, file = split_row(row, downloads_dir)
             if year and not year == row_year:
                 continue
             if not splitext(row['filename'])[1].lower() in exts + ['.do']:
                 continue
-            id = row['file_href'].split('&')[0]
-            try:
-                id = id.split('?')[-1]
-                url = f'/api/access/datafile/:persistentId?{id}'
-                id = id.split('/')[2]
-            except:
-                url = join('/api/access/datafile', id.split('fileId=')[-1])
-                id = row['href'].split('&')[0].split('/')[-1]
-
-            dir = join('out', dataverse, 'downloads', row_year, id)
             os.makedirs(dir, exist_ok=True)
-            file = join(dir, row['filename'])
             if isfile(file):
                 continue
 
@@ -120,7 +128,7 @@ def get_downloads(dataverse, year=None):
 def unzip(dataverse):
     error = []
     while True:
-        files = glob.glob(f'out/{dataverse}/downloads/**/*', recursive=True)
+        files = glob.glob(f'{get_downloads_dir(dataverse)}/**/*', recursive=True)
         files = [f for f in files if get_ext(f) in exts and not f in error]
         if not files:
             break
@@ -137,11 +145,24 @@ def unzip(dataverse):
                 print('error:', file, e)
                 error.append(file)
 
+def get_all_files(dataverse):
+    downloads_dir = get_downloads_dir(dataverse)
+    files = set([f for f in glob.glob(f'{downloads_dir}/**/*', recursive=True) if splitext(f)[1]][1:])
+    with open(f'out/{dataverse}/files.csv') as f:
+        r = csv.DictReader(f)
+        files.update(set(split_row(row, downloads_dir)[-1] for row in r))
+    with open(f'out/{dataverse}/all_files.csv', 'w') as f:
+        w = csv.writer(f)
+        w.writerow(['file'])
+        for file in files:
+            w.writerow([file])
+
 cmd = {
     'get_datasets': get_datasets, 
     'get_files': get_files, 
     'get_ext_counts': get_ext_counts, 
     'get_downloads': get_downloads,
     'unzip': unzip,
+    'get_all_files': get_all_files,
 }[sys.argv[1]]
 cmd(*sys.argv[2:])
