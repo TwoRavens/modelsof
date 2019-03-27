@@ -18,7 +18,16 @@ Recursively unzips all files with ext of `.7z .7zip .gz .rar .tar .zip` in `down
 
 5. `python3 modelsof.py jop get_all_files`
 
-Intersection of `files.csv` and files in `downloads`. Produces `out/jop/all_files.csv` with `file`.
+Union of `files.csv` and files in `downloads`. Produces `out/jop/all_files.csv` with `file`.
+
+6. `python3 modelsof.py plot_files`
+
+Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.csv`. 
+
+7. `python3 modelsof.py plot_commands`
+
+Uses `out/**/stats.json` to produce distribution counts at `out/commands_dist.csv`. 
+
 
 # stats.json counts
 
