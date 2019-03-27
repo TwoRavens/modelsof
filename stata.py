@@ -368,8 +368,9 @@ def run(file):
         with open(file, encoding='cp1252') as f:
             lexer = Lexer(f.read())
     commands = parse(lexer)
-    os.makedirs(f'out/{os.path.dirname(file)}', exist_ok=True)
-    with open(f'out/{file}.json', 'w') as f:
+    file1 = file.replace('/downloads/', '/results/')
+    os.makedirs(os.path.dirname(file1), exist_ok=True)
+    with open(f'{file1}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
     obj = dict(path=file, len=len(commands), len_comments=0, len_prefix_as_prefix=0, len_other=0, other=Counter(), regressions=Counter())
@@ -406,7 +407,7 @@ def run(file):
 
 if __name__ == '__main__':
     journal = sys.argv[1]
-    pattern = f'{journal}/**/*'
+    pattern = f'out/{journal}/**/*'
     if len(sys.argv) > 2 and sys.argv[2] == 'count':
         print(count(pattern))
     else:

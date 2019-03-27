@@ -1,0 +1,5958 @@
+[
+  {
+    "id": "comment",
+    "value": "/*******************************************************\n*This do file contains replication code for the article: \n\"The Social Costs of Public Political Participation: Evidence from a Petition\n Experiment in Lebanon\" by Laura Paler, Leslie Marshall and Sami Atallah.\n\nFor any questions regarding this replication dataset, contact Laura Paler at lpaler@pitt.edu\n\nIn this do file we:\n\t-Generate probability weights based on the sampling design\n\t-Run 10 rounds of missing data imputation using Stata's ice command for chained imputation\n\t-Create post-survey weights via raking and entropy balancing for each dataset\n\t-Combine the 10 datasets into one for analysis. \n\nPlease note:\n\t-The missing data imputation here can produce slightly different versions of the data than the one\n\tused in the actual analysis. For that reason we also supply the dataset that we used for the actual analysis with the replication.\n\t\n\t-After saving \"$final/lebsurv_imputed_FINAL_REP.dta\" there was a data cleaning step where we recoded variables that we used in the analysis.\n\tWe omit the code here for the sake of space but we follow a naming convention described in the Codebook so that readers can easily follow our recoding.\n*******************************************************/",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*SET GLOBAL DIRECTORIES",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*cd ~/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Create two sub-folders to output imputed datasets created by this do-file and create a folder called \"IMPUTED\" inside each of these",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 12,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "working",
+        "line": 12,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"WORKING\"",
+        "line": 12,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 13,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "final",
+        "line": 13,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"FINAL\"",
+        "line": 13,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Use cleaned dataset pre-imputation and pre-weights\t",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 16,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"lebsurv_preimpute_REP.dta\"",
+        "line": 16,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 16,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 17,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 17,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 17,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*CREATE POPULATION WEIGHTS BASED ON SURVEY PROBABILITIES",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Weights the sample up to all those eligible to have been sampled (adult citizens 18-65) based on ",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*probabilities of selection from survey design",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Probability a psu was selected within strata_label",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 27,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pr_psu",
+        "line": 27,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 27,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 27,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "n_in_strata",
+        "line": 27,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Create population weights based on survey probabilities\t",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 30,
+      "column": 14
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean_hh_size_psu",
+        "line": 30,
+        "column": 19
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 30,
+        "column": 38
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 30,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "q4_tot_hh_ppl",
+        "line": 30,
+        "column": 43
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 30,
+        "column": 56
+      }
+    ],
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 30,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "psu",
+            "line": 30,
+            "column": 9
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 31,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_hh_psu",
+        "line": 31,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "n_residents_psu",
+        "line": 31,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 31,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "mean_hh_size_psu",
+        "line": 31,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 32,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pr_hh",
+        "line": 32,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "final_sample_ints",
+        "line": 32,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 32,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "n_hh_psu",
+        "line": 32,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 33,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pr_ind2",
+        "line": 33,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 33,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 33,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "q5_eligible_ppl",
+        "line": 33,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 34,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob2",
+        "line": 34,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pr_psu",
+        "line": 34,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "pr_hh",
+        "line": 34,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "pr_ind2",
+        "line": 34,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 35,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wgt_main2a",
+        "line": 35,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 35,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 35,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "prob2",
+        "line": 35,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*MACROS NEEDED FOR MISSING DATA IMPUTATION",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Categorical outcomes",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 44,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_cat_all",
+        "line": 44,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q85_a_first_concern",
+        "line": 44,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "q85_b_second_concern",
+        "line": 44,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "q85_c_third_concern",
+        "line": 44,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Treat these as continuous",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 47,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_behave",
+        "line": 47,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q80_overall_info_REC2",
+        "line": 47,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "pet_sign_final",
+        "line": 47,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "fb_final",
+        "line": 47,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "q95_fb_interest_REC1",
+        "line": 47,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "q93_fb_account",
+        "line": 47,
+        "column": 84
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 48,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_selfcat",
+        "line": 48,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q83_a_resp_low_REC1",
+        "line": 48,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "q83_b_resp_mid_REC1",
+        "line": 48,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "q83_c_resp_upp_REC1",
+        "line": 48,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "q83_d_resp_sun_REC1",
+        "line": 48,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "q83_e_resp_chr_REC1",
+        "line": 48,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "q83_f_resp_dru_REC1",
+        "line": 48,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "q83_g_resp_shi_REC1",
+        "line": 48,
+        "column": 138
+      },
+      {
+        "id": "identifier",
+        "value": "q83_h_resp_leb_REC1",
+        "line": 48,
+        "column": 158
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 49,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_groupdist",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q84_a_pchr_pmus_REC1",
+        "line": 49,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "q84_b_rchr_rmus_REC1",
+        "line": 49,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "q84_c_pchr_rchr_REC1",
+        "line": 49,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "q84_d_pmus_rmus_REC1",
+        "line": 49,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 50,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_policy",
+        "line": 50,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q86_elect_law_REC1b",
+        "line": 50,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "q88_party_support_REC1",
+        "line": 50,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "q89_pol_support_REC3",
+        "line": 50,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 51,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_party",
+        "line": 51,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q87_a_amal_REC1",
+        "line": 51,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "q87_b_future_REC1",
+        "line": 51,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "q87_c_fpm_REC1",
+        "line": 51,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "q87_d_hezbollah_REC1",
+        "line": 51,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "q87_e_lf_REC1",
+        "line": 51,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "q87_f_phalanges_REC1",
+        "line": 51,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "q87_g_psp_REC1",
+        "line": 51,
+        "column": 121
+      },
+      {
+        "id": "identifier",
+        "value": "q87_h_ssp_REC1",
+        "line": 51,
+        "column": 136
+      },
+      {
+        "id": "identifier",
+        "value": "q87_i_marada_REC1",
+        "line": 51,
+        "column": 151
+      },
+      {
+        "id": "identifier",
+        "value": "q87_j_tashnag_REC1",
+        "line": 51,
+        "column": 169
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 52,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_sectact",
+        "line": 52,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q91_a_sect_REC1b",
+        "line": 52,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "q91_c_zaim_REC1b",
+        "line": 52,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "q91_f_sect_protest_REC1b",
+        "line": 52,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "q91_g_sect_party_REC1b",
+        "line": 52,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 53,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_xsectact",
+        "line": 53,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q91_b_othersect_REC1b",
+        "line": 53,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "q91_d_petition_REC1b",
+        "line": 53,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "q91_e_cs_protest_REC1b",
+        "line": 53,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "q91_h_cs_party_REC1b",
+        "line": 53,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 54,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_xpress",
+        "line": 54,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q90_a_enemies_REC1b",
+        "line": 54,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "q90_b_social_sanc_REC1b",
+        "line": 54,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "q90_c_unsure_REC1b",
+        "line": 54,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 55,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_noeff",
+        "line": 55,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q92_citizens_mob_REC1",
+        "line": 55,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Group together",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 58,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_all",
+        "line": 58,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`y_behave'",
+        "line": 58,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`y_selfcat'",
+        "line": 58,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`y_groupdist'",
+        "line": 58,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`y_policy'",
+        "line": 58,
+        "column": 51
+      },
+      {
+        "id": "`'",
+        "value": "`y_party'",
+        "line": 58,
+        "column": 62
+      },
+      {
+        "id": "`'",
+        "value": "`y_sectact'",
+        "line": 58,
+        "column": 72
+      },
+      {
+        "id": "`'",
+        "value": "`y_xsectact'",
+        "line": 58,
+        "column": 84
+      },
+      {
+        "id": "`'",
+        "value": "`y_xpress'",
+        "line": 58,
+        "column": 97
+      },
+      {
+        "id": "`'",
+        "value": "`y_noeff'",
+        "line": 58,
+        "column": 108
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*MAP EXERCISE OUTCOME VARS",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Percent allocated to each district",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 62,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y1_map",
+        "line": 62,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q57_beirut_REC1",
+        "line": 62,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "q57_baalbek_REC1",
+        "line": 62,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "q57_hasbaya_REC1",
+        "line": 62,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "q57_hermel_REC1",
+        "line": 62,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "q57_rashaya_REC1",
+        "line": 62,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "q57_westbek_REC1",
+        "line": 62,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "q57_zahle_REC1",
+        "line": 62,
+        "column": 116
+      },
+      {
+        "id": "identifier",
+        "value": "q57_aley_REC1",
+        "line": 62,
+        "column": 131
+      },
+      {
+        "id": "identifier",
+        "value": "q57_baabda_REC1",
+        "line": 62,
+        "column": 146
+      },
+      {
+        "id": "identifier",
+        "value": "q57_chouf_REC1",
+        "line": 62,
+        "column": 163
+      },
+      {
+        "id": "identifier",
+        "value": "q57_jbeil_REC1",
+        "line": 62,
+        "column": 179
+      },
+      {
+        "id": "identifier",
+        "value": "q57_keserwan_REC1",
+        "line": 62,
+        "column": 195
+      },
+      {
+        "id": "identifier",
+        "value": "q57_metn_REC1",
+        "line": 62,
+        "column": 213
+      },
+      {
+        "id": "identifier",
+        "value": "q57_bintjbeil_REC1",
+        "line": 62,
+        "column": 229
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 63,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y2_map",
+        "line": 63,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q57_marjayoun_REC1",
+        "line": 63,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "q57_nabatieh_REC1",
+        "line": 63,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "q57_akkar_REC1",
+        "line": 63,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "q57_batroun_REC1",
+        "line": 63,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "q57_becharre_REC1",
+        "line": 63,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "q57_koura_REC1",
+        "line": 63,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "q57_mindin_REC1",
+        "line": 63,
+        "column": 119
+      },
+      {
+        "id": "identifier",
+        "value": "q57_tripoli_REC1",
+        "line": 63,
+        "column": 136
+      },
+      {
+        "id": "identifier",
+        "value": "q57_zgharta_REC1",
+        "line": 63,
+        "column": 155
+      },
+      {
+        "id": "identifier",
+        "value": "q57_jezzine_REC1",
+        "line": 63,
+        "column": 173
+      },
+      {
+        "id": "identifier",
+        "value": "q57_saida_REC1",
+        "line": 63,
+        "column": 191
+      },
+      {
+        "id": "identifier",
+        "value": "q57_sour_REC1",
+        "line": 63,
+        "column": 207
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 65,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y_map_all",
+        "line": 65,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`y1_map'",
+        "line": 65,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`y2_map'",
+        "line": 65,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*CONTROL VARIABLES\t",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 68,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_demo",
+        "line": 68,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ",
+        "line": 68,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 68,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "resp_gender",
+        "line": 68,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 69,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_oil",
+        "line": 69,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q55_a_imp_leb_REC1",
+        "line": 69,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "q55_b_imp_sect_REC1",
+        "line": 69,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "q55_c_imp_hh_REC1",
+        "line": 69,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "q55_d_imp_elite_REC1",
+        "line": 69,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 70,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_satis",
+        "line": 70,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q36_a_help_zaim_REC1",
+        "line": 70,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "q36_b_help_rel_REC1",
+        "line": 70,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "q37_d_satis_mps_sect_REC1",
+        "line": 70,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 71,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_eff",
+        "line": 71,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q38_a_citizen_power_REC1",
+        "line": 71,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "q38_b_official_power_REC1",
+        "line": 71,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 72,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_act",
+        "line": 72,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q41_a_socialmedia",
+        "line": 72,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "q41_b_zaim",
+        "line": 72,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "q41_c_petition",
+        "line": 72,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "q41_d_protest",
+        "line": 72,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "q41_e_ngo",
+        "line": 72,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 73,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_attach1",
+        "line": 73,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q59_a_neighbors_REC1",
+        "line": 73,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "q59_b_supervised_REC1",
+        "line": 73,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "q59_c_friends_REC1",
+        "line": 73,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "q59_d_business_REC1",
+        "line": 73,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "q59_e_marry_REC1",
+        "line": 73,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "q35_sect_fut_REC1",
+        "line": 73,
+        "column": 117
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 74,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_attach2",
+        "line": 74,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q39_a_benefits_REC1",
+        "line": 74,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "q39_b_econ_dev_REC1",
+        "line": 74,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "q39_c_local_dev_REC1",
+        "line": 74,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "q39_d_rep_govt_REC1",
+        "line": 74,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "q39_e_leb_protect_REC1",
+        "line": 74,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "q39_f_sect_protect_REC1",
+        "line": 74,
+        "column": 122
+      },
+      {
+        "id": "identifier",
+        "value": "q39_g_sect_status_REC1",
+        "line": 74,
+        "column": 146
+      },
+      {
+        "id": "identifier",
+        "value": "q39_h_stability_REC1",
+        "line": 74,
+        "column": 169
+      },
+      {
+        "id": "identifier",
+        "value": "q40_support_sect_REC1",
+        "line": 74,
+        "column": 190
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 75,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_sanction",
+        "line": 75,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q42_b_sanc_zaim_REC1",
+        "line": 75,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "q42_d_sanc_fam_REC1",
+        "line": 75,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "q42_e_sanc_sect_REC1",
+        "line": 75,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 76,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_xpress",
+        "line": 76,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q43_sect_contact_REC1",
+        "line": 76,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "q44_econ_contact_REC1",
+        "line": 76,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "q45_debate",
+        "line": 76,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 77,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_id",
+        "line": 77,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q46_a_age_REC1b",
+        "line": 77,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "q46_b_gender_REC1b",
+        "line": 77,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "q46_c_region_REC1b",
+        "line": 77,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "q46_d_sect_REC1b",
+        "line": 77,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "q46_e_job_REC1b",
+        "line": 77,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "q46_f_class_REC1b",
+        "line": 77,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "q46_g_lebanese_REC1b",
+        "line": 77,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "q60_primary_id_REC1",
+        "line": 77,
+        "column": 139
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 78,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_econ1",
+        "line": 78,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q66_main_earner",
+        "line": 78,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "q64_travel",
+        "line": 78,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "q70_subj_income_REC1",
+        "line": 78,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "q71_econ_class_REC1",
+        "line": 78,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "q73_tax_upper_REC1b",
+        "line": 78,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "q61_a_tv",
+        "line": 78,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "q61_b_desktop",
+        "line": 78,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "q61_c_phone",
+        "line": 78,
+        "column": 127
+      },
+      {
+        "id": "identifier",
+        "value": "q61_d_laptop",
+        "line": 78,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "q61_e_house_REC1",
+        "line": 78,
+        "column": 152
+      },
+      {
+        "id": "identifier",
+        "value": "q61_f_car",
+        "line": 78,
+        "column": 169
+      },
+      {
+        "id": "identifier",
+        "value": "q62_elect_hrs",
+        "line": 78,
+        "column": 179
+      },
+      {
+        "id": "identifier",
+        "value": "q63_blackout_hrs_REC1",
+        "line": 78,
+        "column": 193
+      },
+      {
+        "id": "identifier",
+        "value": "q69_hh_income_REC1",
+        "line": 78,
+        "column": 215
+      },
+      {
+        "id": "identifier",
+        "value": "q67_resp_work_REC1",
+        "line": 78,
+        "column": 234
+      },
+      {
+        "id": "identifier",
+        "value": "q68_resp_iga_REC3",
+        "line": 78,
+        "column": 253
+      },
+      {
+        "id": "identifier",
+        "value": "q68_main_iga_REC3",
+        "line": 78,
+        "column": 271
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 80,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_all",
+        "line": 80,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`c_demo'",
+        "line": 80,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`c_oil'",
+        "line": 80,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`c_satis'",
+        "line": 80,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`c_eff'",
+        "line": 80,
+        "column": 41
+      },
+      {
+        "id": "`'",
+        "value": "`c_act'",
+        "line": 80,
+        "column": 49
+      },
+      {
+        "id": "`'",
+        "value": "`c_attach1'",
+        "line": 80,
+        "column": 57
+      },
+      {
+        "id": "`'",
+        "value": "`c_attach2'",
+        "line": 80,
+        "column": 69
+      },
+      {
+        "id": "`'",
+        "value": "`c_sanction'",
+        "line": 80,
+        "column": 81
+      },
+      {
+        "id": "`'",
+        "value": "`c_xpress'",
+        "line": 80,
+        "column": 94
+      },
+      {
+        "id": "`'",
+        "value": "`c_id'",
+        "line": 80,
+        "column": 105
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ1'",
+        "line": 80,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Q72_a collinear so need to impute separately\t",
+    "line": 82,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 83,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_econ2",
+        "line": 83,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q72_b_rich_REC1",
+        "line": 83,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "q72_c_mid_REC1",
+        "line": 83,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "q72_d_poor_REC1",
+        "line": 83,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "q72_e_expoor_REC1",
+        "line": 83,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 84,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_econ3",
+        "line": 84,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q72_a_elite_REC1",
+        "line": 84,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Impute two versions of q33 (REC4 is partially corrected by me first)\t",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 87,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_sect1",
+        "line": 87,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC3",
+        "line": 87,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 88,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_sect2",
+        "line": 88,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 88,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Categorical\t",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 91,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_cat_demo",
+        "line": 91,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q29_hh_head",
+        "line": 91,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "q30_marital",
+        "line": 91,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "q32_elect_dist",
+        "line": 91,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 93,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_cat_econ",
+        "line": 93,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "q74_first_econ_REC3",
+        "line": 93,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "q75_second_econ_REC3",
+        "line": 93,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 95,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "c_cat_all",
+        "line": 95,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_demo'",
+        "line": 95,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_econ'",
+        "line": 95,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*TREATMENT INDICATORS\t",
+    "line": 98,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 99,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "z_treat",
+        "line": 99,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "T_econ_ineq",
+        "line": 99,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "T_econ_cleave",
+        "line": 99,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "T_econ_action",
+        "line": 99,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "T_pet_pub",
+        "line": 99,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "T_fb_pub",
+        "line": 99,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "T_map_econ",
+        "line": 99,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "T_map_sect",
+        "line": 99,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***********************************",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*IMPUTE FULL DATASET (USING ICE)",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Impute in two rounds due to collinearity in econ_class",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****************************************************",
+    "line": 105,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 107,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_0.dta\"",
+        "line": 107,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 107,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 108,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_poststrat_0.dta\"",
+        "line": 108,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 108,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 110,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 110,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 110,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 110,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 110,
+        "column": 18
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 110,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 111,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_poststrat_0.dta\"",
+        "line": 111,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 111,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ice",
+      "line": 112,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i.strata_label",
+        "line": 112,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ2'",
+        "line": 112,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect1'",
+        "line": 112,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`z_treat'",
+        "line": 112,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 112,
+        "column": 52
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 112,
+        "column": 64
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 112,
+        "column": 76
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 112,
+        "column": 84
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 112,
+        "column": 96
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "cmd",
+        "line": 112,
+        "column": 107
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 112,
+        "column": 110
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 112,
+        "column": 111
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 112,
+        "column": 123
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 112,
+        "column": 134
+      },
+      {
+        "id": "identifier",
+        "value": "mlogit",
+        "line": 112,
+        "column": 135
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 112,
+        "column": 141
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 112,
+        "column": 143
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 112,
+        "column": 151
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 112,
+        "column": 163
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ2'",
+        "line": 112,
+        "column": 171
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect1'",
+        "line": 112,
+        "column": 181
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 112,
+        "column": 190
+      },
+      {
+        "id": "identifier",
+        "value": "regress",
+        "line": 112,
+        "column": 191
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 112,
+        "column": 198
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 112,
+        "column": 200
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 112,
+        "column": 206
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 112,
+        "column": 207
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 112,
+        "column": 208
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 112,
+        "column": 209
+      },
+      {
+        "id": "identifier",
+        "value": "saving",
+        "line": 112,
+        "column": 212
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 112,
+        "column": 218
+      },
+      {
+        "id": "string",
+        "value": "\"$working/IMPUTED/lebsurv_imputed_`i'_temp1.dta\"",
+        "line": 112,
+        "column": 219
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 112,
+        "column": 267
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 112,
+        "column": 269
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 112,
+        "column": 276
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 113,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$working/IMPUTED/lebsurv_imputed_`i'_temp1.dta\"",
+        "line": 113,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 113,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 114,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_mj",
+        "line": 114,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 114,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 114,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 115,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_mj",
+        "line": 115,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_mj1",
+        "line": 115,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 116,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_mi",
+        "line": 116,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_mi1",
+        "line": 116,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ice",
+      "line": 117,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i.strata_label",
+        "line": 117,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ3'",
+        "line": 117,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect2'",
+        "line": 117,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`z_treat'",
+        "line": 117,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 117,
+        "column": 52
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 117,
+        "column": 64
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 117,
+        "column": 76
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 117,
+        "column": 84
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 117,
+        "column": 96
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "cmd",
+        "line": 117,
+        "column": 107
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 117,
+        "column": 110
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 117,
+        "column": 111
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 117,
+        "column": 123
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 117,
+        "column": 134
+      },
+      {
+        "id": "identifier",
+        "value": "mlogit",
+        "line": 117,
+        "column": 135
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 117,
+        "column": 141
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 117,
+        "column": 143
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 117,
+        "column": 151
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 117,
+        "column": 163
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ3'",
+        "line": 117,
+        "column": 171
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect2'",
+        "line": 117,
+        "column": 181
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 117,
+        "column": 190
+      },
+      {
+        "id": "identifier",
+        "value": "regress",
+        "line": 117,
+        "column": 191
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 117,
+        "column": 198
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 117,
+        "column": 200
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 117,
+        "column": 206
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 117,
+        "column": 207
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 208
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 117,
+        "column": 209
+      },
+      {
+        "id": "identifier",
+        "value": "saving",
+        "line": 117,
+        "column": 212
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 117,
+        "column": 218
+      },
+      {
+        "id": "string",
+        "value": "\"$working/IMPUTED/lebsurv_imputed_`i'_temp2.dta\"",
+        "line": 117,
+        "column": 219
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 117,
+        "column": 267
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 117,
+        "column": 269
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 117,
+        "column": 276
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 118,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$working/IMPUTED/lebsurv_imputed_`i'_temp2.dta\"",
+        "line": 118,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 118,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 119,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_mj",
+        "line": 119,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 119,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 120,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_`i'.dta\"",
+        "line": 120,
+        "column": 8
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 120,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "****************************************************",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*DO POSTSTRATIFICATION WEIGHTING AND ENTROPY BALANCING WITHIN EACH DATASET",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Can only run raking on imputed data 1/10 but create variables for all datasets (for descriptive stats later)",
+    "line": 126,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****************************************************",
+    "line": 127,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 129,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 130,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 130,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 130,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 130,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 130,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 130,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 131,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_`i'.dta\"",
+        "line": 131,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 131,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 133,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 133,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_gender",
+        "line": 133,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 133,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 133,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 135,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 135,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q31_educ",
+        "line": 135,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 135,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 135,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 137,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beirut",
+        "line": 137,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mohafaza",
+        "line": 137,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 137,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"Beirut\"",
+        "line": 137,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 138,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mt_leb",
+        "line": 138,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mohafaza",
+        "line": 138,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 138,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"Mount Lebanon\"",
+        "line": 138,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 139,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "north",
+        "line": 139,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mohafaza",
+        "line": 139,
+        "column": 12
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 139,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"North\"",
+        "line": 139,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 140,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beqaa",
+        "line": 140,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mohafaza",
+        "line": 140,
+        "column": 12
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 140,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"Beqaa\"",
+        "line": 140,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 141,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "south",
+        "line": 141,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mohafaza",
+        "line": 141,
+        "column": 12
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 141,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"South\"",
+        "line": 141,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 142,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nabatieh",
+        "line": 142,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mohafaza",
+        "line": 142,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 142,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"Nabatieh\"",
+        "line": 142,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "recode",
+      "line": 144,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q30_marital",
+        "line": 144,
+        "column": 9
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 144,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 144,
+        "column": 22
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 144,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 144,
+        "column": 24
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 144,
+        "column": 25
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 144,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 144,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 144,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 144,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 144,
+        "column": 34
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 144,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 144,
+        "column": 36
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 144,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "g",
+        "line": 144,
+        "column": 40
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 144,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "q30_married",
+        "line": 144,
+        "column": 42
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 144,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 146,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q33_maronite",
+        "line": 146,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 146,
+        "column": 19
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 146,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 146,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 147,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q33_sunni",
+        "line": 147,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 147,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 147,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 148,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q33_shia",
+        "line": 148,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 148,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 148,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 148,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 149,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q33_druze",
+        "line": 149,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 149,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 149,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 151,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "own_computer",
+        "line": 151,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q61_b_desktop",
+        "line": 151,
+        "column": 19
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 151,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 151,
+        "column": 33
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 151,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "q61_d_laptop",
+        "line": 151,
+        "column": 37
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 151,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 151,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 153,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "own_car",
+        "line": 153,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q61_f_car",
+        "line": 153,
+        "column": 14
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 153,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 153,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "recode",
+      "line": 155,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q67_resp_work_REC1",
+        "line": 155,
+        "column": 9
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 155,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 155,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 155,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 155,
+        "column": 31
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 155,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 155,
+        "column": 33
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 155,
+        "column": 34
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 155,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 155,
+        "column": 37
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 155,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 155,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 155,
+        "column": 41
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 155,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 155,
+        "column": 43
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 155,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 155,
+        "column": 45
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 155,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "g",
+        "line": 155,
+        "column": 49
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 155,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 155,
+        "column": 51
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 155,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 157,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_one",
+        "line": 157,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 157,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 159,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_`i'_v2.dta\"",
+        "line": 159,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 159,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*PREP FOR RAKING\t",
+    "line": 164,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 165,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 166,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 166,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 166,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 166,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 166,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 167,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_`i'_v2.dta\"",
+        "line": 167,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 167,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 169,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 169,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "(",
+        "value": "(",
+        "line": 169,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": ".489",
+        "line": 169,
+        "column": 19
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 169,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": ".511",
+        "line": 169,
+        "column": 25
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 169,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 170,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "colnames",
+        "line": 170,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 170,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 170,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 170,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 171,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coleq",
+        "line": 171,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 171,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_one",
+        "line": 171,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 172,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rownames",
+        "line": 172,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 172,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 172,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 173,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 173,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 173,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 175,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 175,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "(",
+        "value": "(",
+        "line": 175,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": ".479",
+        "line": 175,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 175,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": ".521",
+        "line": 175,
+        "column": 37
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 175,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 176,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "colnames",
+        "line": 176,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 176,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 176,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 176,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 177,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coleq",
+        "line": 177,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 177,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_one",
+        "line": 177,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 178,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rownames",
+        "line": 178,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 178,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 178,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 179,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 179,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 179,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 181,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 181,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "(",
+        "value": "(",
+        "line": 181,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": ".255",
+        "line": 181,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 181,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": ".274",
+        "line": 181,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 181,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": ".272",
+        "line": 181,
+        "column": 38
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 181,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": ".077",
+        "line": 181,
+        "column": 44
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 181,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": ".122",
+        "line": 181,
+        "column": 50
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 181,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 182,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "colnames",
+        "line": 182,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 182,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 182,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 182,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 182,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 182,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 182,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 183,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coleq",
+        "line": 183,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 183,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_one",
+        "line": 183,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 184,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rownames",
+        "line": 184,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 184,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 184,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 185,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 185,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 185,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 187,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 187,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "(",
+        "value": "(",
+        "line": 187,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": ".348",
+        "line": 187,
+        "column": 21
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 187,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": ".652",
+        "line": 187,
+        "column": 27
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 187,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 188,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "colnames",
+        "line": 188,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 188,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 188,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 188,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 189,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coleq",
+        "line": 189,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 189,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_one",
+        "line": 189,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 190,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rownames",
+        "line": 190,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 190,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 190,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 191,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 191,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 191,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 194,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adult_pop2a",
+        "line": 194,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 194,
+        "column": 21
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 194,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_main2a",
+        "line": 194,
+        "column": 25
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 194,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 195,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wgt_main2a_convert",
+        "line": 195,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wgt_main2a",
+        "line": 195,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 195,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "adult_pop2a",
+        "line": 195,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*IPF Raking command\t",
+    "line": 198,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ipfraking",
+      "line": 199,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wgt_main2a_convert",
+        "line": 199,
+        "column": 16
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 199,
+        "column": 34
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 199,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "generate",
+        "line": 199,
+        "column": 37
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 199,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_post2a",
+        "line": 199,
+        "column": 46
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 199,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "ctotal",
+        "line": 199,
+        "column": 58
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 199,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 199,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 199,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sect_REC4",
+        "line": 199,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 199,
+        "column": 105
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 199,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "nograph",
+        "line": 199,
+        "column": 115
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Entropy balancing (the means come from the analysis of the Arab Barometer data).\t",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ebalance",
+      "line": 203,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beirut",
+        "line": 203,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "mt_leb",
+        "line": 203,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "beqaa",
+        "line": 203,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "south",
+        "line": 203,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "nabatieh",
+        "line": 203,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 203,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 203,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 203,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "q30_married",
+        "line": 203,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sunni",
+        "line": 203,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "q33_shia",
+        "line": 203,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "q33_maronite",
+        "line": 203,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "q33_druze",
+        "line": 203,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "q69_hh_income_REC1",
+        "line": 203,
+        "column": 130
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 203,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "own_computer",
+        "line": 203,
+        "column": 158
+      },
+      {
+        "id": "identifier",
+        "value": "own_car",
+        "line": 203,
+        "column": 171
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "manualtargets",
+        "line": 203,
+        "column": 180
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 203,
+        "column": 194
+      },
+      {
+        "id": "number",
+        "value": "0.11",
+        "line": 203,
+        "column": 195
+      },
+      {
+        "id": "number",
+        "value": "0.39",
+        "line": 203,
+        "column": 200
+      },
+      {
+        "id": "number",
+        "value": "0.12",
+        "line": 203,
+        "column": 205
+      },
+      {
+        "id": "number",
+        "value": "0.11",
+        "line": 203,
+        "column": 210
+      },
+      {
+        "id": "number",
+        "value": "0.06",
+        "line": 203,
+        "column": 215
+      },
+      {
+        "id": "number",
+        "value": "39",
+        "line": 203,
+        "column": 220
+      },
+      {
+        "id": "number",
+        "value": "0.51",
+        "line": 203,
+        "column": 223
+      },
+      {
+        "id": "number",
+        "value": "0.52",
+        "line": 203,
+        "column": 228
+      },
+      {
+        "id": "number",
+        "value": "0.59",
+        "line": 203,
+        "column": 233
+      },
+      {
+        "id": "number",
+        "value": "0.27",
+        "line": 203,
+        "column": 238
+      },
+      {
+        "id": "number",
+        "value": "0.27",
+        "line": 203,
+        "column": 243
+      },
+      {
+        "id": "number",
+        "value": "0.26",
+        "line": 203,
+        "column": 248
+      },
+      {
+        "id": "number",
+        "value": "0.08",
+        "line": 203,
+        "column": 253
+      },
+      {
+        "id": "number",
+        "value": "4.90",
+        "line": 203,
+        "column": 258
+      },
+      {
+        "id": "number",
+        "value": "0.65",
+        "line": 203,
+        "column": 263
+      },
+      {
+        "id": "number",
+        "value": "0.78",
+        "line": 203,
+        "column": 268
+      },
+      {
+        "id": "number",
+        "value": "0.69",
+        "line": 203,
+        "column": 273
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 203,
+        "column": 277
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 205,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_webal",
+        "line": 205,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_ebal1",
+        "line": 205,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ebalance",
+      "line": 207,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beirut",
+        "line": 207,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "mt_leb",
+        "line": 207,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "beqaa",
+        "line": 207,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "south",
+        "line": 207,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "nabatieh",
+        "line": 207,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 207,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 207,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "q31_educ_secondary",
+        "line": 207,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "q30_married",
+        "line": 207,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "q33_sunni",
+        "line": 207,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "q33_shia",
+        "line": 207,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "q33_maronite",
+        "line": 207,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "q33_druze",
+        "line": 207,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "q69_hh_income_REC1",
+        "line": 207,
+        "column": 130
+      },
+      {
+        "id": "identifier",
+        "value": "employed",
+        "line": 207,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "own_computer",
+        "line": 207,
+        "column": 158
+      },
+      {
+        "id": "identifier",
+        "value": "own_car",
+        "line": 207,
+        "column": 171
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "manualtargets",
+        "line": 207,
+        "column": 180
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 207,
+        "column": 194
+      },
+      {
+        "id": "number",
+        "value": "0.11",
+        "line": 207,
+        "column": 195
+      },
+      {
+        "id": "number",
+        "value": "0.39",
+        "line": 207,
+        "column": 200
+      },
+      {
+        "id": "number",
+        "value": "0.12",
+        "line": 207,
+        "column": 205
+      },
+      {
+        "id": "number",
+        "value": "0.11",
+        "line": 207,
+        "column": 210
+      },
+      {
+        "id": "number",
+        "value": "0.06",
+        "line": 207,
+        "column": 215
+      },
+      {
+        "id": "number",
+        "value": "39",
+        "line": 207,
+        "column": 220
+      },
+      {
+        "id": "number",
+        "value": "0.51",
+        "line": 207,
+        "column": 223
+      },
+      {
+        "id": "number",
+        "value": "0.52",
+        "line": 207,
+        "column": 228
+      },
+      {
+        "id": "number",
+        "value": "0.59",
+        "line": 207,
+        "column": 233
+      },
+      {
+        "id": "number",
+        "value": "0.27",
+        "line": 207,
+        "column": 238
+      },
+      {
+        "id": "number",
+        "value": "0.27",
+        "line": 207,
+        "column": 243
+      },
+      {
+        "id": "number",
+        "value": "0.26",
+        "line": 207,
+        "column": 248
+      },
+      {
+        "id": "number",
+        "value": "0.08",
+        "line": 207,
+        "column": 253
+      },
+      {
+        "id": "number",
+        "value": "4.90",
+        "line": 207,
+        "column": 258
+      },
+      {
+        "id": "number",
+        "value": "0.65",
+        "line": 207,
+        "column": 263
+      },
+      {
+        "id": "number",
+        "value": "0.78",
+        "line": 207,
+        "column": 268
+      },
+      {
+        "id": "number",
+        "value": "0.69",
+        "line": 207,
+        "column": 273
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 207,
+        "column": 277
+      },
+      {
+        "id": "identifier",
+        "value": "basewt",
+        "line": 207,
+        "column": 279
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 207,
+        "column": 285
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_main2a",
+        "line": 207,
+        "column": 286
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 207,
+        "column": 296
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 209,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_webal",
+        "line": 209,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_ebal2",
+        "line": 209,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 211,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_poststrat_`i'.dta\"",
+        "line": 211,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 211,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "****************************************************",
+    "line": 215,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*COMBINE DATASETS FOR ANALYSIS USING MI",
+    "line": 216,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****************************************************",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 219,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 220,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m_impute",
+        "line": 220,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 220,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 221,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 221,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 221,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 221,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 221,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 221,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 222,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 222,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"$final/IMPUTED/lebsurv_imputed_poststrat_`i'.dta\"",
+        "line": 222,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nol",
+        "line": 222,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 223,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m_impute",
+        "line": 223,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 223,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "m_impute",
+        "line": 223,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 223,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 223,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mi",
+      "line": 226,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "import",
+        "line": 226,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "flong",
+        "line": 226,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 226,
+        "column": 19
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 226,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "m_impute",
+        "line": 226,
+        "column": 21
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 226,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 226,
+        "column": 31
+      },
+      {
+        "id": "(",
+        "value": "(",
+        "line": 226,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "resp_id",
+        "line": 226,
+        "column": 34
+      },
+      {
+        "id": ")",
+        "value": ")",
+        "line": 226,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 226,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "misstable",
+      "line": 228,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 228,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_post2a",
+        "line": 228,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_ebal1",
+        "line": 228,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`z_treat'",
+        "line": 228,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 228,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 228,
+        "column": 59
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 228,
+        "column": 71
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 228,
+        "column": 79
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 228,
+        "column": 91
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ2'",
+        "line": 228,
+        "column": 99
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ3'",
+        "line": 228,
+        "column": 109
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect1'",
+        "line": 228,
+        "column": 119
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect2'",
+        "line": 228,
+        "column": 129
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "m_impute",
+        "line": 228,
+        "column": 142
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 150
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 228,
+        "column": 152
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "misstable",
+      "line": 230,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 230,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_post2a",
+        "line": 230,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "wgt_ebal2",
+        "line": 230,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`z_treat'",
+        "line": 230,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 230,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 230,
+        "column": 59
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 230,
+        "column": 71
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 230,
+        "column": 79
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 230,
+        "column": 91
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ2'",
+        "line": 230,
+        "column": 99
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ3'",
+        "line": 230,
+        "column": 109
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect1'",
+        "line": 230,
+        "column": 119
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect2'",
+        "line": 230,
+        "column": 129
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "m_impute",
+        "line": 230,
+        "column": 142
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 230,
+        "column": 150
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 230,
+        "column": 151
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mi",
+      "line": 232,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "register",
+        "line": 232,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "imputed",
+        "line": 232,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`z_treat'",
+        "line": 232,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`y_cat_all'",
+        "line": 232,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`c_cat_all'",
+        "line": 232,
+        "column": 44
+      },
+      {
+        "id": "`'",
+        "value": "`y_all'",
+        "line": 232,
+        "column": 56
+      },
+      {
+        "id": "`'",
+        "value": "`y_map_all'",
+        "line": 232,
+        "column": 64
+      },
+      {
+        "id": "`'",
+        "value": "`c_all'",
+        "line": 232,
+        "column": 76
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ2'",
+        "line": 232,
+        "column": 84
+      },
+      {
+        "id": "`'",
+        "value": "`c_econ3'",
+        "line": 232,
+        "column": 94
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect1'",
+        "line": 232,
+        "column": 104
+      },
+      {
+        "id": "`'",
+        "value": "`c_sect2'",
+        "line": 232,
+        "column": 114
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 234,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$final/lebsurv_imputed_FINAL_REP.dta\"",
+        "line": 234,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 234,
+        "column": 47
+      }
+    ]
+  }
+]
