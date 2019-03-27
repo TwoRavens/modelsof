@@ -157,6 +157,31 @@ def get_all_files(dataverse):
         for file in files:
             w.writerow([file])
 
+def plot_files():
+    dist = collections.OrderedDict() 
+    for file in glob.glob(f'out/**/all_files.csv'):
+        with open(file) as f:
+            r = csv.DictReader(f)
+            counts = collections.Counter()
+            for row in r:
+                if row['file'].split('/')[3] != '2018':
+                    continue
+                ext = get_ext(row['file'])
+                if ext in '.do'.split():
+                    counts['stata'] += 1 
+                elif ext in '.r'.split():
+                    counts['r'] += 1 
+                elif ext:
+                    counts['other'] += 1 
+            total = sum(counts.values())
+            dist[file.split('/')[1]] = {k: v / total for k, v in counts.items()}
+    with open(f'out/files_dist.csv', 'w') as f:
+        w = csv.writer(f)
+        keys = dist.keys()
+        w.writerow([''] + list(keys))
+        for kind in 'stata r other'.split():
+            w.writerow([kind] + [dist[k][kind] for k in keys])
+
 cmd = {
     'get_datasets': get_datasets, 
     'get_files': get_files, 
@@ -164,5 +189,6 @@ cmd = {
     'get_downloads': get_downloads,
     'unzip': unzip,
     'get_all_files': get_all_files,
+    'plot_files': plot_files,
 }[sys.argv[1]]
 cmd(*sys.argv[2:])
