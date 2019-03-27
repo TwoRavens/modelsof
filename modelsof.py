@@ -1,6 +1,7 @@
 import collections
 import csv
 import glob
+import json
 import os
 from os.path import dirname, isfile, join, split, splitext
 import shutil
@@ -157,13 +158,20 @@ def get_all_files(dataverse):
         for file in files:
             w.writerow([file])
 
+def plot(which, dist, kinds):
+    with open(f'out/{which}_dist.csv', 'w') as f:
+        w = csv.writer(f)
+        keys = dist.keys()
+        w.writerow([''] + list(keys))
+        for kind in kinds.split():
+            w.writerow([kind] + [dist[k][kind] for k in keys])
+
 def plot_files():
     dist = collections.OrderedDict() 
     for file in glob.glob(f'out/**/all_files.csv'):
         with open(file) as f:
-            r = csv.DictReader(f)
             counts = collections.Counter()
-            for row in r:
+            for row in csv.DictReader(f):
                 if row['file'].split('/')[3] != '2018':
                     continue
                 ext = get_ext(row['file'])
@@ -175,12 +183,18 @@ def plot_files():
                     counts['other'] += 1 
             total = sum(counts.values())
             dist[file.split('/')[1]] = {k: v / total for k, v in counts.items()}
-    with open(f'out/files_dist.csv', 'w') as f:
-        w = csv.writer(f)
-        keys = dist.keys()
-        w.writerow([''] + list(keys))
-        for kind in 'stata r other'.split():
-            w.writerow([kind] + [dist[k][kind] for k in keys])
+    plot('files', dist, 'stata r other')
+
+def plot_commands():
+    dist = collections.OrderedDict() 
+    for file in glob.glob(f'out/**/stats.json'):
+        with open(file) as f:
+            counts = collections.Counter()
+            for row in json.load(f)[1:]:
+                counts.update(dict(reg=row.get('len_regression', 0), total=row.get('len', 0)))
+            reg, total = counts['reg'], counts['total'] 
+            dist[file.split('/')[1]] = dict(regression=reg / total, other=(total - reg) / total) 
+    plot('commands', dist, 'regression other')
 
 cmd = {
     'get_datasets': get_datasets, 
@@ -190,5 +204,6 @@ cmd = {
     'unzip': unzip,
     'get_all_files': get_all_files,
     'plot_files': plot_files,
+    'plot_commands': plot_commands,
 }[sys.argv[1]]
 cmd(*sys.argv[2:])
