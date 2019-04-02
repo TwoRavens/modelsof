@@ -219,4 +219,4 @@ drop if _weight==.
 sort _id
 sum control treat
 tab idp
-/*
+*/

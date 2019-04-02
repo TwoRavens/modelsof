@@ -9,7 +9,7 @@
 
 clear all
 set more off
-cd "/Users/nazita/Desktop/Projects/Resentment Paper/Data
+cd "/Users/nazita/Desktop/Projects/Resentment Paper/Data"
 
 
 

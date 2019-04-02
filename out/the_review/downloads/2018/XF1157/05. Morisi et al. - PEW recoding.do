@@ -632,7 +632,7 @@ replace time=82 if year==2013 & month==10
 replace time=85 if year==2014
 replace time=104 if year==2015
 replace time=124 if year==2017
-label var time "Progressive n. of months(dec 2016=0)
+label var time "Progressive n. of months(dec 2016=0)"
 ta time
 
 *weight
