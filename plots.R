@@ -8,5 +8,5 @@ data = as.matrix(data)
 print(data)
 
 png(sprintf('out/%s_dist.png', args[1]))
-barplot(data, col=brewer.pal(n=4, name='Set1'), border='white', font.axis=2, beside=T, legend=rownames(data), xlab='journal', font.lab=2)
+barplot(data, col=brewer.pal(n=nrow(data), name='Set1'), border='white', font.axis=2, beside=T, legend=rownames(data), xlab='journal', font.lab=2)
 dev.off()
