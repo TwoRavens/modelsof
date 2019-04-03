@@ -22,7 +22,7 @@ Union of `files.csv` and files in `downloads`. Produces `out/jop/all_files.csv` 
 
 6. `python3 modelsof.py plot_files`
 
-Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.csv` and `out/files_by_dataset.csv`, then runs plots.R to produce `out/files_dist.png` and `out/files_by_dataset.png` (whether a dataset contains a kind of file). 
+Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.csv` and `out/files_by_datasets_dist.csv`, then runs plots.R to produce `out/files_dist.png` and `out/files_by_datasets_dist.png` (whether a dataset contains a kind of file). 
 
 7. `python3 stata.py jop`
 
