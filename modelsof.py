@@ -165,6 +165,7 @@ def plot(which, dist, kinds):
         w.writerow([''] + list(keys))
         for kind in kinds.split():
             w.writerow([kind] + [dist[k][kind] for k in keys])
+    subprocess.run(['Rscript', 'plots.R', which], check=True)
 
 def plot_files():
     dist = collections.OrderedDict() 
@@ -191,10 +192,10 @@ def plot_commands():
         with open(file) as f:
             counts = collections.Counter()
             for row in json.load(f)[1:]:
-                counts.update(dict(reg=row.get('len_regression', 0), total=row.get('len', 0)))
-            reg, total = counts['reg'], counts['total'] 
-            dist[file.split('/')[1]] = dict(regression=reg / total, other=(total - reg) / total) 
-    plot('commands', dist, 'regression other')
+                counts.update(dict(linear=row.get('len_regression/linear', 0), nonlinear=row.get('len_regression/nonlinear', 0), total=row.get('len', 0)))
+            linear, nonlinear, total = counts['linear'], counts['nonlinear'], counts['total'] 
+            dist[file.split('/')[1]] = dict(linear_regression=linear / total, nonlinear_regression=nonlinear / total, other=(total - linear - nonlinear) / total) 
+    plot('commands', dist, 'linear_regression nonlinear_regression other')
 
 cmd = {
     'get_datasets': get_datasets, 

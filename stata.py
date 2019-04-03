@@ -373,7 +373,7 @@ def run(file):
     with open(f'{file1}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix_as_prefix=0, len_other=0, other=Counter(), regressions=Counter())
+    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix_as_prefix=0, len_other=0, other=Counter(), linear_regressions=Counter(), nonlinear_regressions=Counter())
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
@@ -385,9 +385,10 @@ def run(file):
         pre = [p['command'] for p in command.get('pre', [])]
         command = command['command']
         val = command.value
-        if val in categories['regression']:
-            key = ':'.join(sorted(x.value for x in pre) + [val]) if pre else val
-            obj['regressions'][key] += 1
+        for kind in 'linear nonlinear'.split():
+            if val in categories['regression/' + kind]:
+                key = ':'.join(sorted(x.value for x in pre) + [val]) if pre else val
+                obj[kind + '_regressions'][key] += 1
         for cmd in [command] + pre:
             if cmd.id != 'identifier':
                 continue
@@ -420,7 +421,8 @@ if __name__ == '__main__':
                 input('ENTER TO CONTINUE')
                 stat = dict(file=file, error=str(e))
             stats.append(stat)
-            regs.update(stat.get('regressions', []))
+            regs.update(stat.get('linear_regressions', []))
+            regs.update(stat.get('nonlinear_regressions', []))
             others.update(stat.get('other', []))
 
         with open(f'out/{journal}/files.json', 'w') as f:
