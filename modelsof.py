@@ -168,23 +168,36 @@ def plot(which, dist, kinds):
     subprocess.run(['Rscript', 'plots.R', which], check=True)
 
 def plot_files():
-    dist = collections.OrderedDict() 
+    dist, dist1 = collections.OrderedDict(), collections.OrderedDict()
     for file in glob.glob(f'out/**/all_files.csv'):
         with open(file) as f:
             counts = collections.Counter()
+            datasets, datasets_stata, datasets_r = set(), set(), set()
             for row in csv.DictReader(f):
-                if row['file'].split('/')[3] != '2018':
+                year, dataset = row['file'].split('/')[3:5]
+                if year != '2018':
                     continue
+                datasets.add(dataset)
                 ext = get_ext(row['file'])
                 if ext in '.do'.split():
                     counts['stata'] += 1 
+                    datasets_stata.add(dataset)
                 elif ext in '.r'.split():
                     counts['r'] += 1 
+                    datasets_r.add(dataset)
                 elif ext:
                     counts['other'] += 1 
+            journal = file.split('/')[1]
             total = sum(counts.values())
-            dist[file.split('/')[1]] = {k: v / total for k, v in counts.items()}
+            dist[journal] = {k: v / total for k, v in counts.items()}
+            total = len(datasets) 
+            dist1[journal] = {
+                'stata': len(datasets_stata) / total, 
+                'r': len(datasets_r) / total, 
+                'neither': len(datasets - (datasets_stata | datasets_r)) / total
+            }
     plot('files', dist, 'stata r other')
+    plot('files_by_datasets', dist1, 'stata r neither')
 
 def plot_commands():
     dist = collections.OrderedDict() 
@@ -192,9 +205,17 @@ def plot_commands():
         with open(file) as f:
             counts = collections.Counter()
             for row in json.load(f)[1:]:
-                counts.update(dict(linear=row.get('len_regression/linear', 0), nonlinear=row.get('len_regression/nonlinear', 0), total=row.get('len', 0)))
+                counts.update(dict(
+                    linear=row.get('len_regression/linear', 0), 
+                    nonlinear=row.get('len_regression/nonlinear', 0), 
+                    total=row.get('len', 0)
+                ))
             linear, nonlinear, total = counts['linear'], counts['nonlinear'], counts['total'] 
-            dist[file.split('/')[1]] = dict(linear_regression=linear / total, nonlinear_regression=nonlinear / total, other=(total - linear - nonlinear) / total) 
+            dist[file.split('/')[1]] = dict(
+                linear_regression=linear / total, 
+                nonlinear_regression=nonlinear / total, 
+                other=(total - linear - nonlinear) / total
+                ) 
     plot('commands', dist, 'linear_regression nonlinear_regression other')
 
 cmd = {

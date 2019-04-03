@@ -22,16 +22,15 @@ Union of `files.csv` and files in `downloads`. Produces `out/jop/all_files.csv` 
 
 6. `python3 modelsof.py plot_files`
 
-Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.csv`. 
+Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.csv` and `out/files_by_dataset.csv`, then runs plots.R to produce `out/files_dist.png` and `out/files_by_dataset.csv (whether a dataset contains a kind of file)`. 
 
 7. `python3 modelsof.py plot_commands`
 
-Uses `out/**/stats.json` to produce distribution counts at `out/commands_dist.csv`. 
-
+Uses `out/**/stats.json` to produce distribution counts at `out/commands_dist.csv`, then runs plots.R to produce `out/commands_dist.png`.
 
 # stats.json counts
 
-Some prefix commands are run in isolation (not as a prefix). they are counted as `len_prefix`. Those prefix commands that are used as a prefix to another command are counted as `len_prefix_as_prefix`. The latter do not show up in overall counts (`len`).
+Some prefix commands are run in isolation (not as a prefix). They are counted as `len_prefix`. Those prefix commands that are used as a prefix to another command are counted as `len_prefix_as_prefix`. The latter do not show up in overall counts (`len`).
 
 The first item is a count of regression commands in all files. Given two commands:
 
