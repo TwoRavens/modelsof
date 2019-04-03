@@ -192,12 +192,13 @@ def plot_files():
             dist[journal] = {k: v / total for k, v in counts.items()}
             total = len(datasets) 
             dist1[journal] = {
-                'stata': len(datasets_stata) / total, 
-                'r': len(datasets_r) / total, 
+                'stata': len(datasets_stata - datasets_r) / total, 
+                'r': len(datasets_r - datasets_stata) / total, 
+                'both': len(datasets_stata & datasets_r) / total, 
                 'neither': len(datasets - (datasets_stata | datasets_r)) / total
             }
     plot('files', dist, 'stata r other')
-    plot('files_by_datasets', dist1, 'stata r neither')
+    plot('files_by_datasets', dist1, 'stata r both neither')
 
 def plot_commands():
     dist = collections.OrderedDict() 
@@ -215,7 +216,7 @@ def plot_commands():
                 linear_regression=linear / total, 
                 nonlinear_regression=nonlinear / total, 
                 other=(total - linear - nonlinear) / total
-                ) 
+            ) 
     plot('commands', dist, 'linear_regression nonlinear_regression other')
 
 cmd = {
