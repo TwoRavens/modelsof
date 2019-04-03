@@ -26,7 +26,7 @@ Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.cs
 
 7. `python3 stata.py jop`
 
-Parses all .do files in `out/downloads` and produces corresponding .do.json at `out/jop/downloads/{year}/{dataset}/{file}` as well as `out/files.json` and `out/stats.json`.
+Parses all .do files in `out/jop/downloads` and produces corresponding .do.json at `out/jop/results/{year}/{dataset}/{file}` as well as `out/jop/files.json` and `out/jop/stats.json`.
 
 8. `python3 modelsof.py plot_commands`
 
