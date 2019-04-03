@@ -10,7 +10,7 @@ Scrapes Dataverse for all files associated with each article in `datasets.csv`. 
 
 3. `python3 modelsof.py jop get_downloads [2018]`
 
-Downloads all files with ext of `.do .7z .7zip .gz .rar .tar .zip` in `files.csv` optionally limited by year. Produces `out/jop/downloads/{year}/{journal}/{file}`. Errors logged to `out/jop/downloads/errors.csv` with `title, href, date, filename, file_href, error`.
+Downloads all files with ext of `.do .7z .7zip .gz .rar .tar .zip` in `files.csv` optionally limited by year. Produces `out/jop/downloads/{year}/{dataset}/{file}`. Errors logged to `out/jop/downloads/errors.csv` with `title, href, date, filename, file_href, error`.
 
 4. `python3 modelsof.py jop unzip` 
 
@@ -24,7 +24,11 @@ Union of `files.csv` and files in `downloads`. Produces `out/jop/all_files.csv` 
 
 Uses `out/**/all_files.csv` to produce distribution counts at `out/files_dist.csv` and `out/files_by_dataset.csv`, then runs plots.R to produce `out/files_dist.png` and `out/files_by_dataset.png` (whether a dataset contains a kind of file). 
 
-7. `python3 modelsof.py plot_commands`
+7. `python3 stata.py jop`
+
+Parses all .do files in `out/downloads` and produces corresponding .do.json at `out/jop/downloads/{year}/{dataset}/{file}` as well as `out/files.json` and `out/stats.json`.
+
+8. `python3 modelsof.py plot_commands`
 
 Uses `out/**/stats.json` to produce distribution counts at `out/commands_dist.csv`, then runs plots.R to produce `out/commands_dist.png`.
 
