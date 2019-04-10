@@ -1,4 +1,4 @@
-import collections
+from collections import Counter, OrderedDict
 import csv
 import glob
 import json
@@ -12,7 +12,24 @@ from bs4 import BeautifulSoup
 import requests
 
 base_url = 'https://dataverse.harvard.edu'
-exts = '.7z .7zip .gz .rar .tar .zip'.split()
+
+exts = dict(
+    zip = '.7z .7zip .gz .rar .tar .zip'.split(),
+    data = '.csv .dat .dbf .tab .txt .xls .xlsx .xml'.split(),
+    gis_data = '.cpg .inp .lgs .prj .sbn .sbx .shp .shx'.split(),
+    jags = '.jags'.split(),
+    matlab = '.m'.split(),
+    matlab_data = '.mat'.split(),
+    r = '.r'.split(),
+    r_data = '.rd .rda .rdata .rds'.split(),
+    r_other = '.history .rmd .rout'.split(),
+    sas = '.sas'.split(),
+    spss = '.sps'.split(),
+    spss_data = '.spv'.split(),
+    stata = '.ado .do'.split(),
+    stata_data = '.dta .gph'.split(),
+    stata_other = '.grec .hlp .smcl .sthlp'.split(),
+)
 
 def attempt(url):
     attempts = 0
@@ -95,10 +112,10 @@ def get_files(dataverse):
         w.writeheader()
         w.writerows(files)
 
-def get_ext_counts(dataverse, year):
-    with open(f'out/{dataverse}/files.csv') as f:
+def get_ext_counts(dataverse):
+    with open(f'out/{dataverse}/all_files.csv') as f:
         r = csv.DictReader(f)
-        cnt = collections.Counter(get_ext(row['filename']) for row in r if row['date'].endswith(year))
+        cnt = Counter(get_ext(row['file']) for row in r)
     print(cnt)
 
 def get_downloads(dataverse, year=None):
@@ -111,7 +128,7 @@ def get_downloads(dataverse, year=None):
             row_year, id, url, dir, file = split_row(row, downloads_dir)
             if year and not year == row_year:
                 continue
-            if not splitext(row['filename'])[1].lower() in exts + ['.do']:
+            if not splitext(row['filename'])[1].lower() in exts['zip'] + ['.do']:
                 continue
             os.makedirs(dir, exist_ok=True)
             if isfile(file):
@@ -130,7 +147,7 @@ def unzip(dataverse):
     error = []
     while True:
         files = glob.glob(f'{get_downloads_dir(dataverse)}/**/*', recursive=True)
-        files = [f for f in files if get_ext(f) in exts and not f in error]
+        files = [f for f in files if get_ext(f) in exts['zip'] and not f in error]
         if not files:
             break
         for file in files:
@@ -158,20 +175,24 @@ def get_all_files(dataverse):
         for file in files:
             w.writerow([file])
 
+def inc(ext, key, counts):
+    if ext in exts[key]:
+        counts[key] += 1 
+
 def plot(which, dist, kinds):
     with open(f'out/{which}_dist.csv', 'w') as f:
         w = csv.writer(f)
         keys = dist.keys()
         w.writerow([''] + list(keys))
         for kind in kinds.split():
-            w.writerow([kind] + [dist[k][kind] for k in keys])
+            w.writerow([kind] + [dist[k].get(kind, 0) for k in keys])
     subprocess.run(['Rscript', 'plots.R', which], check=True)
 
 def plot_files():
-    dist, dist1 = collections.OrderedDict(), collections.OrderedDict()
+    dist, dist1 = OrderedDict(), OrderedDict()
     for file in glob.glob(f'out/**/all_files.csv'):
         with open(file) as f:
-            counts = collections.Counter()
+            counts = Counter()
             datasets, datasets_stata, datasets_r = set(), set(), set()
             for row in csv.DictReader(f):
                 year, dataset = row['file'].split('/')[3:5]
@@ -179,11 +200,15 @@ def plot_files():
                     continue
                 datasets.add(dataset)
                 ext = get_ext(row['file'])
-                if ext in '.do'.split():
-                    counts['stata'] += 1 
+                if ext in exts['stata'] + exts['stata_data'] + exts['stata_other']:
+                    inc(ext, 'stata', counts)
+                    inc(ext, 'stata_data', counts)
+                    inc(ext, 'stata_other', counts)
                     datasets_stata.add(dataset)
-                elif ext in '.r'.split():
-                    counts['r'] += 1 
+                elif ext in exts['r'] + exts['r_data'] + exts['r_other']:
+                    inc(ext, 'r', counts)
+                    inc(ext, 'r_data', counts)
+                    inc(ext, 'r_other', counts)
                     datasets_r.add(dataset)
                 elif ext:
                     counts['other'] += 1 
@@ -197,14 +222,14 @@ def plot_files():
                 'both': len(datasets_stata & datasets_r) / total, 
                 'neither': len(datasets - (datasets_stata | datasets_r)) / total
             }
-    plot('files', dist, 'stata r other')
+    plot('files', dist, 'stata stata_data stata_other r r_data r_other other')
     plot('files_by_datasets', dist1, 'stata r both neither')
 
 def plot_commands():
-    dist = collections.OrderedDict() 
+    dist = OrderedDict() 
     for file in glob.glob(f'out/**/stats.json'):
         with open(file) as f:
-            counts = collections.Counter()
+            counts = Counter()
             for row in json.load(f)[1:]:
                 counts.update(dict(
                     linear=row.get('len_regression/linear', 0), 
