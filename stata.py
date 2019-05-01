@@ -16,14 +16,14 @@ class InputError(Exception):
         self.char = char
         self.line = line
         self.column = column
-        self.text = text 
+        self.text = text
 
 class Lexer:
     def __init__(self, input):
         self.input = input
         self.position = 0
         self.read_position = 0
-        self.ch = '\0' 
+        self.ch = '\0'
         self.line = 1
         self.column = 0
         self.last_token = Token('', '', 0, 0)
@@ -42,38 +42,38 @@ class Lexer:
             pos, line, col = self.get_current()
             while self.peek_char() == ' ':
                 self.read_char()
-            tok = self.token('\n', '\n', line, col) 
+            tok = self.token('\n', '\n', line, col)
         elif ch in "\\,(){}[]<>|&+-:%;'^" or ord(ch) > 127:
-            tok = self.token() 
+            tok = self.token()
         elif ch == '/':
-            tok = self.token() 
+            tok = self.token()
             if self.peek_char() == '*':
                 tok = self.read_until('*/', 'comment', ch)
             elif self.peek_char() == '/':
                 cur = self.get_current()
                 self.read_char()
                 if self.peek_char() == '/' and self.last_token.id != '\n':
-                    tok = self.read_to_end('///', cur) 
+                    tok = self.read_to_end('///', cur)
                 else:
-                    tok = self.read_to_end('comment', cur) 
+                    tok = self.read_to_end('comment', cur)
         elif ch == '*':
-            tok = self.token() 
+            tok = self.token()
             if self.last_token.id in ' \n':
-                tok = self.read_to_end('comment') 
+                tok = self.read_to_end('comment')
         elif ch == '#':
                 pos, line, col = self.get_current()
                 if self.input[pos + 1:].lstrip(' \t').startswith('delimit'):
                     while self.position < pos + self.input[pos:].index('delimit') + 6:
                         self.read_char()
-                        tok = self.token('#delimit', '#delimit', line, col) 
+                        tok = self.token('#delimit', '#delimit', line, col)
                 else:
-                    tok = self.read_to_end('comment') 
+                    tok = self.read_to_end('comment')
         elif ch == '~':
-            tok = self.maybe('~=') 
+            tok = self.maybe('~=')
         elif ch == '!':
-            tok = self.maybe('!=') 
+            tok = self.maybe('!=')
         elif ch == '=':
-            tok = self.maybe('==') 
+            tok = self.maybe('==')
         elif ch == '"':
             tok = self.read_until('"', 'string')
         elif ch == '`':
@@ -83,12 +83,12 @@ class Lexer:
                 tok = self.read_until("'", "`'")
         elif self.is_identifier():
             if ch == '.' and '0' <= self.peek_char() <= '9':
-                return self.get_item('number', self.is_number) 
-            return self.get_item('identifier', self.is_identifier) 
+                return self.get_item('number', self.is_number)
+            return self.get_item('identifier', self.is_identifier)
         elif self.is_number():
-            return self.get_item('number', self.is_number) 
+            return self.get_item('number', self.is_number)
         else:
-            raise InputError(ch, self.line, self.column, self.input[self.position - self.column + 1:self.position + 10]) 
+            raise InputError(ch, self.line, self.column, self.input[self.position - self.column + 1:self.position + 10])
 
         self.read_char()
         self.last_token = tok
@@ -108,7 +108,7 @@ class Lexer:
             if not ch and self.ch == end and not (end == "'" and self.peek_char() == '"'):
                 break
             if self.ch == '\0':
-                raise InputError(ch or f'no closing {end}', line, col, self.input[pos - col + 1:pos + 10]) 
+                raise InputError(ch or f'no closing {end}', line, col, self.input[pos - col + 1:pos + 10])
         return self.token(id, self.input[pos:self.position + 1], line, col)
 
     def read_to_end(self, id, current=None):
@@ -118,15 +118,15 @@ class Lexer:
         return self.token(id, self.input[pos:self.position + 1], line, col)
 
     def maybe(self, chars):
-        tok = self.token() 
-        if self.peek_char() == chars[1]: 
+        tok = self.token()
+        if self.peek_char() == chars[1]:
             pos, line, col = self.get_current()
             self.read_char()
-            tok = self.token(chars, self.input[pos:pos + 2], line, col) 
+            tok = self.token(chars, self.input[pos:pos + 2], line, col)
         return tok
 
     def read_char(self):
-        self.ch = self.peek_char() 
+        self.ch = self.peek_char()
         self.position = self.read_position
         self.read_position += 1
         self.column += 1
@@ -140,7 +140,7 @@ class Lexer:
 
     def is_identifier(self, second=False):
         match = 'A' <= self.ch <= 'Z' or 'a' <= self.ch <= 'z' or self.ch in '@_$.?'
-        return match or second and (self.ch == '#' or '0' <= self.ch <= '9')
+        return match or (second and (self.ch == '#' or '0' <= self.ch <= '9'))
 
     def is_number(self, second=False):
         return '0' <= self.ch <= '9' or self.ch in '.' or (second and 'a' <= self.ch <= 'z')
@@ -149,14 +149,14 @@ class Lexer:
         pos, line, col = self.get_current()
         while method(True):
             self.read_char()
-        self.last_token = self.token(id, self.input[pos:self.position], line, col) 
+        self.last_token = self.token(id, self.input[pos:self.position], line, col)
         return self.last_token
 
     def token(self, id='', value='', line=0, column=0):
-        return Token(id or self.ch, value or self.ch, line or self.line, column or self.column) 
+        return Token(id or self.ch, value or self.ch, line or self.line, column or self.column)
 
 class Node(object):
-    lbp = 0 
+    lbp = 0
 
     def __init__(self, token):
         self.id = token.id
@@ -166,7 +166,7 @@ class Node(object):
 
 class End(Node):
     def __init__(self):
-        pass 
+        pass
 
 class Literal(Node):
     def __repr__(self):
@@ -195,7 +195,7 @@ class Operator(Node):
         return self
 
 class Id(Node):
-    lbp = 30 
+    lbp = 30
 
     def null(self, parser):
         self.args = ['self']
@@ -242,7 +242,7 @@ class Parser(object):
         while 1:
             if isinstance(self.token, End):
                 next(self)
-                break          
+                break
             if self.token.value == '}':
                 next(self)
 
@@ -307,7 +307,7 @@ class Parser(object):
     def parse_command(self, command):
         res = dict(command=command[0])
         varlist, if_, eq, in_, weight, options = [], [], [], [], [], []
-        cur = varlist 
+        cur = varlist
         parens = 0
         for token in command[1:]:
             if token.id == '(':
@@ -318,16 +318,16 @@ class Parser(object):
                 cur = eq
                 continue
             if not parens and token.value == 'if':
-                cur = if_ 
+                cur = if_
                 continue
             if not parens and token.value == 'in':
-                cur = in_ 
+                cur = in_
                 continue
             if not parens and token.value == '[':
-                cur = weight 
+                cur = weight
                 continue
             if not parens and token.value == ',':
-                cur = options 
+                cur = options
                 continue
             cur.append(token)
         if varlist:
@@ -342,33 +342,52 @@ class Parser(object):
             res['weight'] = weight
         if options:
             res['options'] = options
-        return res 
+        return res
 
 def parse(lexer):
     return Parser(lexer).commands()
 
-class Encoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Node):
-            return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
-        return json.JSONEncoder.default(self, obj)
-
-def count(pattern):
-    exts = Counter()
-    for file in glob.glob(pattern, recursive=True):
-        exts[os.path.splitext(file)[1]] += 1
-    return dict(exts.most_common())
+command_aliases_ = [
+    'br browse',
+    'bys bysort',
+    'cap capt capture',
+    'cor corr correl correlate',
+    'di dis disp display',
+    'est estimate estimates',
+    'forval forvalues',
+    'g gen gene generate',
+    'gl global',
+    'gr graph',
+    'hist histogram',
+    'la lab label',
+    'li list',
+    'loc local',
+    'mat matrix',
+    'prob probit',
+    'prog program',
+    'qui quietly',
+    'reg regress',
+    'ren rename',
+    'su sum summ summarize',
+    'ta tab tabulate',
+    'u use'
+]
+command_aliases = dict()
+for cmd_a in command_aliases_:
+    aliases = cmd_a.split()
+    for alias in aliases[:-1]:
+        command_aliases[alias] = aliases[-1]
 
 def run(file):
     print(file)
     try:
-        with open(file) as f:
+        with open(file, encoding='utf8') as f:
             lexer = Lexer(f.read())
     except UnicodeError:
         with open(file, encoding='cp1252') as f:
             lexer = Lexer(f.read())
     commands = parse(lexer)
-    file1 = file.replace('/downloads/', '/results/')
+    file1 = file.replace('\\', '/').replace('/downloads/', '/results/')
     os.makedirs(os.path.dirname(file1), exist_ok=True)
     with open(f'{file1}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
@@ -377,18 +396,24 @@ def run(file):
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
+    cmd_cnt = Counter()
 
-    for command in commands: 
+    for command in commands:
         if isinstance(command, Literal) and command.id == 'comment':
             obj['len_comments'] += 1
             continue
+            
         pre = [p['command'] for p in command.get('pre', [])]
         command = command['command']
-        val = command.value
+        cmds = [x.value for x in pre + [command] if x.id == 'identifier']
+        cmd_str = ':'.join(command_aliases.get(cmd, cmd) for cmd in cmds)
+        if not cmd_str or '.' in cmd_str:
+            continue
+
+        cmd_cnt[cmd_str] += 1
         for kind in 'linear nonlinear'.split():
-            if val in categories['regression/' + kind]:
-                key = ':'.join(sorted(x.value for x in pre) + [val]) if pre else val
-                obj[kind + '_regressions'][key] += 1
+            if command.value in categories['regression/' + kind]:
+                obj[kind + '_regressions'][cmd_str] += 1
         for cmd in [command] + pre:
             if cmd.id != 'identifier':
                 continue
@@ -404,32 +429,34 @@ def run(file):
             if other:
                 obj['len_other'] += 1
                 obj['other'][cmd] += 1
-    return obj
+    return obj, cmd_cnt
+
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Node):
+            return dict(id=obj.id, value=obj.value, line=obj.line, column=obj.column)
+        return json.JSONEncoder.default(self, obj)
 
 if __name__ == '__main__':
     journal = sys.argv[1]
     pattern = f'out/{journal}/**/*'
-    if len(sys.argv) > 2 and sys.argv[2] == 'count':
-        print(count(pattern))
-    else:
-        stats, regs, others = [], Counter(), Counter()
-        for file in glob.glob(f'{pattern}.do', recursive=True):
-            try:
-                stat = run(file)
-            except Exception as e:
-                print('error:', e)
-                input('ENTER TO CONTINUE')
-                stat = dict(file=file, error=str(e))
-            stats.append(stat)
-            regs.update(stat.get('linear_regressions', []))
-            regs.update(stat.get('nonlinear_regressions', []))
-            others.update(stat.get('other', []))
+    cmds, stats, regs, others = Counter(), [], Counter(), Counter()
+    for file in glob.glob(f'{pattern}.do', recursive=True):
+        try:
+            stat, cmd_cnt = run(file)
+            cmds.update(cmd_cnt)
+        except Exception as e:
+            print('error:', e)
+            input('ENTER TO CONTINUE')
+            stat = dict(file=file, error=str(e))
+        stats.append(stat)
+        regs.update(stat.get('linear_regressions', []))
+        regs.update(stat.get('nonlinear_regressions', []))
+        others.update(stat.get('other', []))
 
-        with open(f'out/{journal}/files.json', 'w') as f:
-            json.dump(count(pattern), f, indent=2)
-        with open(f'out/{journal}/stats.json', 'w') as f:
-            json.dump([dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
+    with open(f'out/{journal}/stats.json', 'w') as f:
+        json.dump([dict(cmds.most_common())] + [dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
-        categories['no category'] = dict(others.most_common())
-        with open('categories.json', 'w') as f:
-            json.dump(categories, f, indent=2)
+    categories['no category'] = dict(others.most_common())
+    with open('categories.json', 'w') as f:
+        json.dump(categories, f, indent=2)
