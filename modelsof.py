@@ -41,7 +41,7 @@ def attempt(url):
             r.raise_for_status()
             return r
         except:
-            if attempts < 3:
+            if attempts < 6:
                 attempts += 1
                 continue
             raise
@@ -78,7 +78,13 @@ def get_datasets(dataverse):
         r = attempt(url)
         soup = BeautifulSoup(r.text, 'html.parser')
         for ds in soup.find_all(class_='datasetResult'):
-            datasets.append(dict(title=ds.a.span.text, href=ds.a['href'], date=ds.find(class_='text-muted').text))
+            ds = dict(title=ds.a.span.text, href=ds.a['href'], date=ds.find(class_='text-muted').text)
+            r1 = attempt(base_url + ds['href'])
+            soup1 = BeautifulSoup(r1.text, 'html.parser')
+            ds['description'] = soup1.find('div', class_='form-group').div.div.text.strip()
+            kws = soup1.find('div', id='keywords')
+            ds['keywords'] = kws.text.strip().split('\n')[-1] if kws else ''
+            datasets.append(ds)
 
         next_page = soup.find('a', text='Next >')['href']
         if next_page.split('=')[-1] == url.split('=')[-1]:
@@ -87,7 +93,7 @@ def get_datasets(dataverse):
 
     os.makedirs('out/' + dataverse, exist_ok=True)
     with open(file, 'w') as f:
-        w = csv.DictWriter(f, 'title href date'.split())
+        w = csv.DictWriter(f, 'title href date description keywords'.split())
         w.writeheader()
         w.writerows(datasets)
 
