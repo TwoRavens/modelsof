@@ -14,9 +14,9 @@ base_url = 'https://dataverse.harvard.edu'
 
 exts = dict(
     zip = '.7z .7zip .gz .rar .tar .zip'.split(),
-    data = '.csv .dat .dbf .tab .tsv .txt .xls .xlsx .xml'.split(),
+    data = '.dat .dbf .xml'.split(),
+    excel = '.xls .xlsx'.split(),
     gis_data = '.cpg .inp .lgs .prj .qpj .sbn .sbx .shp .shx .trk'.split(),
-    jags = '.jags'.split(),
     matlab = '.m'.split(),
     matlab_data = '.mat'.split(),
     r = '.r'.split(),
@@ -28,6 +28,7 @@ exts = dict(
     stata = '.ado .do'.split(),
     stata_data = '.dta .gph'.split(),
     stata_other = '.grec .hlp .smcl .sthlp'.split(),
+    text = '.csv .tab .tsv .txt'.split(),
 )
 
 def attempt(url):
@@ -206,7 +207,7 @@ def plot(which, dist, kinds, horiz=''):
     subprocess.run(['Rscript', 'plots.R', which, horiz], check=True)
 
 def plot_files():
-    data_exts = 'gis_data matlab_data spss_data stata_data r_data'
+    data_exts = 'excel gis_data matlab_data spss_data stata_data r_data text'
     dist, dist1, dist2, data_dist = OrderedDict(), OrderedDict(), OrderedDict(), OrderedDict()
     for file in glob.glob(f'out/**/all_files.csv'):
         counts, data_counts = Counter(), Counter()
@@ -224,7 +225,7 @@ def plot_files():
                 elif inc(ext, 'r r_data r_other', counts):
                     datasets_r.add(dataset)
                 elif ext:
-                    inc(ext, 'jags matlab sas spss', counts)
+                    inc(ext, 'matlab sas spss', counts)
                     counts['other'] += 1
 
                 if ext in exts['data']:
@@ -247,7 +248,7 @@ def plot_files():
         update_dist(data_dist, file, data_counts)
 
     plot('files', dist, 'stata stata_data stata_other r r_data r_other other'.split())
-    plot('analysis_files', dist1, 'stata r jags matlab sas spss other'.split())
+    plot('analysis_files', dist1, 'stata r matlab sas spss other'.split())
     plot('files_by_datasets', dist2, 'stata r both neither'.split())
     plot('data_files', data_dist, exts['data'] + data_exts.split() + ['other'])
 

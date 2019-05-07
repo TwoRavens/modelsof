@@ -8,13 +8,13 @@ Scrapes Dataverse for all articles. Produces `out/jop/datasets.csv` with `title,
 
 Scrapes Dataverse for all files associated with each article in `datasets.csv`. Produces `out/jop/files.csv` with `title, href, date, filename, file_href`.
 
-3. `python3 modelsof.py get_downlaods jop [2018]`
+3. `python3 modelsof.py get_downloads jop [2018]`
 
 Downloads all files with ext of `.do .7z .7zip .gz .rar .tar .zip` in `files.csv` optionally limited by year. Produces `out/jop/downloads/{year}/{dataset}/{file}`. Errors logged to `out/jop/downloads/errors.csv` with `title, href, date, filename, file_href, error`.
 
 4. `python3 modelsof.py unzip jop` 
 
-Recursively unzips all files with ext of `.7z .7zip .gz .rar .tar .zip` in `downloads`. Is destructive (it destroys zip files as it unzips) and requires 7z for 7z and rar files. This is `p7zip-full` and `p7zip-rar` on Ubuntu.
+Recursively unzips all files with ext of `.7z .7zip .gz .rar .tar .zip` in `downloads`. Requires 7zip (`p7zip-full` and `p7zip-rar` on Ubuntu).
 
 5. `python3 modelsof.py get_all_files jop`
 
