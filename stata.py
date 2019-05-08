@@ -2,12 +2,42 @@ from collections import Counter, namedtuple
 import glob
 import json
 import os, os.path
-import shutil
-import subprocess
 import sys
 
 with open('categories.json') as f:
     categories = json.load(f)
+
+command_aliases_ = dict(
+    browse=2,
+    bysort=3,
+    capture=3,
+    correlate=3,
+    display=2,
+    estimates=3,
+    forvalues=6,
+    generate=1,
+    graph=2,
+    histogram=4,
+    label=2,
+    list=2,
+    local=3,
+    matrix=3,
+    noisily=1,
+    probit=4,
+    program=4,
+    quietly=3,
+    regress=3,
+    rename=3,
+    summarize=2,
+    tabulate=2,
+    use=1,
+    version=4,
+)
+command_aliases_['global'] = 2
+command_aliases = dict()
+for (cmd, ln) in command_aliases_.items():
+    for alias in [cmd[:i] for i in range(ln, len(cmd) + 1)]:
+        command_aliases[alias] = cmd
 
 Token = namedtuple('Token', 'id value line column')
 
@@ -175,36 +205,6 @@ class Literal(Node):
     def null(self, parser):
         return self
 
-class Operator(Node):
-    lbp = 20
-
-    def __init__(self, token):
-        super().__init__(token)
-        if self.value in '*/%':
-            self.lbp = 21
-        elif self.value == '&&':
-            self.lbp = 22
-        elif self.value == '||':
-            self.lbp = 23
-
-    def null(self, parser):
-        return parser.expression()
-
-    def left(self, left, parser):
-        self.args = [left, parser.expression(self.lbp)]
-        return self
-
-class Id(Node):
-    lbp = 30
-
-    def null(self, parser):
-        self.args = ['self']
-        return self
-
-    def left(self, left, parser):
-        self.args = [left]
-        return self
-
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
@@ -233,10 +233,9 @@ class Parser(object):
         return left
 
     def commands(self):
-        cap, n, qui, vers = 'capture noisily quietly version'.split()
         prefix = []
-        for pre, ln in ((cap, 3), (n, 1), (qui, 3), (vers, 4)):
-            prefix += [pre[:i] for i in range(ln, len(pre) + 1)]
+        for cmd in 'capture noisily quietly version'.split():
+            prefix += [cmd[:i] for i in range(command_aliases_[cmd], len(cmd) + 1)]
 
         commands = []
         while 1:
@@ -274,6 +273,9 @@ class Parser(object):
                 command = self.parse_command(command)
                 if pre:
                     command['pre'] = pre
+                varlist = command.get('varlist', [])
+                if len(varlist) > 1:
+                    command['predictors'] = len(varlist)  - 1
                 commands.append(command)
         return commands
 
@@ -286,16 +288,13 @@ class Parser(object):
                     command.pop()
                 else:
                     break
-
             if self.token.id == '\n' and self.delimiter != '\n':
                 next(self)
                 continue
             else:
                 command.append(self.expression())
-
             if command[-1].id == 'comment' and not '\n' in command[-1].value:
                 break
-
             if len(command) == 2 and command[0].id == '#delimit':
                 self.delimiter = ';' if command[1].id == ';' else '\n'
                 break
@@ -310,73 +309,30 @@ class Parser(object):
         cur = varlist
         parens = 0
         for token in command[1:]:
+            is_cur = lambda v: not parens and token.value == v
             if token.id == '(':
                 parens += 1
-            if token.id == ')':
+            elif token.id == ')':
                 parens -= 1
-            if not parens and token.value == '=':
+            elif is_cur('='):
                 cur = eq
-                continue
-            if not parens and token.value == 'if':
+            elif is_cur('if'):
                 cur = if_
-                continue
-            if not parens and token.value == 'in':
+            elif is_cur('in'):
                 cur = in_
-                continue
-            if not parens and token.value == '[':
+            elif is_cur('['):
                 cur = weight
-                continue
-            if not parens and token.value == ',':
+            elif is_cur(','):
                 cur = options
-                continue
-            cur.append(token)
-        if varlist:
-            res['varlist'] = varlist
-        if eq:
-            res['='] = eq
-        if if_:
-            res['if'] = if_
-        if in_:
-            res['in'] = in_
-        if weight:
-            res['weight'] = weight
-        if options:
-            res['options'] = options
+            else:
+                cur.append(token)
+        for (lst, k) in [(varlist, 'varlist'), (eq, '='), (if_, 'if'), (in_, 'in'), (weight, 'weight'), (options, 'options')]:
+            if lst:
+                res[k] = lst
         return res
 
 def parse(lexer):
     return Parser(lexer).commands()
-
-command_aliases_ = [
-    'br browse',
-    'bys bysort',
-    'cap capt capture',
-    'cor corr correl correlate',
-    'di dis disp display',
-    'est estimate estimates',
-    'forval forvalues',
-    'g gen gene generate',
-    'gl global',
-    'gr graph',
-    'hist histogram',
-    'la lab label',
-    'li list',
-    'loc local',
-    'mat matrix',
-    'prob probit',
-    'prog program',
-    'qui quietly',
-    'reg regress',
-    'ren rename',
-    'su sum summ summarize',
-    'ta tab tabulate',
-    'u use'
-]
-command_aliases = dict()
-for cmd_a in command_aliases_:
-    aliases = cmd_a.split()
-    for alias in aliases[:-1]:
-        command_aliases[alias] = aliases[-1]
 
 def run(file):
     print(file)

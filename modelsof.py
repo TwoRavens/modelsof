@@ -207,7 +207,7 @@ def plot(which, dist, kinds, horiz=''):
     subprocess.run(['Rscript', 'plots.R', which, horiz], check=True)
 
 def plot_files():
-    data_exts = 'excel gis_data matlab_data spss_data stata_data r_data text'
+    data_exts = 'excel text gis_data matlab_data spss_data stata_data r_data'
     dist, dist1, dist2, data_dist = OrderedDict(), OrderedDict(), OrderedDict(), OrderedDict()
     for file in glob.glob(f'out/**/all_files.csv'):
         counts, data_counts = Counter(), Counter()
