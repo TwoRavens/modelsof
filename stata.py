@@ -275,7 +275,7 @@ class Parser(object):
                     command['pre'] = pre
                 varlist = command.get('varlist', [])
                 if len(varlist) > 1:
-                    command['predictors'] = len(varlist)  - 1
+                    command['predictors'] = len(varlist) - 1
                 commands.append(command)
         return commands
 
@@ -363,6 +363,8 @@ def run(file):
         command = command['command']
         cmds = [x.value for x in pre + [command] if x.id == 'identifier']
         cmd_str = ':'.join(command_aliases.get(cmd, cmd) for cmd in cmds)
+        for cmd in 'by bysort capture eststo noisily mi quietly xi'.split():
+            cmd_str = cmd_str.replace(f'{cmd}:', '')
         if not cmd_str or '.' in cmd_str:
             continue
 
