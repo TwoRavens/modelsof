@@ -114,7 +114,7 @@ def get_files(dataverse):
                 files.append(dict(row, filename=md.a.text.strip(), file_href=md.a['href']))
 
     with open(file, 'w') as f:
-        w = csv.DictWriter(f, 'title href date filename file_href'.split())
+        w = csv.DictWriter(f, 'title href date filename file_href'.split(), extrasaction='ignore')
         w.writeheader()
         w.writerows(files)
 
@@ -132,7 +132,7 @@ def get_downloads(dataverse, year=None):
     get_files(dataverse)
     downloads_dir = get_downloads_dir(dataverse)
     os.makedirs(get_downloads_dir(dataverse), exist_ok=True)
-    with open(f'out/{dataverse}/files.csv', encoding='utf8') as f, open(f'{downloads_dir}/errors.csv', 'a') as f1:
+    with open(f'out/{dataverse}/files.csv') as f, open(f'{downloads_dir}/errors.csv', 'a') as f1:
         r, w = csv.DictReader(f), csv.DictWriter(f1, 'title href date filename file_href error'.split())
         for row in r:
             row_year, id, url, dir, file = split_row(row, downloads_dir)
@@ -144,14 +144,18 @@ def get_downloads(dataverse, year=None):
             if isfile(file):
                 continue
 
-            r = attempt(base_url + url)
-            if r.status_code != 200:
-                row['error'] = r.status_code
-                w.writerow(row)
-                continue
-            with open(file, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=128):
-                    f.write(chunk)
+            try:
+                r = attempt(base_url + url)
+                if r.status_code != 200:
+                    row['error'] = r.status_code
+                    w.writerow(row)
+                    continue
+                with open(file, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=128):
+                        f.write(chunk)
+            except:
+                os.remove(file)
+                raise
 
 def unzip(dataverse):
     error = []
@@ -165,7 +169,7 @@ def unzip(dataverse):
             dir = split(file)[0]
             try:
                 if ext in exts['zip']:
-                    subprocess.run(['7z', 'x', file, f'-o{dir}', '-r'], check=True) and os.remove(file)
+                    subprocess.run(['7z', 'x', file, f'-o{dir}', '-r', '-y'], check=True) and os.remove(file)
             except Exception as e:
                 print('error:', file, e)
                 error.append(file)
@@ -173,13 +177,14 @@ def unzip(dataverse):
 def get_all_files(dataverse):
     downloads_dir = get_downloads_dir(dataverse)
     files = set([f for f in glob.glob(f'{downloads_dir}/**/*', recursive=True) if splitext(f)[1]][1:])
-    with open(f'out/{dataverse}/files.csv', encoding='utf8') as f:
+    all_files = f'out/{dataverse}/all_files.csv'
+    with open(all_files if isfile(all_files) else f'out/{dataverse}/files.csv') as f:
         r = csv.DictReader(f)
         for row in r:
             file = split_row(row, downloads_dir)[-1]
             if not get_ext(file) in exts['zip'] or isfile(file):
                 files.add(file)
-    with open(f'out/{dataverse}/all_files.csv', 'w') as f:
+    with open(all_files, 'w') as f:
         w = csv.writer(f)
         w.writerows([['file']] + [[file.replace('\\', '/')] for file in files])
 
