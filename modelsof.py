@@ -36,7 +36,7 @@ def attempt(url):
     while True:
         try:
             print(url)
-            r = requests.get(url, stream=True, timeout=10)
+            r = requests.get(url, stream=True, timeout=30)
             if r.status_code == 403:
                 return r
             r.raise_for_status()
@@ -177,14 +177,13 @@ def unzip(dataverse):
 def get_all_files(dataverse):
     downloads_dir = get_downloads_dir(dataverse)
     files = set([f for f in glob.glob(f'{downloads_dir}/**/*', recursive=True) if splitext(f)[1]][1:])
-    all_files = f'out/{dataverse}/all_files.csv'
-    with open(all_files if isfile(all_files) else f'out/{dataverse}/files.csv') as f:
+    with open(f'out/{dataverse}/files.csv') as f:
         r = csv.DictReader(f)
         for row in r:
             file = split_row(row, downloads_dir)[-1]
             if not get_ext(file) in exts['zip'] or isfile(file):
                 files.add(file)
-    with open(all_files, 'w') as f:
+    with open(f'out/{dataverse}/all_files.csv', 'w') as f:
         w = csv.writer(f)
         w.writerows([['file']] + [[file.replace('\\', '/')] for file in files])
 
