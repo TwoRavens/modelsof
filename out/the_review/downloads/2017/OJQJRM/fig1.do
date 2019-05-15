@@ -10,7 +10,7 @@ set matsize 800
 set more 1
 
 * put the correct folder path on next line
- cd "../FIG1/
+ cd "../FIG1/"
 
 /*************************************************************************
 * median income					 		*

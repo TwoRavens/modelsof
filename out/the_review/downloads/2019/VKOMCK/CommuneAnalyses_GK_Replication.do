@@ -1311,4 +1311,4 @@ gen boreh_0306=boreh_2006 - boreh_2003
 label var boreh_0306 "Difference in number of boreholes (2003-2006)"
 
 gen clinic_0306=clinic_2006 - clinic_2003
-label var clinic_0306 "Difference in number of clinics (2003-2006)"
+label var clinic_0306 "Difference in number of clinics (2003-2006)"*/
