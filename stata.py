@@ -1,4 +1,4 @@
-from collections import Counter, namedtuple
+from collections import Counter, namedtuple, OrderedDict
 import glob
 import json
 import os, os.path
@@ -7,37 +7,16 @@ import sys
 with open('categories.json') as f:
     categories = json.load(f)
 
-command_aliases_ = dict(
-    browse=2,
-    bysort=3,
-    capture=3,
-    correlate=3,
-    display=2,
-    estimates=3,
-    forvalues=6,
-    generate=1,
-    graph=2,
-    histogram=4,
-    label=2,
-    list=2,
-    local=3,
-    matrix=3,
-    noisily=1,
-    probit=4,
-    program=4,
-    quietly=3,
-    regress=3,
-    rename=3,
-    summarize=2,
-    tabulate=2,
-    use=1,
-    version=4,
-)
-command_aliases_['global'] = 2
-command_aliases = dict()
-for (cmd, ln) in command_aliases_.items():
-    for alias in [cmd[:i] for i in range(ln, len(cmd) + 1)]:
-        command_aliases[alias] = cmd
+prefix_commands, command_aliases = [], dict()
+for cat, commands in categories.items():
+    for cmd, opts in commands.items():
+        aliases = opts.get('synonyms', []) 
+        if opts.get('abbrev'):
+            aliases += [cmd[:i] for i in range(opts['abbrev'], len(cmd) + 1)]
+        if opts.get('prefix'):
+            prefix_commands += aliases
+        for alias in aliases:
+            command_aliases[alias] = cmd
 
 Token = namedtuple('Token', 'id value line column')
 
@@ -233,10 +212,6 @@ class Parser(object):
         return left
 
     def commands(self):
-        prefix = []
-        for cmd in 'capture noisily quietly version'.split():
-            prefix += [cmd[:i] for i in range(command_aliases_[cmd], len(cmd) + 1)]
-
         commands = []
         while 1:
             if isinstance(self.token, End):
@@ -250,15 +225,15 @@ class Parser(object):
                 commands.append(command.pop())
             if command:
                 pre = []
-                while command[0].value in prefix + list(categories['prefix']):
+                while len(command) > 1 and command[0].value in prefix_commands:
                     head = command[0].value
-                    if head in prefix:
+                    if head in prefix_commands:
                         pre.append(self.parse_command(command[:1]))
                         if command[1] and command[1].value == ':':
                             del command[1]
                         command = command[1:]
                         continue
-                    if head in categories['prefix']:
+                    if head in prefix_commands:
                         buf = []
                         for i, x in enumerate(command):
                             if x.value != ':':
@@ -270,13 +245,20 @@ class Parser(object):
                         pre.append(self.parse_command(buf))
                         command = command[i + 1:]
                         continue
+
                 command = self.parse_command(command)
-                if pre:
-                    command['pre'] = pre
                 varlist = command.get('varlist', [])
-                if len(varlist) > 1:
-                    command['predictors'] = len(varlist) - 1
-                commands.append(command)
+                cmd = OrderedDict(command=command['command'])
+                val = command['command'].value
+                alias = command_aliases.get(val, val)
+                if len(varlist) > 1 and (alias in categories['regression/linear'] or alias in categories['regression/nonlinear']):
+                    cmd['meta'] = dict(predictors=len(varlist) - 1)
+                if pre:
+                    cmd['pre'] = pre
+                for key in 'varlist = if in weight options'.split():
+                    if command.get(key):
+                        cmd[key] = command[key]
+                commands.append(cmd)
         return commands
 
     def command(self):
@@ -348,7 +330,7 @@ def run(file):
     with open(f'{file1}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix_as_prefix=0, len_other=0, other=Counter(), linear_regressions=Counter(), nonlinear_regressions=Counter())
+    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix=0, len_other=0, other=Counter(), linear_regressions=Counter(), nonlinear_regressions=Counter())
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
@@ -370,7 +352,7 @@ def run(file):
 
         cmd_cnt[cmd_str] += 1
         for kind in 'linear nonlinear'.split():
-            if command.value in categories['regression/' + kind]:
+            if command_aliases.get(command.value, command.value) in categories['regression/' + kind]:
                 obj[kind + '_regressions'][cmd_str] += 1
         for cmd in [command] + pre:
             if cmd.id != 'identifier':
@@ -381,8 +363,8 @@ def run(file):
             for cat, cmds in categories.items():
                 if cat == 'no category':
                     continue
-                if cmd in cmds:
-                    obj['len_prefix_as_prefix' if pre and cat == 'prefix' else f'len_{cat}'] += 1
+                if command_aliases.get(cmd, cmd) in cmds:
+                    obj['len_prefix' if pre else f'len_{cat}'] += 1
                     other = False
             if other:
                 obj['len_other'] += 1
@@ -415,6 +397,6 @@ if __name__ == '__main__':
     with open(f'out/{journal}/stats.json', 'w') as f:
         json.dump([dict(cmds.most_common())] + [dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
-    categories['no category'] = dict(others.most_common())
+    categories['no category'] = dict({k: dict(num=v) for k, v in others.most_common()})
     with open('categories.json', 'w') as f:
         json.dump(categories, f, indent=2)
