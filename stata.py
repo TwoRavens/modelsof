@@ -10,7 +10,7 @@ with open('categories.json') as f:
 prefix_commands, command_aliases = [], dict()
 for cat, commands in categories.items():
     for cmd, opts in commands.items():
-        aliases = opts.get('synonyms', []) 
+        aliases = [cmd] + opts.get('synonyms', []) 
         if opts.get('abbrev'):
             aliases += [cmd[:i] for i in range(opts['abbrev'], len(cmd) + 1)]
         if opts.get('prefix'):
@@ -229,7 +229,7 @@ class Parser(object):
                     head = command[0].value
                     if head in prefix_commands:
                         pre.append(self.parse_command(command[:1]))
-                        if command[1] and command[1].value == ':':
+                        if command[1].value == ':':
                             del command[1]
                         command = command[1:]
                         continue
