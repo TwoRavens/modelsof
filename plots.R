@@ -3,7 +3,7 @@ library(reshape)
 library(RColorBrewer)
 
 args = commandArgs(trailingOnly=T)
-for (kind in c("commands", "regressions")) { 
+for (kind in c('commands', 'regressions')) { 
     all = NULL
     for (journal in args) {
         df = read.csv(sprintf('out/%s/%s.csv', journal, kind), sep=',')
@@ -21,7 +21,6 @@ for (kind in c("commands", "regressions")) {
         sub = df[df$command %in% top$command,]
         data = cast(sub, year~command, sum)
         rownames(data) = data$year
-        data$year = NULL
 
         png(sprintf('out/%s/%s.png', journal, kind), width=1600, height=1200)
         par(mar=c(4, 7, 4, 4))
@@ -37,7 +36,6 @@ for (kind in c("commands", "regressions")) {
     sub = df[df$command %in% top$command,]
     data = cast(sub, journal~command, sum)
     rownames(data) = data$journal
-    data$njournal = NULL
 
     png(sprintf('out/%s.png', kind), width=1600, height=1200)
     par(mar=c(4, 7, 4, 4))
