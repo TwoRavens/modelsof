@@ -1,27 +1,46 @@
-#install.packages(c('dplyr', 'RColorBrewer', 'tidyr'))
-library(dplyr)
+#install.packages(c('reshape', 'RColorBrewer'))
+library(reshape)
 library(RColorBrewer)
-library(tidyr)
 
 args = commandArgs(trailingOnly=T)
+for (kind in c("commands", "regressions")) { 
+    all = NULL
+    for (journal in args) {
+        df = read.csv(sprintf('out/%s/%s.csv', journal, kind), sep=',')
+        df$journal = journal
+        if (!is.data.frame(all)) {
+            all = df
+        } else {
+            all = rbind(all, df)
+        } 
 
-df = read.csv(sprintf('out/%s.csv', args[1]), sep=',', row.names=NULL) %>%
-    group_by(journal) %>%
-    mutate(perc=prop.table(n) * 100) %>%
-    select(-n) %>%
-    spread(journal, perc, 0) %>%
-    as.data.frame
-data = data.matrix(df[,-1])
-rownames(data) = df[,1]
-data = t(data)
-print(data)
+        sums = aggregate(df$count, list(year=df$year), sum)
+        df$prop = df$count / sums$x[match(df$year, sums$year)]
+        sums = aggregate(df$prop, list(command=df$command), sum)
+        top = sums[order(-sums$x),][1:20,]
+        sub = df[df$command %in% top$command,]
+        data = cast(sub, year~command, sum)
+        rownames(data) = data$year
+        data$year = NULL
 
-n = nrow(data)
-horiz = length(args) == 2
-if (horiz) {
-  data = data[n:1,]
+        png(sprintf('out/%s/%s.png', journal, kind), width=1600, height=1200)
+        par(mar=c(4, 7, 4, 4))
+        barplot(as.matrix(data), col=brewer.pal(n=nrow(data), name='Set1'), border='white', beside=T, legend=rownames(data), las=T, horiz=T)
+        dev.off()
+    }
+
+    df = all
+    sums = aggregate(df$count, list(journal=df$journal), sum)
+    df$prop = df$count / sums$x[match(df$journal, sums$journal)]
+    sums = aggregate(df$prop, list(command=df$command), sum)
+    top = sums[order(-sums$x),][1:20,]
+    sub = df[df$command %in% top$command,]
+    data = cast(sub, journal~command, sum)
+    rownames(data) = data$journal
+    data$njournal = NULL
+
+    png(sprintf('out/%s.png', kind), width=1600, height=1200)
+    par(mar=c(4, 7, 4, 4))
+    barplot(as.matrix(data), col=brewer.pal(n=nrow(data), name='Set1'), border='white', beside=T, legend=rownames(data), las=T, horiz=T)
+    dev.off()
 }
-
-png(sprintf('out/%s.png', args[1]), width=1600, height=1200)
-barplot(data, col=brewer.pal(n=3, name='Set1'), border='white', las=1, beside=T, legend=rownames(data), horiz=T)
-dev.off()
