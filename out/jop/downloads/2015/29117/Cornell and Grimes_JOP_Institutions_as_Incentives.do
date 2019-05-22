@@ -252,7 +252,7 @@ recode rev_fh_pr_2011(.=1) if fh_pr_2011==7
 ***************************
 
 *******FIGURE 1. DISRUPTIVE PROTESTS******
-xtmelogit block_prot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+xtmelogit block_prot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 gen sample1=0
 recode sample1(0=1) if e(sample)==1
 
@@ -260,23 +260,23 @@ graph bar (mean) per_mean_block_prot if sample1==1, over(cname)
 
 *******TABLE 1. DISRUPTIVE PROTESTS******
 ***Model 1
-eststo:xtmelogit block_prot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit block_prot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit block_prot mean_corepol_civ_part q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot mean_corepol_civ_part q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 3
 eststo:xtmelogit block_prot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 ///
-van_comp_2010 || ccode: if nresp>2, or
+van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 5
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 6
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 
 esttab using table1.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
@@ -285,34 +285,34 @@ eststo clear
 
 
 *******EMPTY MODEL******
-xtmelogit block_prot || ccode: if e(sample)==1, or
+xtmelogit block_prot || ccode: if e(sample)==1, or
 estat icc
 
 
 *******FIGURE 2. DISRUPTIVE PROTESTS Ð CONDITIONAL MARGINAL EFFECTS OF POLITICAL CONTROL OF THE BUREAUCRACY AT DIFFERENT LEVELS OF CIVIL SOCIETY STRENGTH******
-xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 margins , dydx(q2_b) asbalanced atmeans predict(mu fixedonly) at(mean_corepol_civ_part=( 0.5 (.1) 1.4))
 marginsplot, yline(0)
 
 
 *******TABLE 2. THE INTENSIFYING EFFECTS OF CIVIL SOCIETY STRENGTH Ð ADDITIONAL TESTS******
 ***Model 1
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.bribe c.mean_corepol_civ_part##c.q2_b q2 sex ed polint dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.bribe c.mean_corepol_civ_part##c.q2_b q2 sex ed polint dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.dis_ind_serv c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.dis_ind_serv c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 ***Model 3
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.dis_eff1 c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.dis_eff1 c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.growth_gdp_cap_2011 c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.growth_gdp_cap_2011 c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 ***Model 5
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.van_comp_2010 c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.van_comp_2010 c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011|| ccode: if nresp>2, or
 estat icc
 ***Model 6
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.b47a c.mean_corepol_civ_part##c.q2_b q2 sex ed polint dis_ind_serv bribe dis_eff1 gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.b47a c.mean_corepol_civ_part##c.q2_b q2 sex ed polint dis_ind_serv bribe dis_eff1 gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 esttab using table2.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
 
@@ -320,26 +320,26 @@ eststo clear
 
 
 *******FIGURE 3. DISRUPTIVE PROTESTS Ð CONDITIONAL MARGINAL EFFECTS OF DISSATISFACTION WITH PUBLIC SERVICES AT DIFFERENT LEVELS OF CIVIL SOCIETY STRENGTH******
-xtmelogit block_prot c.mean_corepol_civ_part##c.dis_ind_serv c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+xtmelogit block_prot c.mean_corepol_civ_part##c.dis_ind_serv c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 margins , dydx(dis_ind_serv) asbalanced atmeans predict(mu fixedonly) at(mean_corepol_civ_part=( 0.5 (.1) 1.4))
 marginsplot, yline(0)
 
 
 *******TABLE 3. ADDITIONAL COUNTRY LEVEL CONTROLS******
 ***Model 1
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 unna_gdp_cap van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 unna_gdp_cap van_comp_2010|| ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 van_comp_2010 rev_fh_cl_2011|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 van_comp_2010 rev_fh_cl_2011|| ccode: if nresp>2, or
 estat icc
 ***Model 3
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 recel_gol_enep|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 recel_gol_enep|| ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 van_comp_2010 rev_fh_pr_2011|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 van_comp_2010 rev_fh_pr_2011|| ccode: if nresp>2, or
 estat icc
 ***Model 5
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 van_comp_2010 p_polity2_2011|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 van_comp_2010 p_polity2_2011|| ccode: if nresp>2, or
 estat icc
 esttab using table3.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
 eststo clear
@@ -361,17 +361,17 @@ p_polity2_2011 party_inst_2013 if sample1==1
 
 *******TABLE A4. CONTROL FOR CIVIL SOCIETY AT THE INDIVIDUAL LEVEL******
 ***Model 1
-eststo:xtmelogit block_prot mean_corepol_civ_part q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit block_prot mean_corepol_civ_part q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 2
 eststo:xtmelogit block_prot mean_corepol_civ_part q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 ///
-van_comp_2010 || ccode: if nresp>2, or
+van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 3
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b corepol_civ_part q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 esttab using tableA4.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
 eststo clear
@@ -379,23 +379,23 @@ eststo clear
 
 *******TABLE A5. PROTESTS IN GENERAL AS DEPENDENT VARIABLE******
 ***Model 1
-eststo:xtmelogit protests mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit protests mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit protests mean_corepol_civ_part q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit protests mean_corepol_civ_part q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 3
 eststo:xtmelogit protests mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 ///
-van_comp_2010 || ccode: if nresp>2, or
+van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit protests c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit protests c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 5
-eststo:xtmelogit protests c.mean_corepol_civ_part##c.q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit protests c.mean_corepol_civ_part##c.q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 6
-eststo:xtmelogit protests c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit protests c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 
 esttab using tableA5.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
@@ -404,23 +404,23 @@ eststo clear
 
 *******TABLE A6. OTHER PROTESTS AS DEPENDENT VARIABLE******
 ***Model 1
-eststo:xtmelogit non_blockprot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit non_blockprot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit non_blockprot mean_corepol_civ_part q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit non_blockprot mean_corepol_civ_part q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 3
 eststo:xtmelogit non_blockprot mean_corepol_civ_part q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 ///
-van_comp_2010 || ccode: if nresp>2, or
+van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
+eststo:xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a || ccode: if nresp>2, or
 estat icc
 ***Model 5
-eststo:xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2, or
 estat icc
 ***Model 6
-eststo:xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 
 esttab using tableA6.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
@@ -429,13 +429,13 @@ eststo clear
 
 *******TABLE A7. DISRUPTIVE PROTESTS Ð ADDITIONAL TESTS******
 ***Model 1
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2 & samplenotBol==1, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 || ccode: if nresp>2 & samplenotBol==1, or
 estat icc
 ***Model 2
-eststo:xtmelogit block_prot c.mean_add_all_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_add_all_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 estat icc
 ***Model 3
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 party_inst_2013 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010 party_inst_2013 || ccode: if nresp>2, or
 estat icc
 
 esttab using tableA7.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
@@ -444,13 +444,13 @@ eststo clear
 
 *******TABLE A8. DISRUPTIVE PROTESTS Ð COUNTRY CONTROLS ONE BY ONE******
 ***Model 1
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 || ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a growth_gdp_cap_2011 || ccode: if nresp>2, or
 estat icc
 ***Model 3
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a van_comp_2010 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a van_comp_2010 || ccode: if nresp>2, or
 estat icc
 
 esttab using tableA8.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
@@ -459,22 +459,22 @@ eststo clear
 
 *******TABLE A9. DISRUPTIVE PROTESTS Ð ADDITIONAL COUNTRY CONTROLS ONE BY ONE******
 ***Model 1
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a unna_gdp_cap_2011 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a unna_gdp_cap_2011 || ccode: if nresp>2, or
 estat icc
 ***Model 2
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a rev_fh_cl_2011 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a rev_fh_cl_2011 || ccode: if nresp>2, or
 estat icc
 ***Model 3
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a recel_gol_enep || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a recel_gol_enep || ccode: if nresp>2, or
 estat icc
 ***Model 4
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a rev_fh_pr_2011 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a rev_fh_pr_2011 || ccode: if nresp>2, or
 estat icc
 ***Model 5
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a p_polity2_2011 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a p_polity2_2011 || ccode: if nresp>2, or
 estat icc
 ***Model 6
-eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a party_inst_2013 || ccode: if nresp>2, or
+eststo:xtmelogit block_prot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a party_inst_2013 || ccode: if nresp>2, or
 estat icc
 
 esttab using tableA9.rtf, star(* 0.05) constant aic bic eform scalars(ll) se
@@ -486,19 +486,19 @@ graph bar (mean) q2_b, over(cname)
 
 
 *******FIGURE A2. PROTESTS IN GENERAL Ð CONDITIONAL MARGINAL EFFECTS OF POLITICAL CONTROL OF THE BUREAUCRACY AT DIFFERENT LEVELS OF CIVIL SOCIETY STRENGTH******
-xtmelogit protests c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+xtmelogit protests c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 margins , dydx(q2_b) asbalanced atmeans predict(mu fixedonly) at(mean_corepol_civ_part=( 0.5 (.1) 1.4))
 marginsplot, yline(0)
 
 
 *******FIGURE A3. OTHER PROTESTS Ð CONDITIONAL MARGINAL EFFECTS OF POLITICAL CONTROL OF THE BUREAUCRACY AT DIFFERENT LEVELS OF CIVIL SOCIETY STRENGTH******
-xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+xtmelogit non_blockprot c.mean_corepol_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 margins , dydx(q2_b) asbalanced atmeans predict(mu fixedonly) at(mean_corepol_civ_part=( 0.5 (.1) 1.4))
 marginsplot, yline(0)
 
 
 *******FIGURE A4. DISRUPTIVE PROTESTS Ð CONDITIONAL MARGINAL EFFECTS OF POLITICAL CONTROL OF THE BUREAUCRACY AT DIFFERENT LEVELS OF CIVIL SOCIETY STRENGTH - BROADER MEASURE OF CIVIL SOCIETY******
-xtmelogit block_prot c.mean_add_all_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
+xtmelogit block_prot c.mean_add_all_civ_part##c.q2_b q2 sex ed polint bribe dis_ind_serv dis_eff1 b47a gd_ptss_2011 growth_gdp_cap_2011 van_comp_2010|| ccode: if nresp>2, or
 margins , dydx(q2_b) asbalanced atmeans predict(mu fixedonly) at(mean_add_all_civ_part=( 1 (.1) 2.4))
 marginsplot, yline(0)
 

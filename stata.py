@@ -1,4 +1,5 @@
 from collections import Counter, namedtuple, OrderedDict
+import csv
 import glob
 import json
 import os, os.path
@@ -114,10 +115,10 @@ class Lexer:
         pos, line, col = self.get_current()
         while not ch or self.input[self.position - 1:self.position + 1] != end:
             self.read_char()
-            if not ch and self.ch == end and not (end == "'" and self.peek_char() == '"'):
+            if self.ch == '\0' or self.peek_char() == '\n' and end != '*/':
                 break
-            if self.ch == '\0':
-                raise InputError(ch or f'no closing {end}', line, col, self.input[pos - col + 1:pos + 10])
+            if  not ch and self.ch == end and not (end == "'" and self.peek_char() == '"'):
+                break
         return self.token(id, self.input[pos:self.position + 1], line, col)
 
     def read_to_end(self, id, current=None):
@@ -316,7 +317,7 @@ class Parser(object):
 def parse(lexer):
     return Parser(lexer).commands()
 
-def run(file):
+def run(file, cmd_cnt, reg_cnt):
     print(file)
     try:
         with open(file, encoding='utf8') as f:
@@ -330,12 +331,13 @@ def run(file):
     with open(f'{file1}.json', 'w') as f:
        json.dump(commands, f, indent=2, cls=Encoder)
 
-    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix=0, len_other=0, other=Counter(), linear_regressions=Counter(), nonlinear_regressions=Counter())
+    obj = dict(path=file, len=len(commands), len_comments=0, len_prefix=0, len_other=0, other=Counter(), 
+        linear_regressions=Counter(), nonlinear_regressions=Counter())
     for cat in categories:
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
-    cmd_cnt = Counter()
 
+    year = file1.split('/')[3]
     for command in commands:
         if isinstance(command, Literal) and command.id == 'comment':
             obj['len_comments'] += 1
@@ -350,9 +352,10 @@ def run(file):
         if not cmd_str or '.' in cmd_str:
             continue
 
-        cmd_cnt[cmd_str] += 1
+        cmd_cnt[(year, cmd_str)] += 1
         for kind in 'linear nonlinear'.split():
             if command_aliases.get(command.value, command.value) in categories['regression/' + kind]:
+                reg_cnt[(year, cmd_str)] += 1
                 obj[kind + '_regressions'][cmd_str] += 1
         for cmd in [command] + pre:
             if cmd.id != 'identifier':
@@ -369,7 +372,7 @@ def run(file):
             if other:
                 obj['len_other'] += 1
                 obj['other'][cmd] += 1
-    return obj, cmd_cnt
+    return obj
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
@@ -380,23 +383,26 @@ class Encoder(json.JSONEncoder):
 if __name__ == '__main__':
     journal = sys.argv[1]
     pattern = f'out/{journal}/**/*'
-    cmds, stats, regs, others = Counter(), [], Counter(), Counter()
+    cmds, regs, stats, others = Counter(), Counter(), [], Counter()
     for file in glob.glob(f'{pattern}.do', recursive=True):
         try:
-            stat, cmd_cnt = run(file)
-            cmds.update(cmd_cnt)
+            stat = run(file, cmds, regs)
         except Exception as e:
             print('error:', e)
             input('ENTER TO CONTINUE')
             stat = dict(file=file, error=str(e))
         stats.append(stat)
-        regs.update(stat.get('linear_regressions', []))
-        regs.update(stat.get('nonlinear_regressions', []))
         others.update(stat.get('other', []))
 
     with open(f'out/{journal}/stats.json', 'w') as f:
-        json.dump([dict(cmds.most_common())] + [dict(regs.most_common())] + [{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
+        json.dump([{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
     categories['no category'] = dict({k: dict(num=v) for k, v in others.most_common()})
     with open('categories.json', 'w') as f:
         json.dump(categories, f, indent=2)
+
+    for cmds in [('commands', cmds), ('regressions', regs)]:
+        with open(f'out/{journal}/{cmds[0]}.csv', 'wt') as f:
+            w = csv.writer(f)
+            w.writerow(('year', 'command', 'count'))
+            w.writerows((year, cmd, n) for ((year, cmd), n) in cmds[1].most_common())

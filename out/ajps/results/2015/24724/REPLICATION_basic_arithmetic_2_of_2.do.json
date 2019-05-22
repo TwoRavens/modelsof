@@ -1,0 +1,8077 @@
+[
+  {
+    "id": "comment",
+    "value": "/*********************************************************************\n *** REPLICATION MATERIALS\n ***\n *** \"THE BASIC ARITHMETIC OF LEGISLATIVE DECISIONS\"\n *** Michael Laver and Kenneth Benoit\n ***\n *** Code file 2 of 2  (run 1 of 2 first)\n ***\n *** Table 1: Greek Election Results\n ***          http://en.wikipedia.org/wiki/Greek_legislative_election,_May_2012\n ***          http://en.wikipedia.org/wiki/Greek_legislative_election,_June_2012\n *** Tables 2, 4-8 use \"ERD legislative types.dta\"\n *** Table 2: Legislative type frequencies in ERD data\n *** Table 4: Mean durations of govt formation by type\n *** Table 5: Cox PH hazard models for formation by type duration\n *** Table 6: Govt types by leg type\n *** Table 7: Mean govt duration by type\n *** Table 8: Cox PH model of govt duration\n *** Table 3: Multinomial regressions - this file\n ***          input: ERDsimulateddraws.dta, \n ***                 created by REPLICATION_basic_arithmetic_1_of_2.R\n ***          requires: installation of outreg2 library\n ***     \n *** Figure 1: N/A Produced in MS Word\n *** Figure 2: N/A Produced in Adobe Illustrator\n *** Figure 3: Barpolot of leg types by S1-S3 \n ***           input: ERDtypesim.dta, \n ***                  created by REPLICATION_basic_arithmetic_1_of_2.R\n *** Figure 4: Transitions Table plot\n ***           code in REPLICATION_basic_arithmetic_1_of_2.R   \n ***\n *** Figure A1: See REPLICATION_basic_arithmetic_1_of_2.R\n *** Figure A2: See REPLICATION_basic_arithmetic_1_of_2.R\n *** \n *** 2013 \n *********************************************************************/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*****************************************************************\n *** CREATE THE GOVERNMENT TYPES DATASET FROM THE ERD DATASET  ***\n *****************************************************************/",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** INSTALL ROW-SORTING ROUTINE IF NOT ALREADY INSTALLED",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** ssc install sortrows",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "number",
+      "value": "11",
+      "line": 8,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "version",
+          "line": 8,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"./ERD Dataset/ERDdata.dta\"",
+        "line": 9,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 9,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** CALCULATE TOTAL SEATS, WINNING THRESHOLD, SMALLEST PARTY SIZE",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 12,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "total_seats",
+        "line": 12,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 12,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "v200e",
+        "line": 12,
+        "column": 33
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 12,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "v231e",
+        "line": 12,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 13,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 13,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 13,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "total_seats",
+        "line": 13,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 13,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 13,
+        "column": 29
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 13,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 13,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "float",
+        "line": 14,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Sn",
+        "line": 14,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowmin",
+        "line": 14,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "v200e",
+        "line": 14,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 14,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "v231e",
+        "line": 14,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** SORT PARTY SEAT TOTALS IN DESCENDING ORDER OF SIZE AND RENAME",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sortrows",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v200e",
+        "line": 17,
+        "column": 11
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "v231e",
+        "line": 17,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 17,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 17,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "descending",
+        "line": 17,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** CREAT NEW VARS AND BEAUTIFY VARIABLE NAMES",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v001e",
+        "line": 20,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 20,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 21,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 21,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 21,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"Austria\"",
+        "line": 21,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 21,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Belgium\"",
+        "line": 21,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 21,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"Denmark\"",
+        "line": 21,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 21,
+        "column": 58
+      },
+      {
+        "id": "string",
+        "value": "\"Finland\"",
+        "line": 21,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 21,
+        "column": 70
+      },
+      {
+        "id": "string",
+        "value": "\"France\"",
+        "line": 21,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 21,
+        "column": 81
+      },
+      {
+        "id": "string",
+        "value": "\"Germany\"",
+        "line": 21,
+        "column": 83
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 22,
+        "column": 1
+      },
+      {
+        "id": "string",
+        "value": "\"Greece\"",
+        "line": 22,
+        "column": 3
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 22,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"Iceland\"",
+        "line": 22,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 22,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"Ireland\"",
+        "line": 22,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 22,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"Italy\"",
+        "line": 22,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 22,
+        "column": 47
+      },
+      {
+        "id": "string",
+        "value": "\"Luxembourg\"",
+        "line": 22,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 22,
+        "column": 63
+      },
+      {
+        "id": "string",
+        "value": "\"Netherlands\"",
+        "line": 22,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "13",
+        "line": 22,
+        "column": 80
+      },
+      {
+        "id": "string",
+        "value": "\"Norway\"",
+        "line": 22,
+        "column": 83
+      },
+      {
+        "id": "number",
+        "value": "14",
+        "line": 23,
+        "column": 1
+      },
+      {
+        "id": "string",
+        "value": "\"Portugal\"",
+        "line": 23,
+        "column": 4
+      },
+      {
+        "id": "number",
+        "value": "15",
+        "line": 23,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"Spain\"",
+        "line": 23,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 23,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"Sweden\"",
+        "line": 23,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "17",
+        "line": 23,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"United Kingdom\"",
+        "line": 23,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "18",
+        "line": 23,
+        "column": 58
+      },
+      {
+        "id": "string",
+        "value": "\"Bulgaria\"",
+        "line": 23,
+        "column": 61
+      },
+      {
+        "id": "number",
+        "value": "19",
+        "line": 23,
+        "column": 72
+      },
+      {
+        "id": "string",
+        "value": "\"Cyprus\"",
+        "line": 23,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 24,
+        "column": 1
+      },
+      {
+        "id": "string",
+        "value": "\"Czech Republic\"",
+        "line": 24,
+        "column": 4
+      },
+      {
+        "id": "number",
+        "value": "21",
+        "line": 24,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"Estonia\"",
+        "line": 24,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "22",
+        "line": 24,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Hungary\"",
+        "line": 24,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "23",
+        "line": 24,
+        "column": 47
+      },
+      {
+        "id": "string",
+        "value": "\"Latvia\"",
+        "line": 24,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "24",
+        "line": 24,
+        "column": 59
+      },
+      {
+        "id": "string",
+        "value": "\"Lithuania\"",
+        "line": 24,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 24,
+        "column": 74
+      },
+      {
+        "id": "string",
+        "value": "\"Malta\"",
+        "line": 24,
+        "column": 77
+      },
+      {
+        "id": "number",
+        "value": "26",
+        "line": 24,
+        "column": 85
+      },
+      {
+        "id": "string",
+        "value": "\"Poland\"",
+        "line": 24,
+        "column": 88
+      },
+      {
+        "id": "number",
+        "value": "27",
+        "line": 25,
+        "column": 1
+      },
+      {
+        "id": "string",
+        "value": "\"Romania\"",
+        "line": 25,
+        "column": 4
+      },
+      {
+        "id": "number",
+        "value": "28",
+        "line": 25,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"Slovakia\"",
+        "line": 25,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "29",
+        "line": 25,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"Slovenia\"",
+        "line": 25,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "values",
+        "line": 26,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 26,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 26,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "generate",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 28,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 28,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 28,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 29,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "18",
+        "line": 29,
+        "column": 31
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 29,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 29,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 30,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 30,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 30,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "19",
+        "line": 30,
+        "column": 30
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 30,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 30,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 30,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v002e",
+        "line": 32,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cabinetID",
+        "line": 32,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v003e",
+        "line": 33,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cabinet_name",
+        "line": 33,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v004e",
+        "line": 34,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "date_in",
+        "line": 34,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v005e",
+        "line": 35,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "date_out",
+        "line": 35,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v008e",
+        "line": 36,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "election_date",
+        "line": 36,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v010e",
+        "line": 37,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cabinet_composition",
+        "line": 37,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v100e",
+        "line": 39,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Austria",
+        "line": 39,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v101e",
+        "line": 40,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Belgium",
+        "line": 40,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v102e",
+        "line": 41,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Denmark",
+        "line": 41,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v103e",
+        "line": 42,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Finland",
+        "line": 42,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v104e",
+        "line": 43,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "France",
+        "line": 43,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v105e",
+        "line": 44,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Germany",
+        "line": 44,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v106e",
+        "line": 45,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Greece",
+        "line": 45,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v107e",
+        "line": 46,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Iceland",
+        "line": 46,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v108e",
+        "line": 47,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Ireland",
+        "line": 47,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v109e",
+        "line": 48,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Italy",
+        "line": 48,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v110e",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Luxembourg",
+        "line": 49,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v111e",
+        "line": 50,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Netherlands",
+        "line": 50,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v112e",
+        "line": 51,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Norway",
+        "line": 51,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v113e",
+        "line": 52,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Portugal",
+        "line": 52,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v114e",
+        "line": 53,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Spain",
+        "line": 53,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v115e",
+        "line": 54,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Sweden",
+        "line": 54,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v116e",
+        "line": 55,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "UK",
+        "line": 55,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v117e",
+        "line": 56,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Bulgaria",
+        "line": 56,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v118e",
+        "line": 57,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Cyprus",
+        "line": 57,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v119e",
+        "line": 58,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Czech",
+        "line": 58,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v120e",
+        "line": 59,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Estonia",
+        "line": 59,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v121e",
+        "line": 60,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Hungary",
+        "line": 60,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v122e",
+        "line": 61,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Latvia",
+        "line": 61,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v123e",
+        "line": 62,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Lithuania",
+        "line": 62,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v124e",
+        "line": 63,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Malta",
+        "line": 63,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v125e",
+        "line": 64,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Poland",
+        "line": 64,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v126e",
+        "line": 65,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Romania",
+        "line": 65,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v127e",
+        "line": 66,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Slovakia",
+        "line": 66,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v128e",
+        "line": 67,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Slovenia",
+        "line": 67,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v129e",
+        "line": 69,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade",
+        "line": 69,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v132e",
+        "line": 70,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade1940",
+        "line": 70,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v133e",
+        "line": 71,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade1950",
+        "line": 71,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v134e",
+        "line": 72,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade1960",
+        "line": 72,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v135e",
+        "line": 73,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade1970",
+        "line": 73,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v136e",
+        "line": 74,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade1980",
+        "line": 74,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v137e",
+        "line": 75,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade1990",
+        "line": 75,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v138e",
+        "line": 76,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade2000",
+        "line": 76,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v139e",
+        "line": 77,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "decade2010",
+        "line": 77,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v200e",
+        "line": 79,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 79,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v201e",
+        "line": 80,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 80,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v202e",
+        "line": 81,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 81,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v203e",
+        "line": 82,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S4",
+        "line": 82,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v204e",
+        "line": 83,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S5",
+        "line": 83,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v205e",
+        "line": 84,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S6",
+        "line": 84,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v206e",
+        "line": 85,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S7",
+        "line": 85,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v207e",
+        "line": 86,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S8",
+        "line": 86,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v208e",
+        "line": 87,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S9",
+        "line": 87,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v209e",
+        "line": 88,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "S10",
+        "line": 88,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v300e",
+        "line": 90,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "new_govt",
+        "line": 90,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v303e",
+        "line": 91,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 91,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v306e",
+        "line": 92,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 92,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v309e",
+        "line": 93,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "enp",
+        "line": 93,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v312e",
+        "line": 94,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "p1_share",
+        "line": 94,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v313e",
+        "line": 95,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "p1_banzhaf",
+        "line": 95,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v314e",
+        "line": 96,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "minority_parlt",
+        "line": 96,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v315e",
+        "line": 97,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "non_partisan",
+        "line": 97,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v316e",
+        "line": 98,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "coalition",
+        "line": 98,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v317e",
+        "line": 99,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cabinet_seats",
+        "line": 99,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v318e",
+        "line": 100,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cabinet_seat_share",
+        "line": 100,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v320e",
+        "line": 101,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cabinet_nparties",
+        "line": 101,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v321e",
+        "line": 102,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cab_parties_change",
+        "line": 102,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v322e",
+        "line": 103,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "max_power_in",
+        "line": 103,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v323e",
+        "line": 104,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "one_party_majority",
+        "line": 104,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v324e",
+        "line": 105,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "one_party_minority",
+        "line": 105,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v325e",
+        "line": 106,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "minority_coalition",
+        "line": 106,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v326e",
+        "line": 107,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "majority_coalition",
+        "line": 107,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v327e",
+        "line": 108,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "minimal_winning",
+        "line": 108,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v328e",
+        "line": 109,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "surplus",
+        "line": 109,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v407e",
+        "line": 110,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "polarization",
+        "line": 110,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v505e",
+        "line": 111,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "pos_parl",
+        "line": 111,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v508e",
+        "line": 112,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 112,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v330e",
+        "line": 113,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "n_ministers",
+        "line": 113,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 114,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v411e",
+        "line": 114,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "median1_in",
+        "line": 114,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v412e",
+        "line": 115,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "median2_in",
+        "line": 115,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "generate",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DDM",
+        "line": 116,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 116,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DDM",
+        "line": 117,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "median1_in",
+        "line": 117,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 117,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 34
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 117,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "median2_in",
+        "line": 117,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 117,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v414e",
+        "line": 119,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "MWC",
+        "line": 119,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v600e",
+        "line": 121,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "bargaining_duration",
+        "line": 121,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 122,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v603e",
+        "line": 122,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "relative_cab_duration",
+        "line": 122,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v605e",
+        "line": 123,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 123,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 125,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v702e",
+        "line": 125,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "inflation",
+        "line": 125,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v703e",
+        "line": 126,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "unemployment",
+        "line": 126,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v704e",
+        "line": 127,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "growth",
+        "line": 127,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 129,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 129,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 129,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 130,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 130,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "one_party_majority",
+        "line": 130,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 130,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 130,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 131,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 131,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "minimal_winning",
+        "line": 131,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 131,
+        "column": 44
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "one_party_minority",
+        "line": 131,
+        "column": 48
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 67
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 131,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 132,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 132,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 132,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "one_party_minority",
+        "line": 132,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 132,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 132,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 133,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 133,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "minority_coalition",
+        "line": 133,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 133,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 133,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 134,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 134,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "surplus",
+        "line": 134,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 134,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 134,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 135,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 135,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 135,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"One-party majority\"",
+        "line": 135,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 135,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"MWC\"",
+        "line": 135,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 135,
+        "column": 54
+      },
+      {
+        "id": "string",
+        "value": "\"One-party minority\"",
+        "line": 135,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 135,
+        "column": 77
+      },
+      {
+        "id": "string",
+        "value": "\"Minority coalition\"",
+        "line": 135,
+        "column": 79
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 135,
+        "column": 100
+      },
+      {
+        "id": "string",
+        "value": "\"Surplus\"",
+        "line": 135,
+        "column": 102
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "values",
+        "line": 136,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 136,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 136,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** CLASSIFY THE TYPES",
+    "line": 138,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "generate",
+      "line": 140,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 140,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 140,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 140,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 141,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"A\"",
+        "line": 141,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 141,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 141,
+        "column": 23
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 141,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 142,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"B\"",
+        "line": 142,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 142,
+        "column": 45
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 142,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 142,
+        "column": 50
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 142,
+        "column": 55
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 142,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 142,
+        "column": 61
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 142,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 142,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 142,
+        "column": 28
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 142,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 142,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 142,
+        "column": 38
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 142,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 143,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"B*\"",
+        "line": 143,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 143,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 143,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 143,
+        "column": 51
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 143,
+        "column": 56
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 143,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 143,
+        "column": 62
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 143,
+        "column": 24
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 143,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 143,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 143,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 143,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "Sn",
+        "line": 143,
+        "column": 39
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 143,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 144,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"C\"",
+        "line": 144,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 144,
+        "column": 43
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 144,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 144,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 144,
+        "column": 28
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 144,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 144,
+        "column": 37
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 144,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 145,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"D\"",
+        "line": 145,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 145,
+        "column": 45
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 145,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 145,
+        "column": 50
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 145,
+        "column": 55
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 145,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 145,
+        "column": 61
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 145,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 145,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 145,
+        "column": 28
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 145,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 145,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 145,
+        "column": 38
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 145,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 146,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"E\"",
+        "line": 146,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "S1",
+        "line": 146,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 146,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 146,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "W",
+        "line": 146,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_A",
+        "line": 148,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 148,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_A",
+        "line": 149,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 149,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 149,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"A\"",
+        "line": 149,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_B",
+        "line": 150,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 150,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 151,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_B",
+        "line": 151,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 151,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 151,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 151,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"B\"",
+        "line": 151,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 152,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 152,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 152,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 153,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 153,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 153,
+        "column": 32
+      },
+      {
+        "id": "string",
+        "value": "\"B*\"",
+        "line": 153,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_Bplain",
+        "line": 154,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 154,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_Bplain",
+        "line": 155,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 155,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case_B",
+        "line": 155,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 155,
+        "column": 38
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 155,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 155,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 155,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_C",
+        "line": 156,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 156,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_C",
+        "line": 157,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 157,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 157,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 157,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"C\"",
+        "line": 157,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_D",
+        "line": 158,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 158,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_D",
+        "line": 159,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 159,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 159,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 159,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"D\"",
+        "line": 159,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_E",
+        "line": 160,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 160,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case_E",
+        "line": 161,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 161,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 161,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 161,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"E\"",
+        "line": 161,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*****TABS",
+    "line": 163,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 164,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 164,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "new_govt",
+        "line": 164,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 164,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 164,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 165,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 165,
+        "column": 10
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 165,
+        "column": 22
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 165,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"A\"",
+        "line": 165,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 165,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "new_govt",
+        "line": 165,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 165,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabstat",
+      "line": 166,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 166,
+        "column": 9
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "new_govt",
+        "line": 166,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 166,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 166,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 166,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabulate",
+      "line": 167,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 167,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 167,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 167,
+        "column": 27
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 167,
+        "column": 32
+      },
+      {
+        "id": "string",
+        "value": "\"A\"",
+        "line": 167,
+        "column": 35
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 167,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "new_govt",
+        "line": 167,
+        "column": 41
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 167,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "summarize",
+        "line": 167,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 167,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "nostandard",
+        "line": 167,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "nofreq",
+        "line": 167,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 167,
+        "column": 107
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// save \"./ERD dataset/ERD legislative types.dta\"",
+    "line": 169,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************** \n ***  FIGURE 3 - BOX PLOT   ***\n ******************************/",
+    "line": 172,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 173,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"ERD dataset/ERDtypesim.dta\"",
+        "line": 173,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 173,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 174,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 174,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 175,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 175,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 175,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 175,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"A\"",
+        "line": 175,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 176,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 176,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 176,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 176,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"B*\"",
+        "line": 176,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 177,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 177,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 177,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 177,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 177,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"B\"",
+        "line": 177,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 178,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 178,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 178,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 178,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 178,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"C\"",
+        "line": 178,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 179,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 179,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 179,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 179,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 179,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"D\"",
+        "line": 179,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 180,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 180,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 180,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 180,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 180,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"E\"",
+        "line": 180,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 181,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 181,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 181,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 181,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"A\"",
+        "line": 181,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 181,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"B*\"",
+        "line": 181,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 181,
+        "column": 32
+      },
+      {
+        "id": "string",
+        "value": "\"B\"",
+        "line": 181,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 181,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"C\"",
+        "line": 181,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 181,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"D\"",
+        "line": 181,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 181,
+        "column": 50
+      },
+      {
+        "id": "string",
+        "value": "\"E\"",
+        "line": 181,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 182,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "values",
+        "line": 182,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 182,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 182,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 183,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p2_share",
+        "line": 183,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "S2",
+        "line": 183,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 183,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "total_seats",
+        "line": 183,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 184,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p3_share",
+        "line": 184,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "S3",
+        "line": 184,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 184,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "total_seats",
+        "line": 184,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 185,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 185,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "p2_share",
+        "line": 185,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"P2\"",
+        "line": 185,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 186,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 186,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "p3_share",
+        "line": 186,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"P3\"",
+        "line": 186,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 187,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 187,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "p1_share",
+        "line": 187,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"P1\"",
+        "line": 187,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "graph",
+      "line": 188,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "box",
+        "line": 188,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "p1_share",
+        "line": 188,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "p2_share",
+        "line": 188,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "p3_share",
+        "line": 188,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "p1_share",
+        "line": 188,
+        "column": 41
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 188,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 188,
+        "column": 50
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "over",
+        "line": 189,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "caseID",
+        "line": 189,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "horiz",
+        "line": 189,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 189,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "erdplot",
+        "line": 189,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 189,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 189,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "scheme",
+        "line": 189,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "s1color",
+        "line": 189,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "ytitle",
+        "line": 190,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "Seat",
+        "line": 190,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Share",
+        "line": 190,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "legend",
+        "line": 190,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "rows",
+        "line": 190,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 190,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "symxsize",
+        "line": 190,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 190,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "region",
+        "line": 190,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "color",
+        "line": 190,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "white",
+        "line": 190,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\n*** TABLE 2: Frequencies of leg types in European elections, 1945-2010 ***\n**************************************************************************/",
+    "line": 193,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 194,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"ERD dataset/ERD legislative types.dta\"",
+        "line": 194,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 194,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 195,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npcat",
+        "line": 195,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 195,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 195,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 195,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 195,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 195,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 195,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 195,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 195,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 195,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 196,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npcat",
+        "line": 196,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 196,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "row",
+        "line": 196,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "col",
+        "line": 196,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***************************************************** \n ***  TABLE 4 - MULTINOMIAL LOGISTIC REGRESSIONS   ***\n *****************************************************/",
+    "line": 198,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 199,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 199,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 199,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "contents",
+        "line": 199,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 199,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "bargaining_duration",
+        "line": 199,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "semean",
+        "line": 199,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "bargaining_duration",
+        "line": 199,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "row",
+        "line": 199,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "col",
+        "line": 199,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 199,
+        "column": 98
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 199,
+        "column": 105
+      },
+      {
+        "id": "number",
+        "value": "4.1f",
+        "line": 199,
+        "column": 106
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***************************************************** \n ***  TABLE 5 - GOLDER DATA DURATION MODELS        ***\n *****************************************************/",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 203,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bargaining_duration",
+        "line": 203,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 203,
+        "column": 31
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "bargaining_duration",
+        "line": 203,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 203,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 203,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 204,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bargaining_duration",
+        "line": 204,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 205,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 205,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "minority_parl",
+        "line": 205,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 205,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 205,
+        "column": 47
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 205,
+        "column": 54
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 205,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 205,
+        "column": 71
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 205,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 205,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 205,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 206,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 206,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "minority_parl",
+        "line": 206,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 206,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 206,
+        "column": 47
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 206,
+        "column": 54
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 206,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 206,
+        "column": 71
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 206,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 206,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 206,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 207,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 207,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 207,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 207,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 207,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 207,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "case_E",
+        "line": 207,
+        "column": 50
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 207,
+        "column": 60
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 207,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 207,
+        "column": 77
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 207,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 207,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 207,
+        "column": 91
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 208,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 208,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 208,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 208,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 208,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 208,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "case_E",
+        "line": 208,
+        "column": 50
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 208,
+        "column": 60
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 208,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 208,
+        "column": 77
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 208,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 208,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 208,
+        "column": 91
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 209,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 11
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 209,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 209,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 209,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 209,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 209,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "case_E",
+        "line": 209,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "Austria",
+        "line": 209,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 209,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Italy",
+        "line": 209,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "Netherlands",
+        "line": 209,
+        "column": 71
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 209,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "Slovenia",
+        "line": 209,
+        "column": 83
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 209,
+        "column": 95
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 209,
+        "column": 109
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 209,
+        "column": 112
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 209,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 209,
+        "column": 121
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 209,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 210,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 11
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 210,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "constructive_nc",
+        "line": 210,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 210,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 210,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 210,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "case_E",
+        "line": 210,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "Austria",
+        "line": 210,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 210,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Italy",
+        "line": 210,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "Netherlands",
+        "line": 210,
+        "column": 71
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 210,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "Slovenia",
+        "line": 210,
+        "column": 83
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 210,
+        "column": 95
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 210,
+        "column": 109
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 210,
+        "column": 112
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 210,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 210,
+        "column": 121
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 210,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************",
+    "line": 212,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** TABLE 6 ***",
+    "line": 213,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************",
+    "line": 214,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 215,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 215,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "minority_parl",
+        "line": 215,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 215,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 215,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** TABLE 7 ***",
+    "line": 218,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************",
+    "line": 219,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 220,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 220,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 220,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "contents",
+        "line": 220,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 220,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 220,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "semean",
+        "line": 220,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 220,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "row",
+        "line": 220,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "col",
+        "line": 220,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 220,
+        "column": 102
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 220,
+        "column": 109
+      },
+      {
+        "id": "number",
+        "value": "4.0f",
+        "line": 220,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 221,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gov_type",
+        "line": 221,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 221,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "contents",
+        "line": 221,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 221,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 221,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "semean",
+        "line": 221,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 221,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "col",
+        "line": 221,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 221,
+        "column": 102
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 221,
+        "column": 109
+      },
+      {
+        "id": "number",
+        "value": "4.0f",
+        "line": 221,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 222,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 222,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 222,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "contents",
+        "line": 222,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 222,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 222,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "semean",
+        "line": 222,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 222,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "col",
+        "line": 222,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 222,
+        "column": 97
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 222,
+        "column": 104
+      },
+      {
+        "id": "number",
+        "value": "4.0f",
+        "line": 222,
+        "column": 105
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************",
+    "line": 224,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** TABLE 8 ***",
+    "line": 225,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************",
+    "line": 226,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "censored",
+        "line": 227,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 227,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "censored",
+        "line": 228,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 228,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 228,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 228,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1350",
+        "line": 228,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "absolute_cab_duration",
+        "line": 229,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "failure",
+        "line": 229,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "censored",
+        "line": 229,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 230,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 230,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 230,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "minimal_winning",
+        "line": 230,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "minority_parl",
+        "line": 230,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 230,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 230,
+        "column": 57
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 230,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 230,
+        "column": 61
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 230,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 230,
+        "column": 78
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 230,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 230,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 230,
+        "column": 92
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 231,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 231,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 231,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "minimal_winning",
+        "line": 231,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 231,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 231,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "case_D",
+        "line": 231,
+        "column": 50
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "minority_parl",
+        "line": 231,
+        "column": 60
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 231,
+        "column": 77
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 231,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 231,
+        "column": 81
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 95
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 231,
+        "column": 98
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 231,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 231,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 231,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 232,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 11
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n_parties",
+        "line": 232,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "CEU",
+        "line": 232,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "minimal_winning",
+        "line": 232,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "case_Bstar",
+        "line": 232,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 232,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "case_D",
+        "line": 232,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "Austria",
+        "line": 232,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 232,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Denmark",
+        "line": 232,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "France",
+        "line": 232,
+        "column": 73
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 232,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "Slovenia",
+        "line": 232,
+        "column": 80
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "minority_parl",
+        "line": 232,
+        "column": 92
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 232,
+        "column": 106
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 232,
+        "column": 109
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 232,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "post_election",
+        "line": 232,
+        "column": 113
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 232,
+        "column": 127
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 232,
+        "column": 130
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "efron",
+        "line": 232,
+        "column": 133
+      },
+      {
+        "id": "identifier",
+        "value": "nohr",
+        "line": 232,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 232,
+        "column": 144
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***************************************************** \n ***  TABLE 3 - MULTINOMIAL LOGISTIC REGRESSIONS   ***\n ***            NOTE: requires library outreg2     ***\n *****************************************************/",
+    "line": 236,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Load in simulated cases from ERDsimulateddraws.dta and predict effects",
+    "line": 238,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"ERD dataset/ERDsimulateddraws.dta\"",
+        "line": 239,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 239,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Predict case transition probabilities for changes from original cases",
+    "line": 240,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// using original case as a baseline",
+    "line": 241,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 242,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 242,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "output1.txt",
+        "line": 242,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 243,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 243,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "output1.xml",
+        "line": 243,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 244,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 244,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "output2.txt",
+        "line": 244,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 245,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 245,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "output2.xml",
+        "line": 245,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 246,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p1lead",
+        "line": 246,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 246,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 246,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p2",
+        "line": 246,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 247,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p2lead",
+        "line": 247,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "p2",
+        "line": 247,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 247,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p3",
+        "line": 247,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p3lead",
+        "line": 248,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "p3",
+        "line": 248,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 248,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p4",
+        "line": 248,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 249,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 249,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 249,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 250,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 250,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 250,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 250,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 250,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 250,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 251,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 251,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "output2.txt",
+        "line": 251,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "originaltype",
+        "line": 252,
+        "column": 49
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 252,
+        "column": 61
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 252,
+        "column": 63
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 251,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 251,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 251,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ci",
+        "line": 251,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "addstat",
+        "line": 251,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "Log",
+        "line": 251,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 251,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "likelihood",
+        "line": 251,
+        "column": 61
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 251,
+        "column": 71
+      },
+      {
+        "id": "`'",
+        "value": "`e(ll)'",
+        "line": 251,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 251,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "adec",
+        "line": 251,
+        "column": 90
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 251,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "bracket",
+        "line": 251,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "nocons",
+        "line": 251,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 251,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 251,
+        "column": 119
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 251,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "mlogit",
+        "line": 252,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "simtype",
+        "line": 252,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "p1lead",
+        "line": 252,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "p2lead",
+        "line": 252,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "p3lead",
+        "line": 252,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "pNchange",
+        "line": 252,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "base",
+        "line": 252,
+        "column": 68
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 252,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "rrr",
+        "line": 252,
+        "column": 78
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 254,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 254,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 254,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 255,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 255,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 255,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 255,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 255,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 255,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 256,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 256,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "output1.txt",
+        "line": 256,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "originaltype",
+        "line": 257,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 257,
+        "column": 49
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 257,
+        "column": 51
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 256,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 256,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 256,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ci",
+        "line": 256,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "addstat",
+        "line": 256,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "Log",
+        "line": 256,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 256,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "likelihood",
+        "line": 256,
+        "column": 61
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 256,
+        "column": 71
+      },
+      {
+        "id": "`'",
+        "value": "`e(ll)'",
+        "line": 256,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 256,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "adec",
+        "line": 256,
+        "column": 90
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 256,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "bracket",
+        "line": 256,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "nocons",
+        "line": 256,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 256,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 256,
+        "column": 119
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 256,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "mlogit",
+        "line": 257,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "simtype",
+        "line": 257,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 257,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "p2",
+        "line": 257,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "p3",
+        "line": 257,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "pNchange",
+        "line": 257,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "base",
+        "line": 257,
+        "column": 56
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 257,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "rrr",
+        "line": 257,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 259,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 259,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 259,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 259,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 259,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 259,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 260,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 260,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "output1.txt",
+        "line": 260,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 261,
+        "column": 37
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 261,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 261,
+        "column": 39
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 261,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "originaltype",
+        "line": 261,
+        "column": 43
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 261,
+        "column": 55
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 261,
+        "column": 57
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 260,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 260,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 260,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ci",
+        "line": 260,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "addstat",
+        "line": 260,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "Log",
+        "line": 260,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 260,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "likelihood",
+        "line": 260,
+        "column": 61
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 260,
+        "column": 71
+      },
+      {
+        "id": "`'",
+        "value": "`e(ll)'",
+        "line": 260,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 260,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "adec",
+        "line": 260,
+        "column": 90
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 260,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "bracket",
+        "line": 260,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "nocons",
+        "line": 260,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 260,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 260,
+        "column": 119
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 260,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "mlogit",
+        "line": 261,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "simtype",
+        "line": 261,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 261,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "p2",
+        "line": 261,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "p3",
+        "line": 261,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "pNchange",
+        "line": 261,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "base",
+        "line": 261,
+        "column": 62
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 261,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "rrr",
+        "line": 261,
+        "column": 72
+      }
+    ]
+  }
+]
