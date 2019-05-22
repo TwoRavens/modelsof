@@ -28,7 +28,7 @@ for (kind in c('commands', 'regressions')) {
         dev.off()
     }
 
-    df = all
+    df = subset(all, year == '2018') 
     sums = aggregate(df$count, list(journal=df$journal), sum)
     df$prop = df$count / sums$x[match(df$journal, sums$journal)]
     sums = aggregate(df$prop, list(command=df$command), sum)
