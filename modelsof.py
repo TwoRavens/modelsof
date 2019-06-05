@@ -147,33 +147,38 @@ def get_downloads(dataverse, year=None):
                     f.write(chunk)
 
 def unzip(dataverse):
-    error = []
+    errors = []
     while True:
         files = glob.glob(f'{get_downloads_dir(dataverse)}/**/*', recursive=True)
-        files = [f for f in files if get_ext(f) in exts['zip'] and not f in error]
+        files = [f for f in files if get_ext(f) in exts['zip'] and not f in errors]
         if not files:
             break
-        for file in files:
-            ext = get_ext(file)
-            dir = split(file)[0]
-            try:
-                if ext in exts['zip']:
-                    subprocess.run(['7z', 'x', file, f'-o{dir}', '-r'], check=True) and os.remove(file)
-            except Exception as e:
-                print('error:', file, e)
-                error.append(file)
 
-def get_all_files(dataverse):
+        for file in files:
+            try:
+                subprocess.run(['7z', 'x', f'-o{split(file)[0]}', '-r', file], check=True)
+                os.remove(file)
+            except:
+                errors.append(file)
+
+    all_files = f'out/{dataverse}/all_files.csv'
+    if isfile(all_files):
+        return print(f'{all_files} already exists')
+
     downloads_dir = get_downloads_dir(dataverse)
     files = set([f for f in glob.glob(f'{downloads_dir}/**/*', recursive=True) if splitext(f)[1]][1:])
     with open(f'out/{dataverse}/files.csv', encoding='utf8') as f:
         r = csv.DictReader(f)
         for row in r:
             file = split_row(row, downloads_dir)[-1]
-            if not get_ext(file) in exts['zip'] or isfile(file):
+            ext = get_ext(file)
+            if not ext in exts['zip'] or isfile(file):
                 files.add(file)
-    with open(f'out/{dataverse}/all_files.csv', 'w') as f:
-        w = csv.writer(f)
+            if isfile(file) and not ext == '.do':
+                os.remove(file)
+
+    with open(all_files, 'w') as f:
+        w = csv.writer(f) 
         w.writerows([['file']] + [[file.replace('\\', '/')] for file in files])
 
 def inc(ext, keys, counts):
@@ -188,8 +193,8 @@ def update_dist(dist, file, counts):
     dist[journal] = {k: v / total for k, v in counts.items()}
     return journal
 
-def plot(which, dist, kinds, horiz=''):
-    with open(f'out/{which}_dist.csv', 'w') as f:
+def plot(path, dist, kinds, horiz=''):
+    with open(f'out/{path}.csv', 'w') as f:
         w = csv.writer(f)
         keys = dist.keys()
         w.writerow([''] + list(keys))
@@ -197,13 +202,12 @@ def plot(which, dist, kinds, horiz=''):
             row = [dist[k].get(kind, 0) for k in keys]
             if sum(row):
                 w.writerow([kind] + row)
-    subprocess.run(['Rscript', 'plots.R', which, horiz], check=True)
+    subprocess.run(['Rscript', 'plots.R', path, horiz], check=True)
 
 def plot_files():
-    data_exts = 'gis_data matlab_data spss_data stata_data r_data'
-    dist, dist1, dist2, data_dist = OrderedDict(), OrderedDict(), OrderedDict(), OrderedDict()
+    dist = OrderedDict()
     for file in glob.glob(f'out/**/all_files.csv'):
-        counts, data_counts = Counter(), Counter()
+        counts = Counter()
         datasets, datasets_stata, datasets_r = set(), set(), set()
         with open(file) as f:
             for row in csv.DictReader(f):
@@ -213,37 +217,69 @@ def plot_files():
 
                 datasets.add(dataset)
                 ext = get_ext(row['file'])
-                if inc(ext, 'stata stata_data stata_other', counts):
+                if inc(ext, 'stata', counts):
                     datasets_stata.add(dataset)
-                elif inc(ext, 'r r_data r_other', counts):
+                elif inc(ext, 'r', counts):
                     datasets_r.add(dataset)
-                elif ext:
-                    inc(ext, 'jags matlab sas spss', counts)
-                    counts['other'] += 1
-
-                if ext in exts['data']:
-                    data_counts[ext] += 1
-                elif inc(ext, data_exts, data_counts):
-                    continue
-                else:
-                    data_counts['other'] += 1
 
         journal = update_dist(dist, file, counts)
-        dist1[journal] = dist[journal].copy()
-        dist1[journal]['other'] += sum(dist[journal].get(k, 0) for k in 'stata_data stata_other r_data r_other'.split())
         total = len(datasets)
-        dist2[journal] = {
+        dist[journal] = {
             'stata': len(datasets_stata - datasets_r) / total,
             'r': len(datasets_r - datasets_stata) / total,
             'both': len(datasets_stata & datasets_r) / total,
             'neither': len(datasets - (datasets_stata | datasets_r)) / total
         }
-        update_dist(data_dist, file, data_counts)
 
-    plot('files', dist, 'stata stata_data stata_other r r_data r_other other'.split())
-    plot('analysis_files', dist1, 'stata r jags matlab sas spss other'.split())
-    plot('files_by_datasets', dist2, 'stata r both neither'.split())
-    plot('data_files', data_dist, exts['data'] + data_exts.split() + ['other'])
+    plot('files_by_datasets', dist, 'stata r both neither'.split())
+
+def plot_files_by_year():
+    all_sets = dict()
+    for file in glob.glob(f'out/**/all_files.csv'):
+        journal = file.split('/')[1]
+        sets = dict()
+        with open(file) as f:
+            for row in csv.DictReader(f):
+                year, dataset = row['file'].split('/')[3:5]
+                if not sets.get(year):
+                    sets[year] = dict(all=set(), stata=set(), r=set())
+                sets[year]['all'].add(dataset)
+                ext = get_ext(row['file'])
+                if ext in exts['stata']:
+                    sets[year]['stata'].add(dataset)
+                elif ext in exts['r']:
+                    sets[year]['r'].add(dataset)
+
+        for year in sets:
+            if not all_sets.get(year):
+                all_sets[year] = dict(all=set(), stata=set(), r=set())
+            for k in ('all', 'stata', 'r'):
+                all_sets[year][k].update(sets[year][k])
+
+        dist = dict()
+        for year in sets:
+            all, stata, r = sets[year]['all'], sets[year]['stata'], sets[year]['r']
+            total = len(all)
+            dist[year] = {
+                'stata': len(stata - r) / total,
+                'r': len(r - stata) / total,
+                'both': len(stata & r) / total,
+                'neither': len(all - (stata | r)) / total
+            }
+        plot(journal + '/files_by_year', dist, 'stata r both neither'.split())
+
+    dist = dict()
+    sets = all_sets
+    for year in sets:
+        all, stata, r = sets[year]['all'], sets[year]['stata'], sets[year]['r']
+        total = len(all)
+        dist[year] = {
+            'stata': len(stata - r) / total,
+            'r': len(r - stata) / total,
+            'both': len(stata & r) / total,
+            'neither': len(all - (stata | r)) / total
+        }
+    plot('files_by_year', dist, 'stata r both neither'.split())
 
 def plot_commands():
     dist, reg_dist, cmds = OrderedDict(), OrderedDict(), [set(), set()]
@@ -266,8 +302,8 @@ cmd = {
     'get_ext_counts': get_ext_counts,
     'get_downloads': get_downloads,
     'unzip': unzip,
-    'get_all_files': get_all_files,
     'plot_files': plot_files,
+    'plot_files_by_year': plot_files_by_year,
     'plot_commands': plot_commands,
 }[sys.argv[1]]
 cmd(*sys.argv[2:])
