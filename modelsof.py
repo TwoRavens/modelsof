@@ -196,7 +196,7 @@ def update_dist(dist, file, counts):
 def plot(path, dist, kinds, horiz=''):
     with open(f'out/{path}.csv', 'w') as f:
         w = csv.writer(f)
-        keys = dist.keys()
+        keys = sorted(dist.keys())
         w.writerow([''] + list(keys))
         for kind in kinds:
             row = [dist[k].get(kind, 0) for k in keys]
@@ -212,8 +212,8 @@ def plot_files():
         with open(file) as f:
             for row in csv.DictReader(f):
                 year, dataset = row['file'].split('/')[3:5]
-                if year != '2018':
-                    continue
+                #if year != '2018':
+                    #continue
 
                 datasets.add(dataset)
                 ext = get_ext(row['file'])
@@ -221,6 +221,9 @@ def plot_files():
                     datasets_stata.add(dataset)
                 elif inc(ext, 'r', counts):
                     datasets_r.add(dataset)
+
+        if not datasets:
+            continue
 
         journal = update_dist(dist, file, counts)
         total = len(datasets)
@@ -231,7 +234,7 @@ def plot_files():
             'neither': len(datasets - (datasets_stata | datasets_r)) / total
         }
 
-    plot('files_by_datasets', dist, 'stata r both neither'.split())
+    plot('files_by_journal', dist, 'stata r both neither'.split())
 
 def plot_files_by_year():
     all_sets = dict()
