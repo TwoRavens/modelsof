@@ -1,0 +1,3 @@
+*Run this code on the data set called SPPQ replication data - Data for Figure 2.dta
+
+twoway (line partisan nonpartisan retention appointment opennumber, lcolor(black black black gray) lwidth(medium medium medium thin) legend(off)) (scatter dot opennumber, msymbol(D) mcolor(black) legend(off)), graphregion(color(white)) xtitle(Number of Open-Seat Elections) ytitle(Predicted Value of Legitimacy Perceptions) text(11.2 -.27 "Appointment", place(ne) size(small)) text(10.368 7 "Retention", place(sw) size(small)) text(9.952 10 "Non-Partisan", place(s) size(small)) text(10.368 10.9 "Partisan", place(s) size(small)) xlabel(0 (2) 12) ylabel(10 (.5) 12) yscale(range(9.75 12)) xscale(range(0 12))

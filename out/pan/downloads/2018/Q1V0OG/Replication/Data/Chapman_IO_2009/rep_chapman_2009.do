@@ -1,0 +1,1 @@
+clear allset more offcd "~/Dropbox (MIT)/interaction paper/Data/Included/Chapman_IO_2009/" /* Table 1, but using OLS*/*basic modeluse "data/IO08data", clearreg rally S unauth unauthint priorpop bipart statemnt nextelec nytcov buscon revorg wardumk majopp allies war SCappeal regorgact ordsever hostlvl, robust keep if e(sample)==1saveold rep_chapman_2009, replace
