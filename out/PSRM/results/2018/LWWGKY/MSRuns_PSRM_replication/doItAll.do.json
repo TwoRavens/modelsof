@@ -1,0 +1,1708 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n\tThis file creates the published tables and figures Winter, Hughes, and Sanders, \n\t\"Online Coders, Open Codebooks: New Opportunities for Content Analysis of Political Communication\"\n\tPolitical Science Research & Methods (forthcoming)\n\n\tThis file creates all the tables and figures for the paper. It runs under Stata/SE or Stata/MP version 15.1\n\n\tAll data are included here *except* the Wesleyan Media Project (WMP) Ad-coding data for 2010,\n\twhich are subject to a data-use agreement.  The WMP data can be obtained from\n\thttp://mediaproject.wesleyan.edu/dataaccess/ \n\n\tThe WMP file wmp-federal-2010-v1.3.dta should be put in the \"rawData\" subdirectory.\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// --------------------------------------------------------",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Initial setup and housekeeping",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// --------------------------------------------------------",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 6,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Stata dependencies not provided in StataUtilities [from SSC]",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// ssc install listtab",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// ssc install kappaetc",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// set MakeData to * to skip recreating datasets",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MakeData",
+        "line": 13,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// set calculateReliability to '*' to skip the time-consuming calculation of reliability statistics",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\t(only useful if re-running this code after calculating them once)",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "calculateReliability",
+        "line": 17,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$calculateReliability\"",
+        "line": 18,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 18,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 18,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 18,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`c(SE)'",
+        "line": 18,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 18,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 18,
+        "column": 43
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 18,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// reliability calculations involve WIIIIIIIDE reshape, so this speeds things up",
+    "line": 19,
+    "column": 20
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 19,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxvar",
+        "line": 19,
+        "column": 6
+      },
+      {
+        "id": "number",
+        "value": "20000",
+        "line": 19,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// fontface used by XeLaTex and by Stata for graphs [any system TTF should work]",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FontFace",
+        "line": 23,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Times",
+        "line": 23,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "New",
+        "line": 23,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "Roman",
+        "line": 23,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This global has the path to the Wesleyan Media Project 2010 dataset for federal races.",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// It is subject to a data-use agreement so is not provided as part of this replication archive.",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// It can be obtained from: http://mediaproject.wesleyan.edu/dataaccess/data-access-2010/",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CMAGDataFile",
+        "line": 28,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rawData",
+        "line": 28,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 28,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "wmp",
+        "line": 28,
+        "column": 29
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 28,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "federal",
+        "line": 28,
+        "column": 33
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 28,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 28,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 28,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "v1.3.dta",
+        "line": 28,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// set to 1 for old-style-numerals in figure (must have Adobe Pro font and Inkscape installed); ",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// set to 0 for regular numerals",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "useOldStyleNumerals",
+        "line": 32,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 32,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "graph",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "set",
+        "line": 33,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "window",
+        "line": 33,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "fontface",
+        "line": 33,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"$FontFace\"",
+        "line": 33,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Add Stata utilities directory to adopath so Stata can find utility programs",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "adopath",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 9
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"`c(pwd)'/StataUtilities\"",
+        "line": 36,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// --------------------------------------------------------",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// END of initial setup and housekeeping",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// --------------------------------------------------------",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// make sure (empty) subdirectories exist",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dir",
+        "line": 43,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "auxds",
+        "line": 43,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "auxSyntax",
+        "line": 43,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "dataSets",
+        "line": 43,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 43,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 43,
+        "column": 53
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 43,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "plots",
+        "line": 43,
+        "column": 65
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 43,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "makedir",
+      "line": 44,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`dir'",
+        "line": 44,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// graph scheme provided in StataUtilities/scheme-nwpsrm.scheme",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "scheme",
+        "line": 48,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "nwpsrm",
+        "line": 48,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "loglist",
+        "line": 50,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 50,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 50,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "MsTables.tex",
+        "line": 50,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 50,
+        "column": 40
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 50,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "MsFigures.tex",
+        "line": 50,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 50,
+        "column": 66
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 50,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "MsAppendixTables.tex",
+        "line": 50,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 50,
+        "column": 99
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 50,
+        "column": 110
+      },
+      {
+        "id": "identifier",
+        "value": "MsAppendixFigures.tex",
+        "line": 50,
+        "column": 111
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "file",
+        "line": 51,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 51,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 51,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 52,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 52,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`file'\"",
+        "line": 52,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//master list of coding variables for analysis",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "codevl",
+        "line": 56,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 56,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "mention1Fc",
+        "line": 56,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "mention1Oc",
+        "line": 56,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "ecAppeal",
+        "line": 56,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "etPositive",
+        "line": 56,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "etNegative",
+        "line": 56,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "emEnthusiasm",
+        "line": 56,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "emFear",
+        "line": 56,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "emAnger",
+        "line": 56,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "emDisgust",
+        "line": 56,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "em1Enthusiasm",
+        "line": 56,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "em1Fear",
+        "line": 56,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "em1Anger",
+        "line": 56,
+        "column": 133
+      },
+      {
+        "id": "identifier",
+        "value": "em1Disgust",
+        "line": 56,
+        "column": 142
+      },
+      {
+        "id": "identifier",
+        "value": "tFcComp",
+        "line": 56,
+        "column": 153
+      },
+      {
+        "id": "identifier",
+        "value": "tFcLeader",
+        "line": 56,
+        "column": 161
+      },
+      {
+        "id": "identifier",
+        "value": "tFcInteg",
+        "line": 56,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "tFcEmpathy",
+        "line": 56,
+        "column": 180
+      },
+      {
+        "id": "identifier",
+        "value": "tOcComp",
+        "line": 56,
+        "column": 191
+      },
+      {
+        "id": "identifier",
+        "value": "tOcLeader",
+        "line": 56,
+        "column": 199
+      },
+      {
+        "id": "identifier",
+        "value": "tOcInteg",
+        "line": 56,
+        "column": 209
+      },
+      {
+        "id": "identifier",
+        "value": "tOcEmpathy",
+        "line": 56,
+        "column": 218
+      },
+      {
+        "id": "identifier",
+        "value": "ideologyFc",
+        "line": 56,
+        "column": 229
+      },
+      {
+        "id": "identifier",
+        "value": "ideologyOc",
+        "line": 56,
+        "column": 240
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// --------------------------------------------------------",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  Construct datasets",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// --------------------------------------------------------",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "$MakeData",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "do",
+        "line": 61,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "makeData",
+        "line": 61,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Table 1 (list of coding items)",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rawLatexAndImages",
+        "line": 65,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 65,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "codingTable.tex",
+        "line": 65,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 65,
+        "column": 40
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 65,
+        "column": 51
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 65,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Figure 1 (coding interface image)",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rawLatexAndImages",
+        "line": 69,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 69,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "codingInterface.pdf",
+        "line": 69,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 69,
+        "column": 44
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 69,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "plots",
+        "line": 69,
+        "column": 56
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 69,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "codingInterface.pdf",
+        "line": 69,
+        "column": 62
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 69,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "latexfigure",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "plots",
+        "line": 70,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 70,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "codingInterface.pdf",
+        "line": 70,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 70,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\"`:word 2 of `loglist''\"",
+        "line": 70,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 70,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "caption",
+        "line": 70,
+        "column": 77
+      },
+      {
+        "id": "string",
+        "value": "\"Coding Interface\"",
+        "line": 70,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "precaption",
+        "line": 70,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "width",
+        "line": 70,
+        "column": 116
+      },
+      {
+        "id": "number",
+        "value": "6.25in",
+        "line": 70,
+        "column": 122
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Tables 2 & 3 - reliability summaries; also appendix reliability detail tables",
+    "line": 73,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "T23_reliabilityTables",
+        "line": 74,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 74,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Figure 2 - item-level reliability ",
+    "line": 77,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "F2_reliabilityFigure",
+        "line": 78,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 78,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Table 4 - validity ",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "T4_validityTable",
+        "line": 82,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 82,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// More appendix tables",
+    "line": 85,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// MSE reliability ",
+    "line": 86,
+    "column": 30
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Tx_mseTable",
+        "line": 86,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 86,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Conger's Kappa reliability ",
+    "line": 87,
+    "column": 41
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Tx_reliabilityCongerTable",
+        "line": 87,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 87,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Aggregation gain ",
+    "line": 88,
+    "column": 42
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Tx_metaGainSummary",
+        "line": 88,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 88,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// miscellaneous analyses",
+    "line": 89,
+    "column": 37
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Tx_otherAppendixRuns",
+        "line": 89,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 89,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Tx_flagFiguresForAppendix",
+        "line": 90,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`loglist'",
+        "line": 90,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ------------------------------------------------------------------",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Additional numbers that appear in the text",
+    "line": 93,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "additionalNumbersInText",
+        "line": 94,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "latexOutput",
+        "line": 96,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// combine main-text tables and figures and texify",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "texfiles",
+        "line": 98,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "codingTable.tex",
+        "line": 98,
+        "column": 16
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 32
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "MsTables.tex",
+        "line": 98,
+        "column": 35
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 48
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "MsFigures.tex",
+        "line": 98,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "wraplatex",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MsTF.tex",
+        "line": 99,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 99,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "addfiles",
+        "line": 99,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`texfiles'",
+        "line": 99,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "osn",
+        "line": 99,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "fface",
+        "line": 99,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "$FontFace",
+        "line": 99,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "pagenumbers",
+        "line": 99,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "dolatex",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MsTF.tex",
+        "line": 100,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 100,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// combine appendix tables and figures and texify",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "texfiles",
+        "line": 103,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "MsAppendixTables.tex",
+        "line": 103,
+        "column": 16
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 103,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 103,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "MsAppendixFigures.tex",
+        "line": 103,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "wraplatex",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MsTF_appx.tex",
+        "line": 104,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 104,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "addfiles",
+        "line": 104,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`texfiles'",
+        "line": 104,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "osn",
+        "line": 104,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "appendix",
+        "line": 104,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "fface",
+        "line": 104,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "$FontFace",
+        "line": 104,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "pagenumbers",
+        "line": 104,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "dolatex",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MsTF_appx.tex",
+        "line": 105,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 105,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "twolatex",
+        "line": 105,
+        "column": 32
+      }
+    ]
+  }
+]

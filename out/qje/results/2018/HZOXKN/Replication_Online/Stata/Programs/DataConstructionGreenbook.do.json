@@ -1,0 +1,2098 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 1,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 2,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 2,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 2,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "perm",
+        "line": 2,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Filename: DataConstructionGreenbook.do",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Description: This code takes the \"Row Format\" Greenbook dataset from the",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    Philadelphia Fed's website (in an Excel spreadsheet: GBweb_Row_Format.xls)",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    and merges them, along with a csv file that maps Greenbook dates to FOMC",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    meeting dates (GBFOMCmapping.csv). The latter file was generated from",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    pages on the Federal Reserve Board's historical website",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    (https://www.federalreserve.gov/monetarypolicy/fomc_historical.htm).",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    The output (GBmerged.dta) is used by GreenbookBlueChip.do. ",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Directories",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indir",
+        "line": 19,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 19,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 19,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "Data_Orig",
+        "line": 19,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 19,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outdir",
+        "line": 20,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 20,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 20,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "IntermediateFiles",
+        "line": 20,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 20,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dirInput",
+        "line": 21,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"../IntermediateFiles/\"",
+        "line": 21,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Import mapping between FOMC meeting and Greenbook dates",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "import",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delim",
+        "line": 24,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`indir'",
+        "line": 24,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "GBFOMCmapping.csv",
+        "line": 24,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "varnames",
+        "line": 24,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 24,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "case",
+        "line": 24,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "preserve",
+        "line": 24,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Import and merge Greenbook data",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//     gRGDP : real output growth (GNP/GDP)",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//     gPGDP : inflation (GNP/GDP deflator)",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//     UNEMP : unemployment rate",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//     gPCI  : Q/Q PCE inflation annualized (CPI)",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//     gPPCE : Q/Q PCE inflation annualized (PCE)",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vv",
+        "line": 33,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "gRGDP",
+        "line": 33,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "gPGDP",
+        "line": 33,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "UNEMP",
+        "line": 33,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "gPCPI",
+        "line": 33,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "gPPCE",
+        "line": 33,
+        "column": 39
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 33,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 34,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tempGB",
+        "line": 35,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "import",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 36,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 36,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"`indir'GBweb_Row_Format.xls\"",
+        "line": 36,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sheet",
+        "line": 36,
+        "column": 51
+      },
+      {
+        "id": "string",
+        "value": "\"`vv'\"",
+        "line": 36,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "firstrow",
+        "line": 36,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 36,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`tempGB'\"",
+        "line": 37,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 38,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 39,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 39,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 39,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "GBdate",
+        "line": 39,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 39,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`tempGB'",
+        "line": 39,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 39,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 39,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 39,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 39,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tostring",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "GBdate",
+        "line": 40,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 40,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 42,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 42,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "GBdate",
+        "line": 42,
+        "column": 19
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 42,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 42,
+        "column": 27
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 42,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 42,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 43,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 43,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "GBdate",
+        "line": 43,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 43,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 43,
+        "column": 28
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 43,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 43,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 44,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 44,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 44,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Clean up the data ",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 49,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Drop meetings before the time when we only had 8 per year.",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 51,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FOMCdate",
+        "line": 51,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 51,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "19810000",
+        "line": 51,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// \"gbdate\" is the date the Greenbook was given to the Committee.",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tostring",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "GBdate",
+        "line": 54,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 54,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Drop FOMC meetings for which there is no GB forecast",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// [occurs at beginning and end of sample].",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 58,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 58,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "DATE",
+        "line": 58,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// \"date\" is the quarter of the forecast, in the format YYYY.Q. This will help",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// us line up the forecasts.",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DATE",
+        "line": 62,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "fdate_gb",
+        "line": 62,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "end_gb_sample",
+        "line": 63,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 63,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 63,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Rename variables to be consistent with blue chip variable names",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gbNames",
+        "line": 66,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"gRGDP gPGDP UNEMP gPCPI gPPCE\"",
+        "line": 66,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bcNames",
+        "line": 67,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"RealGDP GDPPriceIndex CivilianUnemploymentRate CPI PCE\"",
+        "line": 67,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 68,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 68,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 68,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 68,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`gbNames'",
+        "line": 68,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 69,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 69,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 69,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 69,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 69,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gbn",
+        "line": 70,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 70,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 70,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 70,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 70,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`gbNames'",
+        "line": 70,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bcn",
+        "line": 71,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 71,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 71,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 71,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 71,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`bcNames'",
+        "line": 71,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "renpfix",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`gbn'",
+        "line": 72,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "B",
+        "line": 72,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "gb",
+        "line": 72,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`bcn'",
+        "line": 72,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "_L",
+        "line": 72,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`gbn'",
+        "line": 73,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "F0",
+        "line": 73,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "gb",
+        "line": 73,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`bcn'",
+        "line": 73,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 73,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "renpfix",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`gbn'",
+        "line": 74,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "F",
+        "line": 74,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "gb",
+        "line": 74,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`bcn'",
+        "line": 74,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "_F",
+        "line": 74,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 76,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "CivilianUnemploymentRate",
+        "line": 76,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 76,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 76,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Unemployment",
+        "line": 76,
+        "column": 37
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 76,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 77,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "preBCvariables",
+        "line": 78,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 78,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 78,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Merge BlueChip data, created in DataConstruction_BlueChip.do",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 82,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 82,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 82,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 82,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 82,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 82,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"`dirInput'BlueChip_constructed.dta\"",
+        "line": 82,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 83,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "_merge_GBshockBC",
+        "line": 83,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// see fdate_gb above",
+    "line": 84,
+    "column": 53
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fdate_bc",
+        "line": 84,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 84,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 84,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 84,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "mdy",
+        "line": 84,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 84,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 84,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 84,
+        "column": 41
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 84,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 84,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 84,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 84,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 85,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "CivilianUnemploymentRate",
+        "line": 85,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 85,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 85,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Unemployment",
+        "line": 85,
+        "column": 37
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 85,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Calculate the difference in the forecasts for each variable",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// This takes the difference between the Blue Chip and Greenbook forecasts",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// in each month. \"Blue Chip in each month\" literally means the Blue Chip",
+    "line": 91,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// forecast made in that month. \"Greenbook in that month\" means the Greenbook",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// forecast made for the meeting in that month. ",
+    "line": 93,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//----------------------------------------------------------------------------//",
+    "line": 94,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "horizons",
+        "line": 95,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"L1 0 F1 F2 F3 F4 F5 F6 F7 F8\"",
+        "line": 95,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 96,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 96,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 96,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 96,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`horizons'",
+        "line": 96,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 97,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 97,
+        "column": 11
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 97,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 97,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 98,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 98,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 99,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "RealGDP",
+        "line": 99,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "GDPPriceIndex",
+        "line": 99,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "Unemployment",
+        "line": 99,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "CPI",
+        "line": 99,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "PCE",
+        "line": 99,
+        "column": 55
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 99,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 100,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 100,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 100,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 100,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 101,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 101,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 101,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 101,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 101,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`horizons'",
+        "line": 101,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ip1",
+        "line": 102,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 102,
+        "column": 13
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 102,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 102,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tp1",
+        "line": 103,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 103,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 103,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`ip1'",
+        "line": 103,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 103,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`horizons'",
+        "line": 103,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dGBBC_",
+        "line": 104,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 104,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 104,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`t'",
+        "line": 104,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "gb",
+        "line": 104,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 104,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 104,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`t'",
+        "line": 104,
+        "column": 31
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 104,
+        "column": 35
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 104,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 104,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`t'",
+        "line": 104,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 104,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Save output",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`preBCvariables'",
+        "line": 110,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "dGBBC",
+        "line": 110,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 110,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "fdate_bc",
+        "line": 110,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`outdir'",
+        "line": 111,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Greenbook_reg.dta",
+        "line": 111,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 111,
+        "column": 33
+      }
+    ]
+  }
+]

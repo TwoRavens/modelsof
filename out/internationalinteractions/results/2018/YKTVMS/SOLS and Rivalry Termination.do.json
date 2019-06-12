@@ -1,0 +1,5489 @@
+[
+  {
+    "id": "comment",
+    "value": "// Bryan Rooney",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Rivalry and Regime Change",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// 1/18/2016",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*clear\ncd \"/Users/bryanandrewrooney/Dropbox/Rivalry/Rivalry 1.18\"\n\ninsheet using \"Rivalry data 1816-2010.csv\"\n\ngen endyear=end\ngen beginyear=start\nreplace endyear=2010 if end==.\nreplace beginyear= \"1816\" if start ==\"pre1816\"\ndestring beginyear, replace\n\nsort ccode1 beginyear\ngen rivid=_n\n\ngen duration = (endyear-beginyear)+1\n\nexpand duration\nsort rivid\nby rivid: gen temp=_n-1\ngen year=beginyear+temp\ndrop temp\nsort rivid year\n\ngen terminate=0\nreplace terminate=1 if end==year & end!=.\n\nreplace positional=0 if positional==.\nreplace spatial=0 if spatial==.\nreplace ideol=0 if ideol==.\n\nsort ccode1 ccode2 year\nsave \"rivalrythompson.dta\", replace\n\n//SOLS Data merge\n\nuse \"CHISOLSstyr3_0.dta\", clear\n\ngen numsols= solschange1+solschange2+solschange3+solschange4+solschange5+solschange6+solschange7\ngen nummin= solsminch1+solsminch2+solsminch3+solsminch4+solsminch5+solsminch6+solsminch7\n\nkeep ccode year regtrans leadertrans solschange solsminchange numsols nummin \nrename ccode ccode1\nrename regtrans rega\nrename leadertrans leada\nrename solschange solsa\nrename solsminchange solsmina\nrename numsols numsolsa\nrename nummin numina\n\nsort ccode1 year\n\nsave \"solsamerge\", replace\n\nuse \"CHISOLSstyr3_0.dta\", clear\n\ngen numsols= solschange1+solschange2+solschange3+solschange4+solschange5+solschange6+solschange7\ngen nummin= solsminch1+solsminch2+solsminch3+solsminch4+solsminch5+solsminch6+solsminch7\n\nkeep ccode year regtrans leadertrans solschange solsminchange numsols nummin \nrename ccode ccode2\nrename regtrans regb\nrename leadertrans leadb\nrename solschange solsb\nrename solsminchange solsminb\nrename numsols numsolsb\nrename nummin numinb\n\nsort ccode2 year\n\nsave \"solsbmerge\", replace\n\n//Merge \nclear\n\nuse \"rivalrythompson.dta\", clear\n\nsort ccode1 year\nmerge ccode1 year using \"solsamerge\"\ndrop _merge\n\nsort ccode2 year\nmerge ccode2 year using \"solsbmerge\"\ndrop _merge\n\ndrop if rivid==.\n\ngen solschange=.\nreplace solschange=1 if solsa==1 \nreplace solschange=1 if solsa==2\nreplace solschange=1 if solsa==3\nreplace solschange=1 if solsb==1 \nreplace solschange=1 if solsb==3 \nreplace solschange=1 if solsb==2\nreplace solschange=0 if solsa==0 & solsb==0\n\ngen regtrans=.\nreplace regtrans=1 if rega>=1 & rega!=.\nreplace regtrans=1 if regb>=1 & regb!=.\nreplace regtrans=0 if rega==0 & regb==0\n\ngen leadertrans=.\nreplace leadertrans=1 if leada>=1 & leada!=.\nreplace leadertrans=1 if leadb>=1 & leadb!=.\nreplace leadertrans=0 if leada==0 & leadb==0\n\ntab terminate solschange, row\n\ngen time=year-beginyear+1\n\nsort ccode1 ccode2 year\nsave \"rivalrySOLS.dta\", replace\n\n//Merge with DUTRPIC Data\n\nuse \"rivalrySOLS.dta\", clear\n\nsort ccode1 ccode2 year\nmerge ccode1 ccode2 year using \"dr_dyadic_data_11212015.dta\"\n\nsort ccode1 ccode2 year\nsave \"rivalrySOLScontrols.dta\", replace\n\n//Other Data\n\n//IGO\nuse \"IGO_dyadunit_stata_v2.3.dta\", clear\negen jointigo = anycount(AAAID-Wassen), values(1)\nkeep ccode1 ccode2 year jointigo\nsort ccode1 ccode2 year\nsave \"jointigo.dta\", replace\n\nuse \"rivalrySOLScontrols.dta\"\ndrop _merge\nsort ccode1 ccode2 year\nmerge ccode1 ccode2 year using \"jointigo.dta\", nokeep\ntab _merge\ndrop _merge\nsort rivid year\nsave \"rivalrySOLScontrols2.dta\", replace\n\n//Trade\nclear\ninsheet using \"COW_Trade_3.0/dyadic_trade_3.0.csv\"\n\ngen trade=.\nreplace trade=flow1+flow2 if flow1!=-9 & flow2!=-9\nkeep ccode1 ccode2 year trade\nsort ccode1 ccode2 year\nsave \"tradetemp.dta\", replace\nclear\n\nuse \"rivalrySOLScontrols2.dta\", clear\nsort ccode1 ccode2 year\nmerge ccode1 ccode2 year using \"tradetemp.dta\", nokeep\ntab _merge\ndrop _merge\n\nsort ccode1 year\nsave \"rivalrySOLScontrols3.dta\", replace\n\n// Other MIDs\n\nclear\ninsheet using \"MID-level/MIDB_4.01.csv\"\ngen mid=1\nsort ccode styear\nbysort ccode styear: egen count_mid = count(mid)\nsave \"participantMID.dta\", replace\n\nrename ccode ccode1\nrename styear year\ncollapse count_mid, by(ccode1 year)\nrename count_mid count_mid1\nsort ccode1 year\nsave \"mida.dta\", replace\n\nclear\nuse \"participantMID.dta\"\nrename ccode ccode2\nrename styear year\ncollapse count_mid, by(ccode2 year)\nrename count_mid count_mid2\nsort ccode2 year\nsave \"midb.dta\", replace\n\nclear\nuse \"rivalrySOLScontrols3.dta\", clear\nsort ccode1 year\nmerge m:1 ccode1 year using \"mida.dta\"\ntab _merge\ndrop _merge\n\nsort ccode2 year\nmerge m:1 ccode2 year using \"midb.dta\"\ntab _merge\ndrop _merge\n\nreplace count_mid1=0 if count_mid1==.\nreplace count_mid2=0 if count_mid2==.\ngen outside_mida = count_mid1 - mid_count\ngen outside_midb = count_mid2 - mid_count\ngen outside_mid = outside_mida + outside_midb\n\ngen numsols_ch = numsolsa+numsolsb\n\ndrop if rivid==.\ngen sols_cha=solsa\nreplace sols_cha=1 if sols_cha==2\nreplace sols_cha=1 if sols_cha==3\ngen sols_chb=solsb\nreplace sols_chb=1 if sols_chb==2\nreplace sols_chb=1 if sols_chb==3\ntab sols_cha rega, row\ntab sols_chb regb, row\n\nsave  \"rivalrySOLScontrols4.dta\", replace\nuse \"rivalrySOLScontrols4.dta\", clear\n\nlabel var solschange \"Source of Leader Support Change\"\nlabel var regtrans \"Regime Transition\"\nlabel var contiguity \"Contiguity\"\nlabel var stalemate \"Probability of Stalemate\"\nlabel var past_mids \"Past MIDs\"\nlabel var jointdem \"Joint Democracy\"\nlabel var icb_dummy \"Crisis in Rivalry\"\nlabel var jointigo \"Joint IGO Memberships\"\nlabel var trade \"Trade Flows\"\nlabel var peace_years_mid \"Peace Years\"\nlabel var positional \"Positional Rivalry\"\nlabel var spatial \"Spatial Rivalry\"\nlabel var ideol \"Ideological Rivalry\"\nlabel var terminate \"Rivalry Termination\"\nlabel var leadertrans \"Leader Transition\"\nlabel var rivalry_length \"Rivalry Length\"\n\n\nbrowse if terminate==1 & solschange==1 & regtrans==0\nbrowse if terminate==0 & solschange==0 & leadertrans==0\nbrowse if terminate==1 & solschange==0 & regtrans==1\nbrowse if terminate==1 & solschange==0 & leadertrans==1\n\ngen solsdem_ch=.\nreplace solsdem_ch=1 if solsa==1 & polity2_1>=6 & polity2_1!=.\nreplace solsdem_ch=1 if solsa==2 & polity2_1>=6 & polity2_1!=.\nreplace solsdem_ch=1 if solsa==3 & polity2_1>=6 & polity2_1!=.\nreplace solsdem_ch=1 if solsb==1 & polity2_2>=6 & polity2_2!=.\nreplace solsdem_ch=1 if solsb==3 & polity2_2>=6 & polity2_2!=.\nreplace solsdem_ch=1 if solsb==2 & polity2_2>=6 & polity2_2!=.\nreplace solsdem_ch=0 if solsa==0 & solsb==0\nreplace solsdem_ch=0 if solsa==1 & polity2_1<=6 & polity2_1!=.\nreplace solsdem_ch=0 if solsa==2 & polity2_1<=6 & polity2_1!=.\nreplace solsdem_ch=0 if solsa==3 & polity2_1<=6 & polity2_1!=.\nreplace solsdem_ch=0 if solsb==1 & polity2_2<=6 & polity2_2!=.\nreplace solsdem_ch=0 if solsb==2 & polity2_2<=6 & polity2_2!=.\nreplace solsdem_ch=0 if solsb==3 & polity2_2<=6 & polity2_2!=.\n\ngen solsaut_ch=.\nreplace solsaut_ch=0 if solsa==1 & polity2_1>=6 & polity2_1!=.\nreplace solsaut_ch=0 if solsa==2 & polity2_1>=6 & polity2_1!=.\nreplace solsaut_ch=0 if solsa==3 & polity2_1>=6 & polity2_1!=.\nreplace solsaut_ch=0 if solsb==1 & polity2_2>=6 & polity2_2!=.\nreplace solsaut_ch=0 if solsb==3 & polity2_2>=6 & polity2_2!=.\nreplace solsaut_ch=0 if solsb==2 & polity2_2>=6 & polity2_2!=.\nreplace solsaut_ch=0 if solsa==0 & solsb==0\nreplace solsaut_ch=1 if solsa==1 & polity2_1<=6 & polity2_1!=.\nreplace solsaut_ch=1 if solsa==2 & polity2_1<=6 & polity2_1!=.\nreplace solsaut_ch=1 if solsa==3 & polity2_1<=6 & polity2_1!=.\nreplace solsaut_ch=1 if solsb==1 & polity2_2<=6 & polity2_2!=.\nreplace solsaut_ch=1 if solsb==2 & polity2_2<=6 & polity2_2!=.\nreplace solsaut_ch=1 if solsb==3 & polity2_2<=6 & polity2_2!=.\n\ngen regtransboth=regtrans\nreplace regtransboth=0 if regb>=1 & regb!=. & rega<1 \nreplace regtransboth=0 if rega>=1 & rega!=. & regb<1 \n\ngen solsboth=solschange\nreplace solsboth=0 if solsb>=1 & solsb!=. & solsa<1 \nreplace solsboth=0 if solsa>=1 & solsa!=. & solsb<1 \n\n\ngen solsone=solschange\nreplace solsone=0 if solsboth==1\n\n//Regions\ngen region1=.\nreplace region1=1 if ccode1>0 & ccode1<200\nreplace region1=2 if ccode1>200 & ccode1<400\nreplace region1=3 if ccode1>400 & ccode1<600\nreplace region1=4 if ccode1>=600 & ccode1<=700\nreplace region1=5 if ccode1>700 & ccode1!=.\n\ngen region2=.\nreplace region2=1 if ccode2>0 & ccode2<200\nreplace region2=2 if ccode2>200 & ccode2<400\nreplace region2=3 if ccode2>400 & ccode2<600\nreplace region2=4 if ccode2>=600 & ccode2<=700\nreplace region2=5 if ccode2>700 & ccode2!=.\n\ngen sameregion=.\nreplace sameregion=1 if region1==region2\nreplace sameregion=0 if region1!=region2 & region1!=. & region2!=.\n\ngen region=.\nreplace region=0 if region1!=region2 & region1!=. & region2!=.\nreplace region=1 if region1==1  & region2==1 \nreplace region=2 if region1==2 & region2==2\nreplace region=3 if region1==3 & region2==3\nreplace region=4 if region1==4 & region2==4\nreplace region=5 if region1==5 & region2==5\n\negen dyad = concat(ccode1 ccode2)\ndestring dyad, replace\n\nsort rivdyad year\nby rivdyad: gen lagsols=solschange[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagsols2=solschange[_n-2]\n\nsort rivdyad year\nby rivdyad: gen lagsols3=solschange[_n-3]\n\n\nsort rivdyad year\nby rivdyad: gen lagsols4=solschange[_n-4]\n\ngen sols2yrs=.\nreplace sols2yrs=1 if solschange==1\nreplace sols2yrs=1 if lagsols==1\nreplace sols2yrs=0 if solschange==0 & lagsols==0 \n\ngen sols3yrs=.\nreplace sols3yrs=1 if solschange==1\nreplace sols3yrs=1 if lagsols==1\nreplace sols3yrs=1 if lagsols2==1\nreplace sols3yrs=0 if solschange==0 & lagsols==0 & lagsols2==0\n\ngen sols5yrs=.\nreplace sols5yrs=1 if solschange==1\nreplace sols5yrs=1 if lagsols==1\nreplace sols5yrs=1 if lagsols2==1\nreplace sols5yrs=1 if lagsols3==1\nreplace sols5yrs=1 if lagsols4==1\nreplace sols5yrs=0 if solschange==0 & lagsols==0 & lagsols2==0 & lagsols3==0 & lagsols4==0 \n\n\nsort rivdyad year\nby rivdyad: gen lagreg=regtrans[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagreg2=regtrans[_n-2]\n\nsort rivdyad year\nby rivdyad: gen lagreg3=regtrans[_n-3]\n\n\nsort rivdyad year\nby rivdyad: gen lagreg4=regtrans[_n-4]\n\ngen reg2yrs=.\nreplace reg2yrs=1 if regtrans==1\nreplace reg2yrs=1 if lagsols==1\nreplace reg2yrs=0 if solschange==0 & lagreg==0 \n\ngen reg3yrs=.\nreplace reg3yrs=1 if regtrans==1\nreplace reg3yrs=1 if lagreg==1\nreplace reg3yrs=1 if lagreg2==1\nreplace reg3yrs=0 if regtrans==0 & lagreg==0 & lagreg2==0\n\ngen reg5yrs=.\nreplace reg5yrs=1 if regtrans==1\nreplace reg5yrs=1 if lagreg==1\nreplace reg5yrs=1 if lagreg2==1\nreplace reg5yrs=1 if lagreg3==1\nreplace reg5yrs=1 if lagreg4==1\nreplace reg5yrs=0 if regtrans==0 & lagreg==0 & lagreg2==0 & lagreg3==0 & lagreg4==0 \n\n\nsort rivdyad year\nby rivdyad: gen lagstale=stalemate[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagmidout=outside_mid[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagicb=icb_dummy[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagpy=peace_years_mid[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagigo=jointigo[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagtrade=trade[_n-1]\n\nsort rivdyad year\nby rivdyad: gen lagdem=jointdem[_n-1]\n\n\nlabel var solschange \"Source of Leader Support Change\"\nlabel var regtrans \"Regime Transition\"\nlabel var contiguity \"Contiguity\"\nlabel var stalemate \"Probability of Stalemate\"\nlabel var past_mids \"Past MIDs\"\nlabel var jointdem \"Joint Democracy\"\nlabel var outside_mid \"Non-Rival MIDs\"\nlabel var icb_dummy \"Crisis in Rivalry\"\nlabel var jointigo \"Joint IGO Memberships\"\nlabel var trade \"Trade Flows\"\nlabel var peace_years_mid \"Peace Years\"\nlabel var positional \"Positional Rivalry\"\nlabel var spatial \"Spatial Rivalry\"\nlabel var ideol \"Ideological Rivalry\"\nlabel var terminate \"Rivalry Termination\"\nlabel var numsols_ch \"Number of SOLS Changes\" \nlabel var leadertrans \"Leader Transition\"\nlabel var rivalry_length \"Rivalry Length\"\n\ngen dem_change=.\nreplace dem_change=0 if solschange==0\nreplace dem_change=1 if solsa>=1 & solsa!=. & polity2_1>=6 & polity2_1!=.\nreplace dem_change=1 if solsb>=1 & solsb!=. & polity2_2>=6 & polity2_1!=.\nreplace dem_change=0 if solsa>=1 & solsa!=. & polity2_1<=5\nreplace dem_change=0 if solsb>=1 & solsb!=. & polity2_1<=5\n\ngen nondem_change=.\nreplace nondem_change=0 if solschange==0\nreplace nondem_change=0 if solsa>=1 & solsa!=. & polity2_1>=6 & polity2_1!=.\nreplace nondem_change=0 if solsb>=1 & solsb!=. & polity2_2>=6 & polity2_1!=.\nreplace nondem_change=1 if solsa>=1 & solsa!=. & polity2_1<=5\nreplace nondem_change=1 if solsb>=1 & solsb!=. & polity2_1<=5\n\nlabel var dem_change \"Democratic Source of Leader Support Change\"\nlabel var nondem_change \"Non-Democratic Source of Leader Support Change\"\n\n\nsort rivdyad year\nby rivdyad: gen lagterminate=terminate[_n-1]\n\ngen terminate2yrs=.\nreplace terminate2yrs=1 if terminate==1\nreplace terminate2yrs=1 if lagterminate==1\nreplace terminate2yrs=0 if terminate==0 & lagterminate==0\n\nsort rivdyad year\nby rivdyad: gen lagterminate2=terminate[_n-2]\n\ngen terminate3yrs=.\nreplace terminate3yrs=1 if terminate==1\nreplace terminate3yrs=1 if lagterminate==1\nreplace terminate3yrs=1 if lagterminate2==1\nreplace terminate3yrs=0 if terminate==0 & lagterminate==0 & lagterminate2==0\n\nsort rivdyad year\nby rivdyad: gen lagterminate3=terminate[_n-3]\n\nsort rivdyad year\nby rivdyad: gen lagterminate4=terminate[_n-4]\n\ngen terminate5yrs=.\nreplace terminate5yrs=1 if terminate==1\nreplace terminate5yrs=1 if lagterminate==1\nreplace terminate5yrs=1 if lagterminate2==1\nreplace terminate5yrs=1 if lagterminate3==1\nreplace terminate5yrs=1 if lagterminate4==1\nreplace terminate5yrs=0 if terminate==0 & lagterminate==0 & lagterminate2==0 & lagterminate3 ==0 & lagterminate4==0\n\n\n\nsave  \"final_data.dta\", replace\n\n*/",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Rivalry Replication.dta\"",
+        "line": 7,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 7,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dyadid",
+        "line": 9,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ccode1",
+        "line": 9,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 9,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 9,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 9,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "ccode2",
+        "line": 9,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Analysis",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Summary stats",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sutex",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 15,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 15,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 15,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 15,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 15,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 15,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 15,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 15,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 15,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 15,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 15,
+        "column": 115
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "lab",
+        "line": 15,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "nobs",
+        "line": 15,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "key",
+        "line": 15,
+        "column": 137
+      },
+      {
+        "id": "identifier",
+        "value": "descstat",
+        "line": 15,
+        "column": 141
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 15,
+        "column": 151
+      },
+      {
+        "id": "identifier",
+        "value": "file",
+        "line": 15,
+        "column": 159
+      },
+      {
+        "id": "identifier",
+        "value": "descstat.tex",
+        "line": 15,
+        "column": 164
+      },
+      {
+        "id": "identifier",
+        "value": "title",
+        "line": 15,
+        "column": 178
+      },
+      {
+        "id": "string",
+        "value": "\"Summary Statistics\"",
+        "line": 15,
+        "column": 184
+      },
+      {
+        "id": "identifier",
+        "value": "minmax",
+        "line": 15,
+        "column": 206
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 17,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 17,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 18,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 18,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "row",
+        "line": 18,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Table 1",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 22,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 22,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 22,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 22,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 22,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 22,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 22,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 22,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 22,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 22,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 24,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 24,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 25,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 25,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 25,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 25,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 26,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 26,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 26,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 26,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 26,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 26,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 26,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 27,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 27,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 27,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 27,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 27,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 27,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 27,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 27,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 28,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 28,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 29,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 29,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 29,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 29,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 30,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 30,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 30,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 30,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 30,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 30,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 30,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 30,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 31,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 31,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 32,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 32,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 32,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 32,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 33,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 33,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 33,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 33,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 33,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 33,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 33,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 33,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 34,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Table1.tex",
+        "line": 34,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 34,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 34,
+        "column": 29
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 34,
+        "column": 36
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 34,
+        "column": 44
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 49
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 50
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 34,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 34,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 34,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 34,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 34,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 35,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 35,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Table 3",
+    "line": 37,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 39,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 39,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 40,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 40,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 40,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 40,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 41,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 41,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 41,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 41,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 41,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 41,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 41,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 42,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 42,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 42,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 42,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 42,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 42,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 42,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 42,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 43,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 43,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 44,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 44,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 44,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 44,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 45,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 45,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 45,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 45,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 45,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 45,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 45,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 45,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 46,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 46,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 47,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 47,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 47,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 47,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 48,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 48,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 48,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 48,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 48,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 48,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 48,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 48,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Table1_Coef.tex",
+        "line": 49,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 49,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 49,
+        "column": 34
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 49,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 49,
+        "column": 49
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 54
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 55
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 49,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 49,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 49,
+        "column": 69
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 50,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 50,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Tables 5 and 6 ",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 55,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 55,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 56,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 56,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 56,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 56,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 57,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 57,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsone",
+        "line": 57,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 57,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 57,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 57,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 57,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 58,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 58,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsone",
+        "line": 58,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 58,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 58,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 58,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 58,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 58,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 59,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 59,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 60,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 60,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 60,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 60,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 61,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 61,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsone",
+        "line": 61,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 61,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 61,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 61,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 61,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 61,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 62,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 62,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 63,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 63,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 63,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 63,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 64,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 64,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsone",
+        "line": 64,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 64,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 64,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 64,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 64,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 64,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 65,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Solsone.tex",
+        "line": 65,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 65,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 65,
+        "column": 30
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 65,
+        "column": 37
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 42
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 65,
+        "column": 45
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 50
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 51
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 65,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 65,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 65,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 65,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 66,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 66,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 68,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 68,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 69,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 69,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 69,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 69,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 70,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 70,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsboth",
+        "line": 70,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 70,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 70,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 70,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 70,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 71,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 71,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsboth",
+        "line": 71,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 71,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 71,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 71,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 71,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 71,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 72,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 72,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 73,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 73,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 73,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 73,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 74,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 74,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsboth",
+        "line": 74,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 74,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 74,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 74,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 74,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 74,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 75,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 75,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 76,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 76,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 76,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 76,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 77,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 77,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solsboth",
+        "line": 77,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 77,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 77,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 77,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 77,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 77,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 78,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Solsboth.tex",
+        "line": 78,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 78,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 78,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 78,
+        "column": 38
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 43
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 78,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 51
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 52
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 78,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 78,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 78,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 78,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 79,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 79,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Table 7",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 83,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 83,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 83,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 83,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 83,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 83,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 83,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 83,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 83,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 83,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "positional",
+        "line": 83,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "spatial",
+        "line": 83,
+        "column": 119
+      },
+      {
+        "id": "identifier",
+        "value": "ideol",
+        "line": 83,
+        "column": 127
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 85,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 85,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 86,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 86,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 86,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 86,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 87,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 87,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 87,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 87,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 87,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 87,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 87,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 88,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 88,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 88,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 88,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 88,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 88,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 88,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 88,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 89,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 89,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 90,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 90,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 90,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 90,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 91,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 91,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 91,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 91,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 91,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 91,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 91,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 91,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 92,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 92,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 93,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 93,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 93,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 93,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 94,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 94,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 94,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 94,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 94,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 94,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 94,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 94,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 95,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Table1_riv_types.tex",
+        "line": 95,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 95,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 95,
+        "column": 39
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 95,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 51
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 95,
+        "column": 54
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 59
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 60
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 61
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 95,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 95,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 95,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 95,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 96,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 96,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Table 8",
+    "line": 98,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 100,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "leadertrans",
+        "line": 100,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 100,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 100,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 100,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 100,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 100,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 100,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 100,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 100,
+        "column": 100
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 102,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 102,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 103,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 103,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 103,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 103,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 104,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 104,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 104,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "leadertrans",
+        "line": 104,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 104,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 104,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 104,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 105,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 105,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 105,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 105,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 105,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 105,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 105,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 105,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 106,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 106,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 107,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 107,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 107,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 107,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 108,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 108,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 108,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 108,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 108,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 108,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 108,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 108,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 109,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 109,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 110,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 110,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 110,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 110,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 111,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 111,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 111,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 111,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 111,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 111,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 111,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 111,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 112,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "leader_trans.tex",
+        "line": 112,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 112,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 112,
+        "column": 35
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 112,
+        "column": 42
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 47
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 112,
+        "column": 50
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 55
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 56
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 112,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 112,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 112,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 112,
+        "column": 78
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 113,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 113,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Table 9",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 117,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 117,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 117,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 117,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 117,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 117,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 117,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 117,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 117,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 117,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 119,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 119,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 120,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 120,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 120,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 120,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 121,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 121,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dem_change",
+        "line": 121,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nondem_change",
+        "line": 121,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 121,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 121,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 121,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 121,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 122,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 122,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dem_change",
+        "line": 122,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nondem_change",
+        "line": 122,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 122,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 122,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 122,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 122,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 122,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 123,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 123,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 124,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 124,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate2yrs",
+        "line": 124,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 124,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 124,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 125,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 125,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dem_change",
+        "line": 125,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nondem_change",
+        "line": 125,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 125,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 125,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 125,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 125,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 125,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 126,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 126,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 127,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate3yrs",
+        "line": 127,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 127,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 127,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 128,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 128,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dem_change",
+        "line": 128,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nondem_change",
+        "line": 128,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 128,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 128,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 128,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 128,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 128,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 129,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 129,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regime_type.tex",
+        "line": 129,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 129,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 129,
+        "column": 34
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 129,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 129,
+        "column": 49
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 54
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 55
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 129,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 129,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 129,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 129,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 130,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 130,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Figure 1",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Requires package st0380 ",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 136,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 136,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 136,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 136,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 136,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 136,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 136,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 136,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 136,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 136,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 138,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 138,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 138,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 138,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcox",
+      "line": 139,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 139,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 139,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 139,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 139,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 139,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "rivdyad",
+        "line": 139,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 140,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 140,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 140,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s0",
+        "line": 141,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "basesurv",
+        "line": 141,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtile",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 142,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 142,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nquantiles",
+        "line": 142,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 142,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stcoxgrp",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 143,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "s0",
+        "line": 143,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 143,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 143,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 143,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 143,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "km",
+        "line": 143,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "km",
+        "line": 143,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "line",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s1",
+        "line": 144,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "km1",
+        "line": 144,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "km_lb1",
+        "line": 144,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "km_ub1",
+        "line": 144,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "s2",
+        "line": 144,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "km2",
+        "line": 144,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "km_lb2",
+        "line": 144,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "km_ub2",
+        "line": 144,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "_t",
+        "line": 144,
+        "column": 48
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "200",
+        "line": 144,
+        "column": 58
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_t",
+        "line": 144,
+        "column": 54
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 144,
+        "column": 56
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sort",
+        "line": 144,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "connect",
+        "line": 144,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "J..",
+        "line": 144,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "lpattern",
+        "line": 144,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l",
+        "line": 144,
+        "column": 90
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 92
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 94
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "l",
+        "line": 144,
+        "column": 98
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 100
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 102
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 104
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Table 10 (Archigos)",
+    "line": 147,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Convergence takes a long time",
+    "line": 148,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Recommended to run in Stata 13",
+    "line": 149,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 151,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Archigos.dta\"",
+        "line": 151,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 151,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 152,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 152,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 152,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 152,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 155,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 155,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "stset",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 156,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "terminate",
+        "line": 156,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 156,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "rivid",
+        "line": 156,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivpoisson",
+      "line": 157,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 157,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gmm",
+        "line": 157,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "_d",
+        "line": 157,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 157,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 157,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 157,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "irreg_ch",
+        "line": 157,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "i._t",
+        "line": 157,
+        "column": 53
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_st",
+        "line": 157,
+        "column": 61
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 157,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 157,
+        "column": 66
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "add",
+        "line": 157,
+        "column": 69
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 158,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "iv.tex",
+        "line": 158,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 158,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 158,
+        "column": 25
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 158,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 158,
+        "column": 32
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 158,
+        "column": 37
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 158,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 158,
+        "column": 40
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 158,
+        "column": 45
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 158,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 158,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 158,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 158,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 158,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 159,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 159,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Table 4 (Crescenzi Score) ",
+    "line": 161,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// NOTE: Table 4 presents exponentiated coefficients",
+    "line": 162,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 164,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Conflict Score.dta\"",
+        "line": 164,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 164,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 166,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 166,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regtrans",
+        "line": 166,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "contiguity",
+        "line": 166,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "stalemate",
+        "line": 166,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "past_mids",
+        "line": 166,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "peace_years_mid",
+        "line": 166,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "outside_mid",
+        "line": 166,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "jointdem",
+        "line": 166,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "jointigo",
+        "line": 166,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "ln_tradefl",
+        "line": 166,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 168,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 168,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ConIISmid_bl",
+        "line": 168,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 168,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 168,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 168,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 168,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 168,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "dyadid",
+        "line": 168,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tobit",
+      "line": 169,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 169,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ConIISmid_bl",
+        "line": 169,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "solschange",
+        "line": 169,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "$X",
+        "line": 169,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "i.region",
+        "line": 169,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "ul",
+        "line": 169,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 169,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "ll",
+        "line": 169,
+        "column": 58
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 169,
+        "column": 61
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 169,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 170,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Conflict_score.tex",
+        "line": 170,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 170,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 170,
+        "column": 37
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "0.10",
+        "line": 170,
+        "column": 44
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 49
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 170,
+        "column": 52
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 57
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 58
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 170,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "label",
+        "line": 170,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 170,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "eform",
+        "line": 170,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 171,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 171,
+          "column": 1
+        }
+      }
+    ]
+  }
+]

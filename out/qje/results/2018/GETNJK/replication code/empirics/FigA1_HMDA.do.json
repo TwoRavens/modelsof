@@ -1,0 +1,1254 @@
+[
+  {
+    "id": "comment",
+    "value": "// Purpose: create monthly time series of overall HMDA mortgage origination amounts (and also just refi amounts) across the US (by application month)",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Pull in two parts, to keep size managable (SQL codes below are for RADAR within Fed system):",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "chmda_1.dta",
+        "line": 6,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 6,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* all originated loans 1990-2003:\nSELECT year,agency_code,respondent_id,action_date,application_date,loan_amount,loan_purpose,loan_type,msa_md,property_type,state_code \nFROM chmda.view_lar_chmda WHERE (view_ lar_chmda.year BETWEEN 1990 AND 2003 AND view_lar_chmda.action_type =1)\n*/",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 9,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "chmda_2.dta",
+        "line": 9,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* all originated loans 2004-2015\nSELECT year,agency_code,respondent_id,action_date,application_date,loan_amount,loan_purpose,loan_type,msa_md,property_type,state_code \nFROM chmda.view_lar_chmda WHERE (view_ lar_chmda.year BETWEEN 2004 AND 2015 AND view_lar_chmda.action_type =1)\n*/",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 12,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "agency_code",
+        "line": 12,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "row",
+        "line": 12,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// PMI",
+    "line": 13,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 13,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "agency_code",
+        "line": 13,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 13,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"8\"",
+        "line": 13,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// PR",
+    "line": 14,
+    "column": 27
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 14,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "state_code",
+        "line": 14,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 14,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"72\"",
+        "line": 14,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Multifam",
+    "line": 15,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 15,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "property_type",
+        "line": 15,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 15,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 15,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 4 is multifamily pre 2004",
+    "line": 17,
+    "column": 41
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 17,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "loan_purpose",
+        "line": 17,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 17,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 17,
+        "column": 22
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 17,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "loan_purpose",
+        "line": 17,
+        "column": 26
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 17,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 17,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 19,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 19,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "application_date",
+        "line": 19,
+        "column": 14
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 19,
+        "column": 31
+      },
+      {
+        "id": "string",
+        "value": "\"/\"",
+        "line": 19,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "appdate",
+        "line": 20,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 20,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "application_date",
+        "line": 20,
+        "column": 18
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 20,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"MDY\"",
+        "line": 20,
+        "column": 36
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 20,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2050",
+        "line": 20,
+        "column": 43
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 20,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 20,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 20,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "appdate",
+        "line": 21,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 21,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "application_date",
+        "line": 21,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 21,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\"YMD\"",
+        "line": 21,
+        "column": 42
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 21,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 21,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 21,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "format",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "appdate",
+        "line": 22,
+        "column": 8
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 22,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "td",
+        "line": 22,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "datem_app",
+        "line": 24,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mofd",
+        "line": 24,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "appdate",
+        "line": 24,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "format",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "datem_app",
+        "line": 25,
+        "column": 8
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 25,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "tm",
+        "line": 25,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 26,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "datem_app",
+        "line": 26,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 26,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 26,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1990m1",
+        "line": 26,
+        "column": 21
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 26,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "datem_app",
+        "line": 26,
+        "column": 29
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 26,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 26,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "2015m12",
+        "line": 26,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 27,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "loan_amount",
+        "line": 29,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "loanamt",
+        "line": 29,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refiamt",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "loanamt",
+        "line": 30,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refiamt",
+        "line": 31,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 31,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "loan_purp",
+        "line": 31,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 31,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 31,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_code",
+        "line": 33,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refiamt",
+        "line": 33,
+        "column": 15
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 33,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 33,
+        "column": 23
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 33,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "refiamt",
+        "line": 33,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 33,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 33,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "loan_code",
+        "line": 34,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "loanamt",
+        "line": 34,
+        "column": 15
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 34,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 34,
+        "column": 23
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 34,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "loanamt",
+        "line": 34,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 34,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 34,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 36,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "total_loanvol",
+        "line": 36,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "loanamt",
+        "line": 36,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "refi_HI_loanvol",
+        "line": 36,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "refiamt",
+        "line": 36,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 37,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "count_loans",
+        "line": 37,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "loan_code",
+        "line": 37,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "count_refi_HI",
+        "line": 37,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "refi_code",
+        "line": 37,
+        "column": 48
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 38,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "datem_app",
+        "line": 38,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "fast",
+        "line": 38,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "datem_app",
+        "line": 40,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "datem",
+        "line": 40,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "total_loanvol",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total_loanvol",
+        "line": 42,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 42,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 42,
+        "column": 39
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 42,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 42,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_HI_loanvol",
+        "line": 43,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_HI_loanvol",
+        "line": 43,
+        "column": 27
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 43,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 43,
+        "column": 43
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 43,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 43,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "purch_loanvol",
+        "line": 44,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total_loanvol",
+        "line": 44,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 44,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "refi_HI_loanvol",
+        "line": 44,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 46,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 46,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2000m1",
+        "line": 46,
+        "column": 18
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 46,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "datem",
+        "line": 46,
+        "column": 26
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 46,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 46,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2012m12",
+        "line": 46,
+        "column": 35
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "datem",
+        "line": 46,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 46,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// plot separately:",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "#14, angle(45)) ///\n ytitle(\"Origination amount (bn)\", axis(1)) tline(2008m11) xtitle(\"\") name(rp1, replace)",
+    "line": 49,
+    "column": 54
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "line",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_HI_loanvol",
+        "line": 49,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "datem",
+        "line": 49,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "ylabel",
+        "line": 49,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 49,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 49,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "350",
+        "line": 49,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "xlabel",
+        "line": 49,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "#14, angle(45)) ///\n ytitle(\"Origination amount (bn)\", axis(1)) tline(2008m11) xtitle(\"\") name(rp2, replace)",
+    "line": 51,
+    "column": 53
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "line",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "purch_loanvol",
+        "line": 51,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "datem",
+        "line": 51,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "ylabel",
+        "line": 51,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 51,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 51,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "350",
+        "line": 51,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "xlabel",
+        "line": 51,
+        "column": 46
+      }
+    ]
+  }
+]

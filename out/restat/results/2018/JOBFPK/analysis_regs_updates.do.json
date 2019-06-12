@@ -1,0 +1,9542 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 1,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 1,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 2,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 2,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 2,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 3,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "11000",
+        "line": 3,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxvar",
+        "line": 4,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "25000",
+        "line": 4,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Aaron Flaaen",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**July 25, 2013",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Last Updated: August 5, 2017",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**This File Conducts Analysis Surrounding 2011 March Tohoku Event",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**-------------------------------------------------------------------------",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dir",
+        "line": 13,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**------------------------------------------------------------------------",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Step 1: Prep Data",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**--------------------------------------------------------------------------",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n*use analysisdata_manuf.dta, clear\n!gunzip analysisdata_manufU.dta.gz\nuse analysisdata_manufU.dta, clear\n!gzip analysisdata_manufU.dta\nreplace jexp = 0 if jexp==.\n\n**1.1 Ensure that the multinational flags are consistent\nbys firmid: egen maxflagfor = max(flag_for_mult)\nby firmid: egen maxflagus = max(flag_us_mult)\nby firmid: egen maxflagjpn = max(japan)\n\nreplace flag_for_mult = maxflagfor\nreplace flag_us_mult = maxflagus\nreplace japan = maxflagjpn\ndrop maxflagjpn maxflagus maxflagfor\n\n\n\n**1.2 Bring in USGS information\n*sort firmid\n*merge firmid using usgs_add.dta\n*tab _m\n*drop if _m==2\n*drop _m\n\n**Port Information\n*sort firmid\n*merge firmid using jpn_ports_indicator.dta\n*tab _m\n*drop if _m==2\n*drop _m\n\n**1.3 Restrict to Relevant Sample: Only Other Multinationals\nreplace flag_for_mult = 1 if japan==1\ndrop if flag_for_mult==0 & flag_us_mult==0 \n\n\n**1.4 Create Relevant Variables for Analysis \n\n**Create GIS-based indicators\n*replace mmimaxind = 0 if mmimaxind==.\n*replace mmimax = 0 if mmimax==.\n\n*gen geoeffect = 0\n*replace geoeffect = 1 if mmimaxind>6\n\n*gen geoeffect2 = 0\n*replace geoeffect2 = 1 if mmimax>6\n\n*replace ratioport = 0 if ratioport==.\n*gen ports1 = 0\n*replace ports1 = 1 if ratioport>0.10\n\n*gen ports2 = 0\n*replace ports2=1 if ratioport>0.20\n\n*gen ports3 = 0\n*replace ports3=1 if ratioport>0.3\n\n**Calculate Exposure to Japanese Imports in Year 2010\nbys firmid year: egen annjimp_int = sum(jimp_int)\nbys firmid year: egen annnjimp_int = sum(njimp_int)\ngen exposure_2010 =  annjimp_int/((pay*1000)+ annjimp_int+annnjimp_int) if year==2010\n\n**Ensure that we have one value of exposure per firm\nbys firmid: egen expmin = min(exposure_2010)\ndrop exposure_2010\nrename expmin exposure_2010\n\n**Make sure each firm has all observations\nbys firmid: gen dup = _N\n*drop if dup<xx\n\n**Generate Categorical Exposure variable\ngen exposed = 0\nreplace exposed = 1 if exposure_2010>0.05\n\n\n***Create the Kernel Density Picture\nkdensity exposure_2010 if japan==1, n(100) gen(jpn_x jpn_d)\n\nkdensity exposure_2010 if japan==0 & (flag_us_mult==1 | flag_for_mult==1), n(XXX) gen(njpn_x njpn_d)\nkeep jpn_x jpn_d njpn_x njpn_d\nduplicates drop\ntwoway line njpn_d njpn_x || line jpn_d jpn_x\n\n*************************************************************\n\n\n\n\n**Calculate Total Intermediate Input Imports\ngen imp_int = njimp_int + jimp_int\n\n**Three digit industry\ngen naics3 = substr(naics_code,1,3)\negen numnaics = group(naics3)\n\ngen lexposure_2010 = log(exposure_2010)\n\n*gen lfirmid = length(firmid)\n*replace firmid = firmid + \"0000\" if lfirmid==6\n*drop lfirmid\n\n\n\n**--------------------------------------------------------------------------\n**Step 2: Remove Linear Trend\n**--------------------------------------------------------------------------\n\n**Generate Monthvar, and Time-Set the Data\ngen monthvar = xxx\nforvalues i = 2(1)12 {\n\treplace monthvar = xxx + `i' - 1 if month==`i' & year==2009\n}\nforvalues i = 1(1)12 {\n\treplace monthvar = xxx + `i' - 1 if month==`i' & year==2010\n}\n\t\nforvalues i = 1(1)12 {\n\treplace monthvar = xxx + `i' - 1 if month==`i' & year==2011\n}\nforvalues i = 1(1)12 {\n\treplace monthvar = xxx + `i' - 1 if month==`i' & year==2012\n}\n\n\negen numfirm = group(firmid)\ntsset numfirm monthvar, monthly\n\n**Remove Unit-Specific Trend for some variables\nforeach var of varlist naexp jimp_int njimp_int imp_int jexp {\n\n\tqui xi: reg `var' c.monthvar##i.numfirm if monthvar<XXX & numfirm<XXX\n\tqui predict `var'_pred if numfirm<XXX\n\treplace `var'_pred = . if numfirm>=XXX\n\n\tqui sum numfirm\n\tlocal ubound = floor(`r(max)'/1000)*10\n\n\tforvalues j = 5(5)`ubound' {\n\t\tlocal i = `j'*100\n\t\tlocal k = (`j'+5)*100\n\t\tdi \"`i'\"\n\t\n\t\tqui xi: reg `var' c.monthvar##i.numfirm if monthvar<xxx & numfirm>=`i' & numfirm<`k'\n\t\tqui predict `var'_`j'_pred if numfirm>=`i' & numfirm<`k'\n\t\treplace `var'_`j'_pred = . if numfirm<`i' & numfirm>=`k'\n\t\treplace `var'_pred = `var'_`j'_pred if `var'_pred==.\n\t\tdrop `var'_`j'_pred\n\t}\n\n\tgen `var'_resid = `var' - `var'_pred\n}\n\n**Removing Linear Trend: Seems to screw up values that are always zero\nbys firmid: egen maximp_int = max(imp_int)\nreplace imp_int_resid = 0 if maximp_int==0\nbys firmid: egen maxjimp_int = max(jimp_int)\nreplace jimp_int_resid = 0 if maxjimp_int==0\nbys firmid: egen maxnjimp_int = max(njimp_int)\nreplace njimp_int_resid = 0 if maxnjimp_int==0\nbys firmid: egen maxnaexp = max(naexp)\nreplace naexp_resid = 0 if maxnaexp==0\nbys firmid: egen maxjexp = max(jexp)\nreplace jexp_resid = 0 if maxjexp==0\ndrop maximp_int maxnaexp maxnjimp_int maxjexp\n\n\n\n*save analysis_manuf_temp.dta, replace\nsave analysis_manuf_tempU.dta, replace\n\n\nuse analysis_manuf_tempU.dta, clear\n\n\n\n**--------------------------------------------------------------------------\n**Step 5: Full Sample in Levels\n**--------------------------------------------------------------------------\n*use analysis_manuf_temp.dta, clear\nuse analysis_manuf_tempU.dta, clear\n\n\n**Step 5.1 Make sure we have the right sample\n\n**Drop if no Japanese affiliates in 3-digit industry (??????)\nbys naics3: egen maxjapan = max(japan)\ndrop if maxjapan==0\ndrop maxjapan\n\n\ndrop numfirm\negen numfirm = group(firmid)\ntsset numfirm monthvar, monthly\n\n**Make sure each firm has all observations (Can't do this now)\ndrop dup\nbys firmid: gen dup = _N\n**drop if dup<XX\n\n\n**Step 5.2 Do the Re-weighting\ngen presample = 0\nreplace presample = 1 if monthvar==xxx | monthvar==xxx | monthvar==xxx\nbys firmid presample: egen presamp_naexp = mean(naexp)\nbys firmid presample: egen presamp_imp = mean(imp_int)\nbys firmid presample: egen presamp_njimp = mean(njimp_int)\nreplace presamp_imp = . if presample==0\nreplace presamp_naexp = . if presample==0\nreplace presamp_njimp = . if presample==0\nbys firmid: egen presamp_naexp2 = min(presamp_naexp)\nbys firmid: egen presamp_imp2 = min(presamp_imp)\nbys firmid: egen presamp_njimp2 = min(presamp_njimp)\ndrop presamp_naexp\nrename presamp_naexp2 presamp_naexp\ndrop presamp_imp\nrename presamp_imp2 presamp_imp\ndrop presamp_njimp\nrename presamp_njimp2 presamp_njimp\n\n**Just using the probit\nprobit japan i.numnaics presamp_imp presamp_naexp\npredict jpnhat\n\ngen jpnhat3 = jpnhat / (1-jpnhat)\nreplace jpnhat3 = 1 if japan==1\n\n**Create Industry Dummies\nxi i.numnaics\nrename _Inumnaics_3 numnaics_3\nrename _Inumnaics_4 numnaics_4\n//rename _Inumnaics_6 numnaics_6\nforvalues i = 9(1)22 {\n\trename _Inumnaics_`i' numnaics_`i'\n}\n\n\n/*\nversion 12.1\n**Generate Test of Differences in Pre-sample characteristics\n**Currently not sure how to output this information\npstest presamp_imp presamp_naexp presamp_njimp numnaics_*, treated(japan) mweight(jpnhat3)\n*/",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\nmatrix PRESHOCK = J(2,2,1)\nmatrix PRESHOCK_SUPPORT = J(2,5,1)\npreserve\n\n** JPN Multinationals **************\nkeep if japan==1 & presample==1\nesum njimp_int, sType(\"mean\") firmident(\"firmid\") tvsident(\"njimp_int\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK[1,1] = temp[1,3]\nmatrix PRESHOCK_SUPPORT[1,4] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[1,1] = temp[1,5]\n\nesum jexp, sType(\"mean\") firmident(\"firmid\") tvsident(\"jexp\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK[2,1] = temp[1,3]\nmatrix PRESHOCK_SUPPORT[2,4] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[2,1] = temp[1,5]\n\nrestore\npreserve\n** Non-JPN Multinationals **************\nkeep if japan==0 & presample==1\n\nsum njimp_int [aweight=jpnhat3]\nmatrix PRESHOCK[1,2] = r(mean)\n\nesum njimp_int, sType(\"mean\") firmident(\"firmid\") tvsident(\"njimp_int\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK_SUPPORT[1,5] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[1,2] = temp[1,5]\n\nsum jexp [aweight=jpnhat3]\nmatrix PRESHOCK[2,2] = r(mean)\n\nesum jexp, sType(\"mean\") firmident(\"firmid\") tvsident(\"jexp\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK_SUPPORT[2,5] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[2,2] = temp[1,5]\n\n\nrestore\n*/",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** JPN Multinationals **************",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 22,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 22,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 22,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 22,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 22,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 22,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 23,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 23,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 23,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 23,
+        "column": 24
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 23,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 23,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 23,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 23,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jexp",
+        "line": 24,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 24,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 24,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 24,
+        "column": 20
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 24,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 24,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 24,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 24,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "njimp_int",
+        "line": 25,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 25,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 25,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 25,
+        "column": 25
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 25,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 25,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 25,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 25,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Non-JPN Multinationals **************",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 29,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 29,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 29,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 29,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 29,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 29,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 29,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 30,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 30,
+        "column": 24
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 30,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 30,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 30,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jexp",
+        "line": 31,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 31,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 31,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 31,
+        "column": 20
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 31,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 31,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 31,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 31,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "njimp_int",
+        "line": 32,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 32,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 32,
+        "column": 25
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 32,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 32,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 32,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Step 5.3 Run the Regressions",
+    "line": 34,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Create Indicator Variables for Regressions",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "i.monthvar",
+      "line": 37,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 37,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 37,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "i.japan",
+        "line": 37,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 38,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "xxx",
+        "line": 38,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 38,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "xxx",
+        "line": 38,
+        "column": 21
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 38,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 39,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Imonthvar_",
+        "line": 39,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 39,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "monthvar_",
+        "line": 39,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 39,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 40,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_ImonXjap_",
+        "line": 40,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 40,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "_1",
+        "line": 40,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "monXjap_",
+        "line": 40,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 40,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 43,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "monthvar",
+        "line": 43,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "monthly",
+        "line": 43,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_dhs",
+        "line": 44,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 44,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 44,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 44,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 44,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.naexp",
+        "line": 44,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 44,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 44,
+        "column": 36
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 44,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "l.naexp",
+        "line": 44,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid_dhs",
+        "line": 45,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 45,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 45,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 45,
+        "column": 26
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 45,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.naexp_resid",
+        "line": 45,
+        "column": 38
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 45,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 45,
+        "column": 54
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 45,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "l.naexp_resid",
+        "line": 45,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int_dhs",
+        "line": 46,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 46,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 46,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 46,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 46,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.imp_int",
+        "line": 46,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 46,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 46,
+        "column": 42
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 46,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "l.imp_int",
+        "line": 46,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int_resid_dhs",
+        "line": 47,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 47,
+        "column": 25
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 47,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int_resid",
+        "line": 47,
+        "column": 28
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 47,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "l.imp_int_resid",
+        "line": 47,
+        "column": 42
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 47,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int_resid",
+        "line": 47,
+        "column": 60
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 47,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "l.imp_int_resid",
+        "line": 47,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\ncapture erase ../Tables/regs_base_update.txt  \n\n**Not Re-weighting (Through 2011)\nareg imp_int_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2011)\nareg jimp_int_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2011)\nareg naexp_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2011)\nareg njimp_int_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2011)\nareg jexp_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2011)\n\n**Reweighting (Through 2011)\nareg imp_int_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2011)\nareg jimp_int_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2011)\nareg naexp_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2011)\nareg njimp_int_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2011)\nareg jexp_resid monthvar_595-monthvar_623 monXjap_595-monXjap_623 if monthvar<xxx [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2011)\n\n\n**Not Re-weighting (Through 2012)\nareg imp_int_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2012)\nareg jimp_int_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2012)\nareg naexp_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2012)\nareg njimp_int_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2012)\nareg jexp_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635, absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt,  noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2012)\n\n**Reweighting (Through 2012)\nareg imp_int_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)\nareg jimp_int_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)\nareg naexp_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)\nareg njimp_int_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)\nareg jexp_resid monthvar_595-monthvar_635 monXjap_595-monXjap_635 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)\noutreg2 using ../Tables/regs_base_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)\n\n\npreserve\nclear\nimport delimited /.txt\nexport excel using \".\", sheet(\"T1_regs\") sheetmodify firstrow(variables)\nrestore\n\n\n\n*/",
+    "line": 49,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************************************",
+    "line": 51,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Quarterly Versions of These Regressions",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************************************",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*/",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*use analysis_manuf_temp.dta, clear",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "analysis_manuf_tempU.dta",
+        "line": 56,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 56,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Step 5.1 Make sure we have the right sample",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Drop if no Japanese affiliates in 3-digit industry (??????)",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "naics3",
+      "line": 62,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 62,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 62,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 62,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "maxjapan",
+        "line": 62,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 62,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 62,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 63,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "maxjapan",
+        "line": 63,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 63,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 63,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxjapan",
+        "line": 64,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 67,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 68,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 68,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "firmid",
+        "line": 68,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 69,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "monthvar",
+        "line": 69,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "monthly",
+        "line": 69,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Make sure each firm has all observations (Can't do this now)",
+    "line": 71,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dup",
+        "line": 72,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 73,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 73,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 73,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 73,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "dup",
+        "line": 73,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 73,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**drop if dup<XX",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Step 5.2 Do the Re-weighting",
+    "line": 77,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 78,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 78,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 79,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 79,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "monthvar",
+        "line": 79,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "xxx",
+        "line": 79,
+        "column": 36
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 79,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "monthvar",
+        "line": 79,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "xxx",
+        "line": 79,
+        "column": 52
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 79,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "monthvar",
+        "line": 79,
+        "column": 58
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "xxx",
+        "line": 79,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 80,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 80,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 80,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 80,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 80,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_naexp",
+        "line": 80,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 80,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 80,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 81,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 81,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 81,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 81,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 81,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_imp",
+        "line": 81,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 81,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 81,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 82,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 82,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 82,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 82,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 82,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_njimp",
+        "line": 82,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 82,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "njimp_int",
+        "line": 82,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_imp",
+        "line": 83,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 83,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 83,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 83,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_naexp",
+        "line": 84,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 84,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 84,
+        "column": 30
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 84,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 84,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_njimp",
+        "line": 85,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 85,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 85,
+        "column": 30
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 85,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 85,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 86,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 86,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 86,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_naexp2",
+        "line": 86,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 86,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_naexp",
+        "line": 86,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 87,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 87,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 87,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 87,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_imp2",
+        "line": 87,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 87,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_imp",
+        "line": 87,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 88,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 88,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 88,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 88,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_njimp2",
+        "line": 88,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 88,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_njimp",
+        "line": 88,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_naexp",
+        "line": 89,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_naexp2",
+        "line": 90,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_naexp",
+        "line": 90,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_imp",
+        "line": 91,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_imp2",
+        "line": 92,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_imp",
+        "line": 92,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_njimp",
+        "line": 93,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_njimp2",
+        "line": 94,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_njimp",
+        "line": 94,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Just using the probit",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "probit",
+      "line": 97,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 97,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "i.numnaics",
+        "line": 97,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_imp",
+        "line": 97,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_naexp",
+        "line": 97,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jpnhat",
+        "line": 98,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 100,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "jpnhat",
+        "line": 100,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 100,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 25
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 100,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "jpnhat",
+        "line": 100,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 101,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 101,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 101,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 101,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Create Industry Dummies",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "i.numnaics",
+      "line": 104,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 104,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Inumnaics_3",
+        "line": 105,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "numnaics_3",
+        "line": 105,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Inumnaics_4",
+        "line": 106,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "numnaics_4",
+        "line": 106,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//rename _Inumnaics_6 numnaics_6",
+    "line": 107,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 108,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "9",
+        "line": 108,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 108,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "22",
+        "line": 108,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 108,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 109,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Inumnaics_",
+        "line": 109,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 109,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "numnaics_",
+        "line": 109,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 109,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\nversion 12.1\n**Generate Test of Differences in Pre-sample characteristics\n**Currently not sure how to output this information\npstest presamp_imp presamp_naexp presamp_njimp numnaics_*, treated(japan) mweight(jpnhat3)\n*/",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\nmatrix PRESHOCK = J(2,2,1)\nmatrix PRESHOCK_SUPPORT = J(2,5,1)\npreserve\n\n** JPN Multinationals **************\nkeep if japan==1 & presample==1\nesum njimp_int, sType(\"mean\") firmident(\"firmid\") tvsident(\"njimp_int\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK[1,1] = temp[1,3]\nmatrix PRESHOCK_SUPPORT[1,4] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[1,1] = temp[1,5]\n\nesum jexp, sType(\"mean\") firmident(\"firmid\") tvsident(\"jexp\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK[2,1] = temp[1,3]\nmatrix PRESHOCK_SUPPORT[2,4] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[2,1] = temp[1,5]\n\nrestore\npreserve\n** Non-JPN Multinationals **************\nkeep if japan==0 & presample==1\n\nsum njimp_int [aweight=jpnhat3]\nmatrix PRESHOCK[1,2] = r(mean)\n\nesum njimp_int, sType(\"mean\") firmident(\"firmid\") tvsident(\"njimp_int\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK_SUPPORT[1,5] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[1,2] = temp[1,5]\n\nsum jexp [aweight=jpnhat3]\nmatrix PRESHOCK[2,2] = r(mean)\n\nesum jexp, sType(\"mean\") firmident(\"firmid\") tvsident(\"jexp\")\nmatrix temp = r(sumout)\nmatrix temp2 = r(sumout2)\nmatrix PRESHOCK_SUPPORT[2,5] = temp2[1,1]\nmatrix PRESHOCK_SUPPORT[2,2] = temp[1,5]\n\n\nrestore\n*/",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 115,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 115,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 115,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 115,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 115,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_naexp_sum",
+        "line": 115,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 115,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 115,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 116,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 116,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 116,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 116,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 116,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_imp_sum",
+        "line": 116,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 116,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 116,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "firmid",
+      "line": 117,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 117,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 117,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 117,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 117,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "presamp_njimp_sum",
+        "line": 117,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 117,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "njimp_int",
+        "line": 117,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** JPN Multinationals **************",
+    "line": 118,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_naexp_sum",
+        "line": 120,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 120,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 120,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 120,
+        "column": 34
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 120,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 120,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 120,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 120,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_imp_sum",
+        "line": 121,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 121,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 121,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 121,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 121,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 121,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 121,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 121,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*sum jexp if japan==1 & presample==1",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*sum njimp_int if japan==1 & presample==1",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Non-JPN Multinationals **************",
+    "line": 126,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_naexp_sum",
+        "line": 127,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 127,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 127,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 127,
+        "column": 34
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 127,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 127,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 127,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 127,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "presamp_imp_sum",
+        "line": 128,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 128,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 128,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 128,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 128,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "presample",
+        "line": 128,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 128,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 128,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*sum jexp if japan==0 & presample==1",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*sum njimp_int if japan==0 & presample==1",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Step 5.3 Run the Regressions",
+    "line": 137,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Collapse by quarter",
+    "line": 138,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 139,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 139,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 140,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 140,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 140,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 140,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 140,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 140,
+        "column": 31
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 140,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 140,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 140,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 140,
+        "column": 42
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 140,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 140,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 140,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 140,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 141,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 141,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 141,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 141,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 141,
+        "column": 31
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 141,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 141,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 141,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 141,
+        "column": 42
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 141,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 141,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 141,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 141,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 142,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 142,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 142,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 142,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 142,
+        "column": 31
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 142,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 142,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 142,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 142,
+        "column": 43
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 142,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 142,
+        "column": 48
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 142,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 142,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 144,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "196",
+        "line": 144,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 145,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "197",
+        "line": 145,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 145,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 145,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 145,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 145,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 145,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 145,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 145,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 146,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "198",
+        "line": 146,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 146,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 146,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 146,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 146,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 146,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 146,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 146,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 147,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 147,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "199",
+        "line": 147,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 147,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 147,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 147,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 147,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 147,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 148,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "200",
+        "line": 148,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 148,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 148,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 148,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 148,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 148,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 148,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 148,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 149,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "201",
+        "line": 149,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 149,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 149,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 149,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 149,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 149,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 150,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "202",
+        "line": 150,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 150,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 150,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 150,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 150,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 150,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 150,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 150,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 151,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 151,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "203",
+        "line": 151,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 151,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 151,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 151,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 151,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 151,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 151,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 151,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 152,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 152,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "204",
+        "line": 152,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 152,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 152,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 152,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 152,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 152,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 152,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 153,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "205",
+        "line": 153,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 153,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 153,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 153,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 153,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 153,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 153,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 153,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 154,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "206",
+        "line": 154,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 154,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 154,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 154,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 154,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 154,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 154,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 154,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 155,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "207",
+        "line": 155,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 155,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 155,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 155,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 155,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 155,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 156,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "208",
+        "line": 156,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 156,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 156,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 156,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 156,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 156,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 156,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 156,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 157,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "209",
+        "line": 157,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 157,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 157,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 157,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 157,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 157,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 157,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 157,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 158,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "210",
+        "line": 158,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 158,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 158,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 158,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 158,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 158,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 158,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 158,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 159,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "211",
+        "line": 159,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 159,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 159,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 159,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 159,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 159,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 159,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 159,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 161,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "naexp",
+        "line": 161,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 161,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int",
+        "line": 161,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "imp_int_resid",
+        "line": 161,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "jimp_int",
+        "line": 161,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "jimp_int_resid",
+        "line": 161,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "njimp_int",
+        "line": 161,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "njimp_int_resid",
+        "line": 161,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 161,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 161,
+        "column": 114
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 161,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "firmid",
+        "line": 161,
+        "column": 126
+      },
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 161,
+        "column": 133
+      },
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 161,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 161,
+        "column": 145
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 162,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 162,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 162,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "quarterly",
+        "line": 162,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "i.qtime",
+      "line": 164,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 164,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 164,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "i.japan",
+        "line": 164,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 165,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "197",
+        "line": 165,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "211",
+        "line": 165,
+        "column": 21
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 165,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 166,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Iqtime_",
+        "line": 166,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 166,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_",
+        "line": 166,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 166,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 167,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_IqtiXjap_",
+        "line": 167,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 167,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "_1",
+        "line": 167,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_",
+        "line": 167,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 167,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 172,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 172,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 172,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Code",
+        "line": 172,
+        "column": 7
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 172,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "disclosure",
+        "line": 172,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 172,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "output",
+        "line": 172,
+        "column": 23
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 172,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 174,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 174,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 174,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Not Re-weighting (Through 2011)",
+    "line": 176,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 177,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int_resid",
+        "line": 177,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 177,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 177,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 177,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 177,
+        "column": 40
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 177,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 177,
+        "column": 52
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 177,
+        "column": 67
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 177,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 177,
+        "column": 73
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 177,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 177,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 177,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 177,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 177,
+        "column": 106
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 178,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 178,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 178,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 178,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 178,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 178,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 178,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 178,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 178,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 178,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 178,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 178,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 178,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 178,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 178,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 178,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 178,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 178,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 178,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 178,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 178,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 178,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 178,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 178,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 178,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 178,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 179,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jimp_int_resid",
+        "line": 179,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 179,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 179,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 179,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 179,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 179,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 179,
+        "column": 53
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 179,
+        "column": 68
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 179,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 179,
+        "column": 74
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 179,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 179,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 179,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 179,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 179,
+        "column": 107
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 180,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 180,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 180,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 180,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 180,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 180,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 180,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 180,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 180,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 180,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 180,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 180,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 180,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 180,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 180,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 180,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 180,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 180,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 180,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 180,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 180,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 180,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 180,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 180,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 180,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 180,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 181,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 181,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 181,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 181,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 181,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 181,
+        "column": 38
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 181,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 181,
+        "column": 50
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 181,
+        "column": 65
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 181,
+        "column": 70
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 181,
+        "column": 71
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 181,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 181,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 181,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 181,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 181,
+        "column": 104
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 182,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 182,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 182,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 182,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 182,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 182,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 182,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 182,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 182,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 182,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 182,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 182,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 182,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 182,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 182,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 182,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 182,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 182,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 182,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 182,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 182,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 182,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 182,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 182,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 182,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 182,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 183,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "njimp_int_resid",
+        "line": 183,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 183,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 183,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 183,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 183,
+        "column": 42
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 183,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 183,
+        "column": 54
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 183,
+        "column": 69
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 183,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 183,
+        "column": 75
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 183,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 183,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 183,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 183,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 183,
+        "column": 108
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 184,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 184,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 184,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 184,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 184,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 184,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 184,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 184,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 184,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 184,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 184,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 184,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 184,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 184,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 184,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 184,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 184,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 184,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 184,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 184,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 184,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 184,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 184,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 184,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 184,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 184,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*areg jexp_resid qtime_197-qtime_207 qtiXjap_197-qtiXjap_207 if qtime<208, absorb(numfirm) vce(cluster numfirm)",
+    "line": 185,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2011)",
+    "line": 186,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Reweighting (Through 2011)",
+    "line": 188,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 189,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int_resid",
+        "line": 189,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 189,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 189,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 189,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 189,
+        "column": 40
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 189,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 189,
+        "column": 52
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 189,
+        "column": 86
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 189,
+        "column": 93
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 189,
+        "column": 67
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 189,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 189,
+        "column": 73
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 189,
+        "column": 78
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 189,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 189,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 189,
+        "column": 112
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 189,
+        "column": 116
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 189,
+        "column": 124
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 190,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 190,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 190,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 190,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 190,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 190,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 190,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 190,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 190,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 190,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 190,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 190,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 190,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 190,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 190,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 190,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 190,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 190,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 190,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 190,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 190,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 190,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 190,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "reweight",
+        "line": 190,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 190,
+        "column": 132
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 190,
+        "column": 133
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 190,
+        "column": 137
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 190,
+        "column": 138
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 191,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jimp_int_resid",
+        "line": 191,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 191,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 191,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 191,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 191,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 191,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 191,
+        "column": 53
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 191,
+        "column": 87
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 191,
+        "column": 94
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 191,
+        "column": 68
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 191,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 191,
+        "column": 74
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 191,
+        "column": 79
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 191,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 191,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 191,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 191,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 191,
+        "column": 125
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 192,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 192,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 192,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 192,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 192,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 192,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 192,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 192,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 192,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 192,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 192,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 192,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 192,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 192,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 192,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 192,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 192,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 192,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 192,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 192,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 192,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 192,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 192,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "reweight",
+        "line": 192,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 192,
+        "column": 132
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 192,
+        "column": 133
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 192,
+        "column": 137
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 192,
+        "column": 138
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 193,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 193,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 193,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 193,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 193,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 193,
+        "column": 38
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 193,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 193,
+        "column": 50
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 193,
+        "column": 84
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 193,
+        "column": 91
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 193,
+        "column": 65
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 193,
+        "column": 70
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 193,
+        "column": 71
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 193,
+        "column": 76
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 193,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 193,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 193,
+        "column": 110
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 193,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 193,
+        "column": 122
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 194,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 194,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 194,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 194,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 194,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 194,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 194,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 194,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 194,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 194,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 194,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 194,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 194,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 194,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 194,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 194,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 194,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 194,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 194,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 194,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 194,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 194,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 194,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "reweight",
+        "line": 194,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 194,
+        "column": 132
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 194,
+        "column": 133
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 194,
+        "column": 137
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 194,
+        "column": 138
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 195,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "njimp_int_resid",
+        "line": 195,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 195,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 195,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_207",
+        "line": 195,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 195,
+        "column": 42
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 195,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_207",
+        "line": 195,
+        "column": 54
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 195,
+        "column": 88
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 195,
+        "column": 95
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 195,
+        "column": 69
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 195,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "208",
+        "line": 195,
+        "column": 75
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 195,
+        "column": 80
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 195,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 195,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 195,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 195,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 195,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 196,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 196,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 196,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 196,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 196,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 196,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 196,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 196,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 196,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 196,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 196,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 196,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 196,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 196,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 196,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 196,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 196,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 196,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 196,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 196,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 196,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 196,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 196,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "reweight",
+        "line": 196,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 196,
+        "column": 132
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 196,
+        "column": 133
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 196,
+        "column": 137
+      },
+      {
+        "id": "number",
+        "value": "2011",
+        "line": 196,
+        "column": 138
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*areg jexp_resid qtime_197-qtime_207 qtiXjap_197-qtiXjap_207 if qtime<208 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)",
+    "line": 197,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2011)",
+    "line": 198,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Not Re-weighting (Through 2012)",
+    "line": 201,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 202,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imp_int_resid",
+        "line": 202,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 202,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 202,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_211",
+        "line": 202,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 202,
+        "column": 40
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 202,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_211",
+        "line": 202,
+        "column": 52
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 202,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 202,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 202,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 202,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 202,
+        "column": 94
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 203,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 203,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 203,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 203,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 203,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 203,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 203,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 203,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 203,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 203,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 203,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 203,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 203,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 203,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 203,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 203,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 203,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 203,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 203,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 203,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 203,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 203,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 203,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 203,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 203,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 203,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 204,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jimp_int_resid",
+        "line": 204,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 204,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 204,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_211",
+        "line": 204,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 204,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 204,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_211",
+        "line": 204,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 204,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 204,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 204,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 204,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 204,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 205,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 205,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 205,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 205,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 205,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 205,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 205,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 205,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 205,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 205,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 205,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 205,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 205,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 205,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 205,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 205,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 205,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 205,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 205,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 205,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 205,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 205,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 205,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 205,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 205,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 205,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 206,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 206,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 206,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 206,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_211",
+        "line": 206,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 206,
+        "column": 38
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 206,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_211",
+        "line": 206,
+        "column": 50
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 206,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 206,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 206,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 206,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 206,
+        "column": 92
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 207,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 207,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 207,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 207,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 207,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 207,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 207,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 207,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 207,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 207,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 207,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 207,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 207,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 207,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 207,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 207,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 207,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 207,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 207,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 207,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 207,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 207,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 207,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 207,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 207,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 208,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "njimp_int_resid",
+        "line": 208,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 208,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 208,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_211",
+        "line": 208,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 208,
+        "column": 42
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 208,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_211",
+        "line": 208,
+        "column": 54
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 208,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 208,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 208,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 208,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 208,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 209,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 209,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 209,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 209,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Tables",
+        "line": 209,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 209,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 209,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 209,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 209,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 209,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 209,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 209,
+        "column": 78
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 209,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 209,
+        "column": 87
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 209,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 209,
+        "column": 93
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 209,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 209,
+        "column": 105
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 209,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 209,
+        "column": 111
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 209,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 209,
+        "column": 119
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 209,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 209,
+        "column": 124
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 209,
+        "column": 128
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 209,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*areg jexp_resid qtime_197-qtime_211 qtiXjap_197-qtiXjap_211 , absorb(numfirm) vce(cluster numfirm)",
+    "line": 210,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt,  noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-2009-2012)",
+    "line": 211,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Reweighting (Through 2012)",
+    "line": 213,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*areg imp_int_resid qtime_197-qtime_211 qtiXjap_197-qtiXjap_211 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)",
+    "line": 214,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)",
+    "line": 215,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*areg jimp_int_resid qtime_197-qtime_211 qtiXjap_197-qtiXjap_211 [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)",
+    "line": 216,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 218,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 218,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_197",
+        "line": 218,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 218,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "qtime_211",
+        "line": 218,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_197",
+        "line": 218,
+        "column": 38
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 218,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "qtiXjap_211",
+        "line": 218,
+        "column": 50
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "jpnhat3",
+        "line": 218,
+        "column": 72
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 218,
+        "column": 79
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 218,
+        "column": 64
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 218,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 218,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 218,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 218,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "numfirm",
+        "line": 218,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 219,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 219,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noparen",
+        "line": 219,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "noaster",
+        "line": 219,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "addtext",
+        "line": 219,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "Fixed",
+        "line": 219,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "Effects",
+        "line": 219,
+        "column": 68
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 219,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 219,
+        "column": 77
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 219,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "Clustering",
+        "line": 219,
+        "column": 83
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 219,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "Firm",
+        "line": 219,
+        "column": 95
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 219,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "Sample",
+        "line": 219,
+        "column": 101
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 219,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "Mult",
+        "line": 219,
+        "column": 109
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 219,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "reweight",
+        "line": 219,
+        "column": 114
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 219,
+        "column": 122
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 219,
+        "column": 123
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 219,
+        "column": 127
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 219,
+        "column": 128
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*areg njimp_int_resid qtime_197-qtime_211 qtiXjap_197-qtiXjap_211  [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)",
+    "line": 220,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*areg jexp_resid qtime_197-qtime_211 qtiXjap_197-qtiXjap_211  [aweight=jpnhat3], absorb(numfirm) vce(cluster numfirm)",
+    "line": 222,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*outreg2 using ../Tables/regs_qbase_update.txt, noparen noaster addtext(Fixed Effects, Firm, Clustering, Firm, Sample, Mult-reweight-2009-2012)",
+    "line": 223,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 226,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 227,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "import",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delimited",
+        "line": 228,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "regs_qbase_update.txt",
+        "line": 228,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "export",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 229,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 229,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"regs_qbase_update\"",
+        "line": 229,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sheet",
+        "line": 229,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"Q_regs\"",
+        "line": 229,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "sheetmodify",
+        "line": 229,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "firstrow",
+        "line": 229,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "variables",
+        "line": 229,
+        "column": 78
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 230,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "**Supports for Regressions",
+    "line": 235,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM",
+        "line": 236,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 236,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 236,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 236,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 236,
+        "column": 27
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 236,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 236,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 237,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_CR",
+        "line": 237,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 237,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 237,
+        "column": 22
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 237,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 237,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 237,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 237,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 239,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 239,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 240,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 240,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "197",
+        "line": 240,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 240,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "207",
+        "line": 240,
+        "column": 21
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 240,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 242,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM",
+        "line": 242,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 242,
+        "column": 34
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`count'",
+        "line": 242,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 242,
+        "column": 29
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 242,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 243,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 244,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 244,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 244,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 244,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 245,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 245,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 245,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 245,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esum",
+      "line": 246,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 246,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sType",
+        "line": 246,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"mean\"",
+        "line": 246,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "firmident",
+        "line": 246,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"firmid\"",
+        "line": 246,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "tvsident",
+        "line": 246,
+        "column": 54
+      },
+      {
+        "id": "string",
+        "value": "\"naexp\"",
+        "line": 246,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 247,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 247,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 247,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sumout",
+        "line": 247,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 248,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 248,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 248,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "sumout2",
+        "line": 248,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 249,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_CR",
+        "line": 249,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 249,
+        "column": 32
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`count'",
+        "line": 249,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 249,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 249,
+        "column": 27
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 249,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 249,
+        "column": 40
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 249,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 250,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM",
+        "line": 250,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 250,
+        "column": 34
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`count'",
+        "line": 250,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 250,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 250,
+        "column": 29
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 250,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 250,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 250,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 253,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 255,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 256,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "qtime",
+        "line": 256,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 256,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 256,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 257,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "japan",
+        "line": 257,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 257,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 257,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esum",
+      "line": 258,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "naexp_resid",
+        "line": 258,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sType",
+        "line": 258,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"mean\"",
+        "line": 258,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "firmident",
+        "line": 258,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"firmid\"",
+        "line": 258,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "tvsident",
+        "line": 258,
+        "column": 54
+      },
+      {
+        "id": "string",
+        "value": "\"naexp\"",
+        "line": 258,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 259,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 259,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 259,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sumout",
+        "line": 259,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 260,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 260,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 260,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "sumout2",
+        "line": 260,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 261,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_CR",
+        "line": 261,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 261,
+        "column": 32
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`count'",
+        "line": 261,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 261,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 261,
+        "column": 27
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 261,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 261,
+        "column": 40
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 261,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 262,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM",
+        "line": 262,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 262,
+        "column": 34
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`count'",
+        "line": 262,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 262,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 262,
+        "column": 29
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 262,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 262,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 262,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 266,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 268,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 268,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`count'",
+        "line": 268,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 268,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 268,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Output Results: Support",
+    "line": 274,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*************************",
+    "line": 275,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Regressions",
+    "line": 277,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 278,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 278,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 279,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM",
+        "line": 279,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 280,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM1",
+        "line": 280,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "monthvar",
+        "line": 280,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 281,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM2",
+        "line": 281,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "NAEXP_JPN_FIRM",
+        "line": 281,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 282,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_FIRM3",
+        "line": 282,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "NAEXP_NONJPN_FIRM",
+        "line": 282,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 284,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "blank",
+        "line": 284,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 284,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 285,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_CR",
+        "line": 285,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 286,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_CR1",
+        "line": 286,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "NAEXP_JPN_CR",
+        "line": 286,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 287,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGJPN_CR2",
+        "line": 287,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "NAEXP_NONJPN_CR",
+        "line": 287,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "export",
+      "line": 290,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 290,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 290,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"../support/regs_qbase_update_support\"",
+        "line": 290,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sheet",
+        "line": 290,
+        "column": 60
+      },
+      {
+        "id": "string",
+        "value": "\"Q_regs_base\"",
+        "line": 290,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "firstrow",
+        "line": 290,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "variables",
+        "line": 290,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 290,
+        "column": 101
+      }
+    ]
+  }
+]

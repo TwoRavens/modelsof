@@ -1,0 +1,1910 @@
+[
+  {
+    "id": "comment",
+    "value": "/* \nThis file identifies refi loans for the cashout panel. \nIt starts with all matched first liens with an open date in our sample. \nIt then looks at all other loans that were opened by that consumer, and \nlooks for any that terminated between -1 and 4 months from the prospective refi\nloan's open date. Conditional on finding such a loan, we consider it a refi if:\n- If the refi loan is marked as a purchase loan in LPS, we never call it a refi\n- If the refi loan is marked as U/Z and linked to another LPS loan, we require the LPS zipcodes to match\n- If the refi loan is marked as U/Z and linked to a loan in Equifax, we require the consumer's \nto not \"move\" in Equifax in the 6 months following the refi\n- If the refi loan is marked as a refi in LPS, then we always consider it a refi \n(including cases where there is no previous loan -- home previously owned outright)\n\nINPUT FILES: \n- efx_lps_matched.dta\n- efx_lps_all.dta\n\nOUTPUT FILES: \n- linked_nomoves.dta\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 4,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 4,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 5,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*** Find all cases where an LPS loan is opened around the time another loan is terminated",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "output",
+        "line": 8,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "efx_lps_matched.dta",
+        "line": 8,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 8,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 9,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "lien_type",
+        "line": 9,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 9,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 9,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 10,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "$fmonth",
+        "line": 10,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "close_datem",
+        "line": 10,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 10,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 11,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "first_efx",
+        "line": 11,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 11,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "close_datem",
+        "line": 11,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 11,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 11,
+        "column": 36
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 11,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "last_efx",
+        "line": 11,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 11,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "close_datem",
+        "line": 11,
+        "column": 53
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 11,
+        "column": 65
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 11,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 12,
+        "column": 4
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "not",
+        "line": 12,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "renvars",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`r(varlist)'",
+        "line": 13,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 13,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "refi_",
+        "line": 13,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// also comes from 4_match_efx_lps",
+    "line": 14,
+    "column": 58
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "joinby",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 14,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 14,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 14,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "efx_lps_all.dta",
+        "line": 14,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "unmatched",
+        "line": 14,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 14,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Link refis with their original loan by termination/open date",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "link_diff",
+        "line": 17,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_termdatem",
+        "line": 17,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 17,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "abs_link_diff",
+        "line": 18,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 18,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "link_diff",
+        "line": 18,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 19,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "link_diff",
+        "line": 19,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 19,
+        "column": 28
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 19,
+        "column": 29
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 19,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 19,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 19,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "link_diff",
+        "line": 19,
+        "column": 38
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 19,
+        "column": 48
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 19,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 19,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* take out known purchase loans",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 22,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 22,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"1\"",
+        "line": 22,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* take out LPS moves",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lps_move",
+        "line": 24,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_prop_zip",
+        "line": 24,
+        "column": 17
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 24,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "prop_zip",
+        "line": 24,
+        "column": 34
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 24,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 24,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 25,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 25,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "lps_move",
+        "line": 25,
+        "column": 26
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 25,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 25,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 25,
+        "column": 56
+      },
+      {
+        "id": "string",
+        "value": "\"U\"",
+        "line": 25,
+        "column": 59
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 25,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 25,
+        "column": 65
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 25,
+        "column": 83
+      },
+      {
+        "id": "string",
+        "value": "\"Z\"",
+        "line": 25,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 26,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 26,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 26,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 27,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabstat",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lps_move",
+        "line": 28,
+        "column": 9
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 28,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 28,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 28,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* look for refis where there was no previous open mortgage, and set their previous balance to 0",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "refi_loan_id",
+      "line": 31,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 31,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 31,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 31,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "num_refi_link",
+        "line": 31,
+        "column": 27
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 31,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 31,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "refi_loan_id",
+      "line": 32,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 32,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 32,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 32,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 32,
+        "column": 26
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 32,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 33,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "num_refi_link",
+        "line": 33,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 33,
+        "column": 40
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 33,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 33,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 64
+      },
+      {
+        "id": "string",
+        "value": "\"2\"",
+        "line": 33,
+        "column": 67
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 33,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 33,
+        "column": 73
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 91
+      },
+      {
+        "id": "string",
+        "value": "\"3\"",
+        "line": 33,
+        "column": 94
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 33,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 33,
+        "column": 100
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 118
+      },
+      {
+        "id": "string",
+        "value": "\"5\"",
+        "line": 33,
+        "column": 121
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 34,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 34,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"2\"",
+        "line": 34,
+        "column": 44
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 34,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 34,
+        "column": 50
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 68
+      },
+      {
+        "id": "string",
+        "value": "\"3\"",
+        "line": 34,
+        "column": 71
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 34,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 34,
+        "column": 77
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 95
+      },
+      {
+        "id": "string",
+        "value": "\"5\"",
+        "line": 34,
+        "column": 98
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 35,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 35,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 35,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "refi_loan_id",
+      "line": 36,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 36,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 36,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 36,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 36,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 36,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 36,
+        "column": 46
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 36,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 36,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi",
+        "line": 37,
+        "column": 4
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 37,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 37,
+        "column": 10
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 37,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "link",
+        "line": 37,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 37,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 37,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 37,
+        "column": 35
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "not",
+        "line": 37,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 38,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 38,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 38,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`r(varlist)'",
+        "line": 38,
+        "column": 24
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 38,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 39,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 39,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 39,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 39,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 39,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 40,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 40,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 40,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 40,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 40,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 42,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 42,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 43,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 43,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 43,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_bal_orig",
+        "line": 44,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 44,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "purchase_refi",
+        "line": 44,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* keep potential refis",
+    "line": 45,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 46,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 46,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 46,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 46,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* remove equifax moves for unknown/other purpose types ",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "as_of_mon_id_datem",
+        "line": 49,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// comes from 2_clean_efx_moves",
+    "line": 50,
+    "column": 76
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 50,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 50,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 50,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "as_of_mon_id_datem",
+        "line": 50,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 50,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 50,
+        "column": 40
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 50,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "cid_moves.dta",
+        "line": 50,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 50,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 65
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 50,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 50,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as_of_mon_id_datem",
+        "line": 51,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 51,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_efx_move",
+        "line": 52,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "movep6m",
+        "line": 52,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 53,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 53,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "refi_efx_move",
+        "line": 53,
+        "column": 26
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 53,
+        "column": 40
+      },
+      {
+        "id": "~",
+        "value": "~",
+        "line": 53,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 53,
+        "column": 43
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 53,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 53,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 53,
+        "column": 70
+      },
+      {
+        "id": "string",
+        "value": "\"U\"",
+        "line": 53,
+        "column": 73
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 53,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 53,
+        "column": 79
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 53,
+        "column": 97
+      },
+      {
+        "id": "string",
+        "value": "\"Z\"",
+        "line": 53,
+        "column": 100
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 54,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 54,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 54,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_efx_move",
+        "line": 55,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "~",
+        "value": "~",
+        "line": 55,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 55,
+        "column": 23
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 55,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 55,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 55,
+        "column": 50
+      },
+      {
+        "id": "string",
+        "value": "\"U\"",
+        "line": 55,
+        "column": 53
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 55,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "refi_purpose_type",
+        "line": 55,
+        "column": 59
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 55,
+        "column": 77
+      },
+      {
+        "id": "string",
+        "value": "\"Z\"",
+        "line": 55,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 56,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 56,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 56,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 57,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "refi_link",
+        "line": 57,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 57,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 57,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_m",
+        "line": 58,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 59,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 59,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "linked_nomoves.dta",
+        "line": 59,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 59,
+        "column": 31
+      }
+    ]
+  }
+]

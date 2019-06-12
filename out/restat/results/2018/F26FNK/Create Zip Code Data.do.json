@@ -1,0 +1,3648 @@
+[
+  {
+    "id": "comment",
+    "value": "**--------------------------------------------------------------**",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***CREATE DATA SET OF ZIP CODE LEVEL DATA TO MERGE WITH CB DATA***",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**-------------------------------------------------------------**",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*To construct main zip code file to merge with CB data; \nMain data file is called zipcode_data_annual.dta\nThis file will also run several intermediate do-files which do the following and are saved in /Info for Replication/Code/Input Programs/: \n\n1. read_zipcodes.do: reads in a list of zipcodes with their size\n2. read_soi_data.do: construct zip-code level income, population \n\tcreates: zipcode_income_pop_data.dta\n3. read_usage_rates.do: construct usage rates from CPS and PEW data\n        creates: hsi_use_byurban hsi_use_pew\n4. read_urates_hprice.do: county level unemployment rates and home prices (BLS, FHFA, Census)\n       creates: county_hprice_urate_zips\n5. read_access_data.do: constructs the broadband availability measure, final zip code level data file\n       creates: biannual files \"int`month'`year'\n6. Creating Lagged Broadband Variables.do: adds lags and other measures of broadband to main data set and hprice/urate data set; runs at end of file\n\nThis do-file will also create several additional data files:\n\n7. read_pop_data.do: reads in census 2000 data to age forward; used as denominator in cols 2-3 table 3\n\tCreates: zipcode_population_census00.dta\n8. read_cps_teenusage.do : cps data on teen broadband usage for appendix\n        Creates: cps_teenusage\n               \nThis file runs the algorithm to choose best fit measure of broadband access, as described in appendix:\n    minimize_rmse_aval_usage.do: minimum RMSE to derive preferred broadband variable */",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "myfolder",
+        "line": 9,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"/Info for Replication/\"",
+        "line": 9,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dofolder",
+        "line": 10,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"$myfolder/Code/\"",
+        "line": 10,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "datafolder",
+        "line": 11,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"$myfolder/Data/Raw Data/Other Data/\"",
+        "line": 11,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "datafolder2",
+        "line": 12,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"$myfolder/Data/Processed Data/\"",
+        "line": 12,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$datafolder\"",
+        "line": 16,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_zipcodes.do\"",
+        "line": 19,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_soi_data.do\"",
+        "line": 20,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_usage_rates.do\"",
+        "line": 21,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_urates_hprice.do\"",
+        "line": 22,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_access_data.do\"",
+        "line": 23,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Open broadband providers data; ",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 29,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 29,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 29,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"int121999.dta\"",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 30,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Y",
+        "line": 31,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 31,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 31,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "2007",
+        "line": 31,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 31,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 32,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 32,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "int12",
+        "line": 32,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`Y'",
+        "line": 32,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 33,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 33,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"`data'.dta\"",
+        "line": 33,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Y",
+        "line": 35,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 35,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 35,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 35,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 35,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 36,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 36,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "int060",
+        "line": 36,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`Y'",
+        "line": 36,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 37,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 37,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"`data'.dta\"",
+        "line": 37,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 41,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 41,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 41,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 41,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 42,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 42,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 42,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 42,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 43,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 43,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/**note several zip codes span multiple states, incl. 42223 (TN/KY) 57724 (MT/SD)  71749 (AR/LA) 72395 (TN/AR) 73949 (OK/TX) \nand are therefore recorded twice, the information is simply replicated, so just keep one */",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "zip",
+      "line": 47,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 47,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 47,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 47,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 47,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 47,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 47,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 48,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 48,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 48,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 48,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 49,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 50,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 50,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 50,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 50,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 50,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 50,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 51,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 51,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**merge to zipcode list and size data (census)",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 55,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 55,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 55,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 55,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 55,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"zipcodedata2000.dta\"",
+        "line": 55,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 56,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "zip_match",
+        "line": 56,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 58,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 58,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 58,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 58,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 58,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"zipcodedata2000_2.dta\"",
+        "line": 58,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 59,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "zip_match2",
+        "line": 59,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 61,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop2000",
+        "line": 61,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totalhousing",
+        "line": 62,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "totalhousing2000",
+        "line": 62,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totalland",
+        "line": 63,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "totalland2000",
+        "line": 63,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**missing infor are not inhabitated areas, drop",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 66,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "zip_match",
+        "line": 66,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 66,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**demographics in 2000",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 70,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "urban",
+        "line": 70,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "white",
+        "line": 70,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "black",
+        "line": 70,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 70,
+        "column": 32
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 70,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 71,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 71,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 71,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 71,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 71,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 72,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 72,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 72,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 72,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 72,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 72,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 75,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "05",
+        "line": 75,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "59",
+        "line": 75,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1014",
+        "line": 75,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1517",
+        "line": 75,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1819",
+        "line": 75,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 75,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "21",
+        "line": 75,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "2224",
+        "line": 75,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2529",
+        "line": 75,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "3034",
+        "line": 75,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "3539",
+        "line": 75,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "4044",
+        "line": 75,
+        "column": 61
+      },
+      {
+        "id": "number",
+        "value": "4549",
+        "line": 75,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "5054",
+        "line": 75,
+        "column": 71
+      },
+      {
+        "id": "number",
+        "value": "5559",
+        "line": 75,
+        "column": 76
+      },
+      {
+        "id": "number",
+        "value": "6061",
+        "line": 75,
+        "column": 81
+      },
+      {
+        "id": "number",
+        "value": "6264",
+        "line": 75,
+        "column": 86
+      },
+      {
+        "id": "number",
+        "value": "6566",
+        "line": 75,
+        "column": 91
+      },
+      {
+        "id": "number",
+        "value": "6769",
+        "line": 75,
+        "column": 96
+      },
+      {
+        "id": "number",
+        "value": "7074",
+        "line": 75,
+        "column": 101
+      },
+      {
+        "id": "number",
+        "value": "7579",
+        "line": 75,
+        "column": 106
+      },
+      {
+        "id": "number",
+        "value": "8084",
+        "line": 75,
+        "column": 111
+      },
+      {
+        "id": "number",
+        "value": "85",
+        "line": 75,
+        "column": 116
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 75,
+        "column": 118
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 76,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 76,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 76,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 76,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 76,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 76,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 76,
+        "column": 28
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 76,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 76,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 77,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 77,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 77,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 77,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 77,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 77,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 77,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 77,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 78,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 78,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 78,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 78,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 78,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 78,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 78,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 79,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 79,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 79,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 79,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 79,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 79,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 79,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 79,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 79,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 79,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_6569",
+        "line": 82,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "frac_6566",
+        "line": 82,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 82,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "frac_6769",
+        "line": 82,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_6064",
+        "line": 83,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "frac_6061",
+        "line": 83,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 83,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "frac_6264",
+        "line": 83,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_6566",
+        "line": 84,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "frac_6769",
+        "line": 84,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "frac_6061",
+        "line": 84,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "frac_6264",
+        "line": 84,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 86,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 86,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 86,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 86,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 86,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 86,
+        "column": 32
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 86,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 86,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**population density in 2000",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pop_density2000",
+        "line": 89,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "totalpop2000",
+        "line": 89,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 89,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "totalland2000",
+        "line": 89,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 92,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 92,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 92,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 92,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 92,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 92,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 93,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 93,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 93,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 93,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 94,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 94,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 94,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 94,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 94,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 96,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 96,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 96,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"PR\"",
+        "line": 96,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 98,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 98,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 98,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 98,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 98,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**merge time variant population data from SOI/Census",
+    "line": 101,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 102,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 102,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 102,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 102,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 102,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 102,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"zipcode_income_pop_data.dta\"",
+        "line": 102,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 103,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 103,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 103,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 103,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 104,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pop_density",
+        "line": 106,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 106,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 106,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "totalland2000",
+        "line": 106,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*drop totalland",
+    "line": 107,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totalland2000",
+        "line": 108,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "totalland",
+        "line": 108,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**create main indicator for availability**",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers_pop2700",
+        "line": 112,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 112,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 112,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 112,
+        "column": 34
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "2700",
+        "line": 112,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers_pop2700",
+        "line": 113,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers_pop2700",
+        "line": 113,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 113,
+        "column": 45
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 113,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 113,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 114,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers_sqmi12",
+        "line": 114,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 114,
+        "column": 23
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 114,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "totalland",
+        "line": 114,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 114,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 114,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers_sqmi12",
+        "line": 115,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers_sqmi12",
+        "line": 115,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 115,
+        "column": 43
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 115,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 115,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban",
+        "line": 117,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers_pop2700",
+        "line": 117,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 117,
+        "column": 57
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "frac_urban",
+        "line": 117,
+        "column": 45
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 117,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban",
+        "line": 118,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers_sqmi12",
+        "line": 118,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "frac_urban",
+        "line": 118,
+        "column": 48
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 118,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 118,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers_pop2700",
+        "line": 119,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "providers_sqmi12",
+        "line": 119,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 121,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 121,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "internet_zip",
+        "line": 121,
+        "column": 25
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 121,
+        "column": 39
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 121,
+        "column": 50
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "totalhousing",
+        "line": 121,
+        "column": 60
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "totalland",
+        "line": 121,
+        "column": 74
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "frac_",
+        "line": 121,
+        "column": 85
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "pop_density",
+        "line": 121,
+        "column": 92
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "mean_",
+        "line": 121,
+        "column": 105
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 121,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "providers_dum",
+        "line": 123,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 123,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 123,
+        "column": 29
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 123,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 123,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 123,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 123,
+        "column": 35
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 123,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 123,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 125,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 125,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban",
+        "line": 125,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Broadband Availabile in Zip Code\"",
+        "line": 125,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 126,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 126,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Number of providers in zip code (1=1-3)\"",
+        "line": 126,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 127,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop",
+        "line": 127,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Total Population, Time Variant\"",
+        "line": 127,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 128,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "totalland",
+        "line": 128,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Total Land Area - Square Miles (2000)\"",
+        "line": 128,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 129,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 129,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "totalhousing",
+        "line": 129,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Total Households, Time Variant\"",
+        "line": 129,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 130,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "totalpop2000",
+        "line": 130,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Total Population (2000)\"",
+        "line": 130,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 131,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "totalhousing2000",
+        "line": 131,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Total Households (2000)\"",
+        "line": 131,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 132,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 132,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 132,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Year and Month of Observation\"",
+        "line": 132,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 133,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "pop_density",
+        "line": 133,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Population Density (using time-variant pop)\"",
+        "line": 133,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 134,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "pop_density2000",
+        "line": 134,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Population Density (2000 pop)\"",
+        "line": 134,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 135,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "frac_50k",
+        "line": 135,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Fraction of zip making 50k+\"",
+        "line": 135,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 136,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "frac_100k",
+        "line": 136,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Fraction of zip making 100k+\"",
+        "line": 136,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 139,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 139,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 139,
+        "column": 11
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 139,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 139,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 139,
+        "column": 28
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 139,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 139,
+        "column": 39
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 139,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 139,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 140,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 140,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 140,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 140,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 140,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 140,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_month",
+        "line": 141,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 143,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban",
+        "line": 143,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "providers",
+        "line": 143,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "providers_dum",
+        "line": 143,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 143,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 143,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 143,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 143,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 143,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 146,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban6",
+        "line": 146,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Broadband Available in Zip Code, June\"",
+        "line": 146,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 147,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 147,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "providers6",
+        "line": 147,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Number of providers in zip code (1=1-3), June\"",
+        "line": 147,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 148,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "providers_dum6",
+        "line": 148,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"At least one provider, June\"",
+        "line": 148,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 149,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban12",
+        "line": 149,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Broadband Available in Zip Code, Dec\"",
+        "line": 149,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 150,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "providers12",
+        "line": 150,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Number of providers in zip code (1=1-3) Dec\"",
+        "line": 150,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 151,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 151,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "providers_dum6",
+        "line": 151,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"At least one provider, Dec\"",
+        "line": 151,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**add identifiers for first year covered, etc.**",
+    "line": 153,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_covered",
+        "line": 154,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "internet_zip_urban12",
+        "line": 154,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 154,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 154,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_covered",
+        "line": 155,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 155,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year_covered",
+        "line": 155,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 155,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "zipcode",
+      "line": 156,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 156,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 156,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "egen",
+        "line": 156,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "year_firstcovered",
+        "line": 156,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 156,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "year_covered",
+        "line": 156,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "years_since_covered",
+        "line": 157,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 157,
+        "column": 25
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 157,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "year_firstcovered",
+        "line": 157,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 159,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year_firstcovered",
+        "line": 159,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Year Coverage Turned On\"",
+        "line": 159,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 160,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "years_since_covered",
+        "line": 160,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Number of years before/after coverage turned on\"",
+        "line": 160,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_covered",
+        "line": 161,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 163,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "zipcode",
+        "line": 163,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$datafolder2/zipcode_data_annual_updated.dta\"",
+        "line": 165,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 165,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Finally, add lagged variables to zipcode_data_annual_updated and county_hprice_urate_zips and re-save **",
+    "line": 168,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/Creating Lagged Broadband Variables.do\"",
+        "line": 170,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**other tangential files that need to run ",
+    "line": 173,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_cps_teenusage.do\"",
+        "line": 175,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dofolder/read_pop_data.do\"",
+        "line": 176,
+        "column": 4
+      }
+    ]
+  }
+]

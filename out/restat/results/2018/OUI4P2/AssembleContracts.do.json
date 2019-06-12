@@ -1,0 +1,1922 @@
+[
+  {
+    "id": "comment",
+    "value": "*Assemble contract data and create dataset of obligations and spending by year",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Run commented-out code on the raw data from USAspending.gov",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\nclear\nlocal years \"00 01 02 03 04 05 06 07 08 09 10 11 12 13\"\nerase \"ContractsAllYrs.dta\"\nclear\nforeach x of local years {\n    use FY`x', clear\n   di `x'\n   di \"FY data\"\n   tostring placeofperformancezip location, replace\n    *Keep if in USA\n    gen country=substr(placeofperformancecountry,1,3)\n    keep if country==\"USA\"\n    drop placeofperformancecountry country\n\tdestring dunsnumber, replace force\n   \n   ***create zip code variable\n    *Zip of contractor\n    gen zipCont=substr(zipcode,1,5)\n\t*Zip of performance\n    gen zip=substr(placeofperformancezip,1,5)\n     *How many observations have zip of performance?\n    g byte hasZipPerf=(placeofperformancezip~=\"\" & placeofperformancezip~=\".\")\n    su hasZip\n\t *state of performance\n\tgen statePerf=substr(statecode,1,2)\n\t g byte samestate=(state==statePerf)\n\t g byte spMiss=statePerf==\"\"\n \t ta samestate if spMiss==0\n   \n    replace zip=zipCont if zip==\"\" | zip==\".\"\n***create time variables\n\t gen signDATE=date(signed,\"MDY\")\n\t gen signMTH=month(signDATE)\n\t gen signYR=year(signDATE)\n\n\t gen compDATE=date(current,\"MDY\")\n\n***drop unnecessary variables\n\tdrop unique *date multiyear vendorname city state zipcode zipCont parent mod_parent locationcode statecode place*\n\t\n\tcompress\n\t\n   describe, short\n   capture append using \"ContractsAllYrs.dta\"\n   describe, short\n   save \"ContractsAllYrs.dta\", replace\n}\n*/",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ContractsAllYrs.dta",
+        "line": 5,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 5,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**********dropping negatives with prior positive contracts",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 7,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "compMTH",
+        "line": 7,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 7,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "compDATE",
+        "line": 7,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 8,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "compYR",
+        "line": 8,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 8,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "compDATE",
+        "line": 8,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 10,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 10,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 10,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gsort",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 11,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "duns",
+        "line": 11,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "ABS",
+        "line": 11,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "signDATE",
+        "line": 11,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "byte",
+        "line": 14,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 14,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 14,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**identify contracts with other contracts of similar value",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "zip",
+      "line": 16,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 16,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "duns",
+        "line": 16,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 16,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 16,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dif",
+        "line": 16,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 16,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 16,
+        "column": 27
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 16,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 16,
+        "column": 34
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 16,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 16,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 16,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 16,
+        "column": 44
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 16,
+        "column": 45
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 16,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 16,
+        "column": 48
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 16,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 16,
+        "column": 55
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 16,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 16,
+        "column": 58
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 16,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "zip",
+      "line": 17,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 17,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "duns",
+        "line": 17,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 17,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 17,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 17,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 17,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 17,
+        "column": 32
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 17,
+        "column": 39
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 17,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 17,
+        "column": 46
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 17,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 17,
+        "column": 50
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 17,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "ABSdol",
+        "line": 17,
+        "column": 53
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 17,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 17,
+        "column": 60
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 17,
+        "column": 63
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 17,
+        "column": 64
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 17,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": ".005",
+        "line": 17,
+        "column": 67
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 17,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 17,
+        "column": 77
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 17,
+        "column": 84
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 17,
+        "column": 85
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 17,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 17,
+        "column": 89
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 17,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 17,
+        "column": 97
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 99
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 17,
+        "column": 100
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 17,
+        "column": 101
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 17,
+        "column": 102
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 17,
+        "column": 103
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 17,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 17,
+        "column": 109
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 17,
+        "column": 116
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 17,
+        "column": 117
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 17,
+        "column": 119
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 17,
+        "column": 121
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 17,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 17,
+        "column": 129
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 17,
+        "column": 131
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 17,
+        "column": 132
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 17,
+        "column": 133
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 17,
+        "column": 134
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 17,
+        "column": 135
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 18,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*remove flags that are duplicates",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 20,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 20,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 20,
+        "column": 19
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 20,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 20,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 20,
+        "column": 27
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 20,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 20,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 20,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 21,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "zip",
+      "line": 22,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 22,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "duns",
+        "line": 22,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 22,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 22,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 22,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 22,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 22,
+        "column": 32
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 22,
+        "column": 37
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 22,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 22,
+        "column": 40
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 22,
+        "column": 41
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 22,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 23,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 24,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "flag",
+        "line": 24,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "************now create spending data set.*************",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*first create contract identifier",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "unique",
+        "line": 28,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 28,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "timetocomp",
+        "line": 30,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "compDATE",
+        "line": 30,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 30,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "signDATE",
+        "line": 30,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 31,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "signYRM",
+        "line": 31,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "signYR",
+        "line": 31,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 31,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 31,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "signMTH",
+        "line": 31,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 32,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "compYRM",
+        "line": 32,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "compYR",
+        "line": 32,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 32,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 32,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "compMTH",
+        "line": 32,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 33,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "months",
+        "line": 33,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 33,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 33,
+        "column": 18
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 33,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 33,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "timetocomp",
+        "line": 33,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 33,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 33,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 34,
+      "column": 7
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "byte",
+        "line": 34,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "gt2020",
+        "line": 34,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "compYR",
+        "line": 34,
+        "column": 21
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 34,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "2020",
+        "line": 34,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 35,
+      "column": 13
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gt2020",
+        "line": 35,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 36,
+      "column": 7
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "gt2020",
+        "line": 36,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "expand",
+      "line": 37,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "months",
+        "line": 37,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 38,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "unique",
+        "line": 38,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "signDATE",
+        "line": 38,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "months",
+        "line": 38,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 39,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Spending",
+        "line": 39,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 39,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 39,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "months",
+        "line": 39,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 40,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Spending",
+        "line": 40,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 40,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "months",
+        "line": 40,
+        "column": 30
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 40,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*now create a date variable   ",
+    "line": 41,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "unique",
+      "line": 42,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 42,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 42,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 42,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 42,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "signDATE",
+        "line": 42,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 42,
+        "column": 32
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 42,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 42,
+        "column": 35
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 42,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 44,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 44,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 44,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 44,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 45,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 45,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 45,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 45,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 46,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearm",
+        "line": 46,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 46,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 46,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 46,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 46,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 46,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*only one entry for dollars obligated per transaction",
+    "line": 48,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "unique",
+      "line": 49,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 49,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "signDATE",
+        "line": 49,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 49,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 49,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 49,
+        "column": 26
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 49,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 50,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 50,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 50,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 50,
+        "column": 23
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 50,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 51,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 51,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 54,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 54,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "Spending",
+        "line": 54,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 54,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 54,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 54,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 54,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 54,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******county-level***",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n    merge m:1 zip using ZipCounty\n    keep if _merge==3\n    collapse (sum) Spending dollars, by(county year month)\n\nsave \"GvtDataCountyMonthly.dta, replace\n*/",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****CBSA level **********",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 59,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 59,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 59,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 59,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 59,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "ZipCBSA",
+        "line": 59,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 60,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 60,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 60,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 60,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 62,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cbsa",
+        "line": 62,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 62,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 62,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 63,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cbsa",
+        "line": 63,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 63,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******Annual*******",
+    "line": 64,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 65,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Spending",
+        "line": 65,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "dollars",
+        "line": 65,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 65,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "cbsa",
+        "line": 65,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 65,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "GvtDataCBSA.dta",
+        "line": 66,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 66,
+        "column": 23
+      }
+    ]
+  }
+]

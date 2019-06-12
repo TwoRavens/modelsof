@@ -1,0 +1,4924 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 1,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Note: the directory is set in the \"Environmental Engel Curves.do\" file, which calls on this\n\tprogram, and does not need to be set here unless the program is running independently.\n\tTo run this program separetly, be sure to set the directory here.\" */",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Import CEX fmly files ICPSR.do\n-------------------------------------\nThis program is part of the Enviromental Engel Curves project.\n\nThe point of this file is to import and clean the CEX microdata fmly files from ICPSR.  The files are organized\nbased on quarterly data (the quarter that the survey was administered).\n\nI am focusing on the Surveys for now.  According to the quick-start guide, the diary datasets cover\n\tdifferent consumer units, so you can't match across diary and survey\n\nHouseholds are tracked for 5 consecutive quarters and each file contains households (CUs) in all stages of those\n5 quarters.\n\nSurveys Q2-Q5 have expenditure information.  The relevant income information comes from the Q5 survey.  In these data,\n\tQ2 is the first survey available, which is good.\n\n\t\nNOTE: This file adjusts dollar values of income and total expenditure for inflation, to annual 2002 dollars. \n\t\n*/",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n   Specific oddities of earlier files:\n-- files 1992 and earlier do not have a \"state\" variable\n-- files from round 1993 and 1994 do not include Q5, i.e. there is no \"19941\" or \"19951\", only \"19941x\" and \"19951x\"\n-- files from 1996 BLS Microdata are also copied over in order to get the full set of 1995 files, which include\n\thouseholds that start the survey in Q4 1995 and finish in Q3 1996.\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* PART 1: IMPORTING RAW FILES\n-------------------------------*/",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Import all of the files into individual Quarter/Year files. Each file contains all households that *started*\n\ttheir survey in those quarters.  There is one file per quarter */",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yyyy",
+        "line": 14,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 14,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 14,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1984",
+        "line": 14,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1995",
+        "line": 14,
+        "column": 30
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 14,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*local yyyy = 1993",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 16,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zzzz",
+        "line": 18,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 18,
+        "column": 14
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 18,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 18,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yy",
+        "line": 19,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 19,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 19,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 19,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 19,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 19,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 19,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 19,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zz",
+        "line": 20,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 20,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 20,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 20,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 20,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 20,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 20,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 20,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Append all files together */",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Note: in this case quarter and year refer to the survey file, not necessarily the exact date of the survey */",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`yy'1x.dta\"",
+        "line": 25,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 25,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 26,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 26,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 27,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 28,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`yy'2.dta\"",
+        "line": 28,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 29,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 29,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 29,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 29,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 29,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 30,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 30,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 30,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 30,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 31,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`yy'3.dta\"",
+        "line": 31,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 32,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 32,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 33,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 33,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 33,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 33,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 34,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`yy'4.dta\"",
+        "line": 34,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 35,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 35,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 35,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 35,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 35,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 36,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 36,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 36,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 36,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 36,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 38,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 38,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1993",
+        "line": 38,
+        "column": 12
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 38,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 38,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 38,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1994",
+        "line": 38,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 38,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 39,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 39,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`zz'1x.dta\"",
+        "line": 39,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 41,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 42,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 42,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`zz'1.dta\"",
+        "line": 42,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 44,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 44,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 44,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 44,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 44,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 45,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 45,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 45,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 45,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 45,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 46,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`zz'2.dta\"",
+        "line": 46,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 47,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 47,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 47,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 47,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 47,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 48,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 48,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 48,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 48,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 48,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Files from ICPSR\\fmli`zz'3.dta\"",
+        "line": 49,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 50,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 50,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 50,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 50,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 51,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 51,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 51,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 51,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 51,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Early files are missing the cuid and interi variables.  Interi is the last digit of newid.\n\tThe preceding digits are the cuid.  There are supposed to be 7, but there could be 1\n\t(or more) leading zeros */",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* in case the file DOES have cuid, drop it */",
+    "line": 55,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 55,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 55,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 55,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 55,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tostring",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 56,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 56,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 57,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 57,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 57,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 58,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 58,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 58,
+        "column": 19
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 58,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 58,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 58,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 58,
+        "column": 28
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 58,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 58,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 59,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 59,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 59,
+        "column": 21
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 59,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 59,
+        "column": 28
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 59,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 59,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 60,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 60,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* in some files, fincatax is actually called fincatxm. Likewise for fincbtax */",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 63,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 63,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 63,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 63,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 64,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 64,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 64,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fincatxm",
+        "line": 64,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 64,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 64,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 64,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 65,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 65,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 65,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 65,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 66,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 66,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 66,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fincbtxm",
+        "line": 66,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 66,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 66,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 67,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 67,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tottxpdx",
+        "line": 67,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 67,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 68,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 68,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tottxpdx",
+        "line": 68,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "tottxpdm",
+        "line": 68,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tottxpdx",
+        "line": 68,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 68,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 68,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Create an indicator for fullyr (i.e. all four interviews completed) */",
+    "line": 71,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cuid",
+      "line": 72,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 72,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 72,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 72,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "num_inter",
+        "line": 72,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 72,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fullyr",
+        "line": 73,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "num_inter",
+        "line": 73,
+        "column": 14
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 73,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 73,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Clean demographic variables in preparation for collapse */",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "urban",
+        "line": 77,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "bls_urbn",
+        "line": 77,
+        "column": 14
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 77,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"1\"",
+        "line": 77,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*state*/",
+    "line": 78,
+    "column": 28
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "respstat",
+        "line": 78,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 78,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* files 1992 and earlier do not have \"state\"*/",
+    "line": 78,
+    "column": 38
+  },
+  {
+    "id": "comment",
+    "value": "/*high_edu*/",
+    "line": 78,
+    "column": 135
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "region",
+      "line": 78,
+      "column": 86
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 78,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "educa2",
+        "line": 78,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "marital1",
+        "line": 78,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 78,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 78,
+        "column": 127
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": ",",
+      "value": ",",
+      "line": 78,
+      "column": 148
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 78,
+        "column": 150
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 79,
+        "column": 4
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 79,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1992",
+        "line": 79,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "destring",
+        "line": 79,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 79,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 79,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Adjust for inflation (quarterly) */",
+    "line": 82,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Note: the annual cpi in 2002 was 179.867 */",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 84,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 84,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 84,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 84,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 84,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 84,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\quarterly cpi.dta\"",
+        "line": 84,
+        "column": 30
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 84,
+        "column": 71
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 84,
+        "column": 76
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 84,
+        "column": 78
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 85,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 87,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 87,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 87,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "179.867",
+        "line": 87,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 87,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_all",
+        "line": 87,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 88,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 88,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 88,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "179.867",
+        "line": 88,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 88,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_all",
+        "line": 88,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tottxpdx",
+        "line": 89,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "tottxpdx",
+        "line": 89,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 89,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "179.867",
+        "line": 89,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 89,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_all",
+        "line": 89,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totexppq",
+        "line": 90,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "totexppq",
+        "line": 90,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 90,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "179.867",
+        "line": 90,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 90,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_all",
+        "line": 90,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totexpcq",
+        "line": 91,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "totexpcq",
+        "line": 91,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 91,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "179.867",
+        "line": 91,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 91,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_all",
+        "line": 91,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 92,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "totexppq",
+        "line": 92,
+        "column": 14
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 92,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "totexpcq",
+        "line": 92,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Create the file of households that started the survey in Q1 */",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 96,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Only keep CU's that started interi==2 in the first quarter of loop */",
+    "line": 97,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 98,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 98,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 98,
+        "column": 19
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 98,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 98,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 98,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 98,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 98,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 98,
+        "column": 55
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 98,
+        "column": 57
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 98,
+        "column": 66
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 98,
+        "column": 68
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 72
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 98,
+        "column": 74
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 98,
+        "column": 83
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 89
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 98,
+        "column": 91
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 98,
+        "column": 93
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 100
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 98,
+        "column": 102
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 98,
+        "column": 104
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 108
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 98,
+        "column": 110
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 98,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 125
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 98,
+        "column": 127
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 98,
+        "column": 129
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 136
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 98,
+        "column": 138
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 98,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 98,
+        "column": 140
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 144
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 98,
+        "column": 146
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Collapse, keeping the important demographic variables */",
+    "line": 100,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 101,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 101,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 101,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 103,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 103,
+        "column": 5
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 103,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1992",
+        "line": 103,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 103,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*state*/",
+    "line": 104,
+    "column": 166
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 104,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "collapse_vars",
+        "line": 104,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 104,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "age_ref",
+        "line": 104,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 104,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "fam_size",
+        "line": 104,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "num_auto",
+        "line": 104,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "perslt18",
+        "line": 104,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "persot64",
+        "line": 104,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "bathrmq",
+        "line": 104,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "bedroomq",
+        "line": 104,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "num_inter",
+        "line": 104,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 104,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "fullyr",
+        "line": 104,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 104,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "urban",
+        "line": 104,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "respstat",
+        "line": 104,
+        "column": 131
+      },
+      {
+        "id": "comment",
+        "value": "/*\n\t\t*/",
+        "line": 104,
+        "column": 140
+      },
+      {
+        "id": "identifier",
+        "value": "lastnm",
+        "line": 104,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 104,
+        "column": 157
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*file before 1992 do not have \"state\" */",
+    "line": 104,
+    "column": 177
+  },
+  {
+    "id": "comment",
+    "value": "/*high_edu*/",
+    "line": 104,
+    "column": 268
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "region",
+      "line": 104,
+      "column": 219
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 104,
+        "column": 226
+      },
+      {
+        "id": "identifier",
+        "value": "educa2",
+        "line": 104,
+        "column": 235
+      },
+      {
+        "id": "identifier",
+        "value": "marital1",
+        "line": 104,
+        "column": 242
+      },
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 104,
+        "column": 251
+      },
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 104,
+        "column": 260
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*\n\t\t*/",
+      "line": 104,
+      "column": 282
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 104,
+        "column": 291
+      },
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 104,
+        "column": 297
+      },
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 104,
+        "column": 306
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 104,
+        "column": 316
+      },
+      {
+        "id": "identifier",
+        "value": "finlwt21",
+        "line": 104,
+        "column": 321
+      },
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 104,
+        "column": 330
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 104,
+        "column": 338
+      },
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 104,
+        "column": 341
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 106,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 106,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*file before 1992 do not have \"state\" */",
+    "line": 107,
+    "column": 173
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 107,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "collapse_vars",
+        "line": 107,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 107,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "age_ref",
+        "line": 107,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 107,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "fam_size",
+        "line": 107,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "num_auto",
+        "line": 107,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "perslt18",
+        "line": 107,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "persot64",
+        "line": 107,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "bathrmq",
+        "line": 107,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "bedroomq",
+        "line": 107,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "num_inter",
+        "line": 107,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 107,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "fullyr",
+        "line": 107,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 107,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "urban",
+        "line": 107,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "respstat",
+        "line": 107,
+        "column": 131
+      },
+      {
+        "id": "comment",
+        "value": "/*\n\t\t*/",
+        "line": 107,
+        "column": 140
+      },
+      {
+        "id": "identifier",
+        "value": "lastnm",
+        "line": 107,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 107,
+        "column": 157
+      },
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 107,
+        "column": 166
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*high_edu*/",
+    "line": 107,
+    "column": 264
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "region",
+      "line": 107,
+      "column": 215
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 107,
+        "column": 222
+      },
+      {
+        "id": "identifier",
+        "value": "educa2",
+        "line": 107,
+        "column": 231
+      },
+      {
+        "id": "identifier",
+        "value": "marital1",
+        "line": 107,
+        "column": 238
+      },
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 107,
+        "column": 247
+      },
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 107,
+        "column": 256
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*\n\t\t*/",
+      "line": 107,
+      "column": 278
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 107,
+        "column": 287
+      },
+      {
+        "id": "identifier",
+        "value": "fincbtax",
+        "line": 107,
+        "column": 293
+      },
+      {
+        "id": "identifier",
+        "value": "fincatax",
+        "line": 107,
+        "column": 302
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 107,
+        "column": 312
+      },
+      {
+        "id": "identifier",
+        "value": "finlwt21",
+        "line": 107,
+        "column": 317
+      },
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 107,
+        "column": 326
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 107,
+        "column": 334
+      },
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 107,
+        "column": 337
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 110,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`collapse_vars'",
+        "line": 110,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 111,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 111,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 111,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 112,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 112,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 112,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 113,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\compiledfmly_`yy'1.dta\"",
+        "line": 113,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 113,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 114,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Create the file of households that started the survey in Q2 */",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 117,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Only keep CU's that started interi==2 in the second quarter of loop */",
+    "line": 118,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 119,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 119,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 119,
+        "column": 19
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 119,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 119,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 119,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 119,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 119,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 119,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 119,
+        "column": 55
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 119,
+        "column": 57
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 119,
+        "column": 66
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 119,
+        "column": 68
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 72
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 119,
+        "column": 74
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 119,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 119,
+        "column": 83
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 89
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 119,
+        "column": 91
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 119,
+        "column": 93
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 100
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 119,
+        "column": 102
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 119,
+        "column": 104
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 108
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 119,
+        "column": 110
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 119,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 119,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 125
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 119,
+        "column": 127
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 119,
+        "column": 129
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 136
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 119,
+        "column": 138
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 119,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 119,
+        "column": 140
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 144
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 119,
+        "column": 146
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Collapse, keeping the important demographic variables */",
+    "line": 120,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 121,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 121,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 121,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 122,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`collapse_vars'",
+        "line": 122,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 123,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 123,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 123,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 124,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 124,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 124,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 125,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\compiledfmly_`yy'2.dta\"",
+        "line": 125,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 125,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 126,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Create the file of households that started the survey in Q3 */",
+    "line": 128,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 129,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Only keep CU's that started interi==2 in the third quarter of loop */",
+    "line": 130,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 131,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 131,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 131,
+        "column": 19
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 131,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 131,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 131,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 131,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 131,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 131,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 131,
+        "column": 55
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 131,
+        "column": 57
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 131,
+        "column": 66
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 131,
+        "column": 68
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 72
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 131,
+        "column": 74
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 131,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 131,
+        "column": 83
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 89
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 131,
+        "column": 91
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 131,
+        "column": 93
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 100
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 131,
+        "column": 102
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 131,
+        "column": 104
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 108
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 131,
+        "column": 110
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 131,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 131,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 125
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 131,
+        "column": 127
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 131,
+        "column": 129
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 136
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 131,
+        "column": 138
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 131,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 131,
+        "column": 140
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 131,
+        "column": 144
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 131,
+        "column": 146
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Collapse, keeping the important demographic variables */",
+    "line": 133,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 134,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 134,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 134,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 135,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`collapse_vars'",
+        "line": 135,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 136,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 136,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 136,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 137,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 137,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 137,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 138,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\compiledfmly_`yy'3.dta\"",
+        "line": 138,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 138,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 139,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Create the file of households that started the survey in Q4 */",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 142,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Only keep CU's that started interi==2 in the fourth quarter of loop */",
+    "line": 143,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 144,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 144,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 144,
+        "column": 19
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 144,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 144,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 144,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 144,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 144,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 144,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 144,
+        "column": 55
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 144,
+        "column": 57
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 144,
+        "column": 66
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 144,
+        "column": 68
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 72
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 144,
+        "column": 74
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 144,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 144,
+        "column": 83
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 89
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 144,
+        "column": 91
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 144,
+        "column": 93
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 100
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 144,
+        "column": 102
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 144,
+        "column": 104
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 108
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 144,
+        "column": 110
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 144,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 144,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 125
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 144,
+        "column": 127
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 144,
+        "column": 129
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 136
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 144,
+        "column": 138
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 144,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 144,
+        "column": 140
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 144
+      },
+      {
+        "id": "`'",
+        "value": "`zzzz'",
+        "line": 144,
+        "column": 146
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Collapse, keeping the important demographic variables */",
+    "line": 146,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 147,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 147,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "interi",
+        "line": 147,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 148,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`collapse_vars'",
+        "line": 148,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 149,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 149,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 149,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 150,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quarter",
+        "line": 150,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 150,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 151,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\compiledfmly_`yy'4.dta\"",
+        "line": 151,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 151,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 152,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* PART 2: STACK THE FILES TOGETHER\n-----------------------------------*/",
+    "line": 158,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Now stack them all together into a single file */",
+    "line": 159,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yyyy",
+        "line": 160,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 160,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 160,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1984",
+        "line": 160,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 160,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1995",
+        "line": 160,
+        "column": 30
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 160,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*local yyyy = 1996",
+    "line": 161,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 162,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 162,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yy",
+        "line": 163,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 163,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 163,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 163,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 163,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 163,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 163,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 163,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*loop over quarters within each year */",
+    "line": 165,
+    "column": 29
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 165,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 165,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 165,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 165,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 23
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 165,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 165,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 165,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*local q = 2",
+    "line": 166,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 167,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`yyyy'",
+        "line": 167,
+        "column": 6
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 167,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "1984",
+        "line": 167,
+        "column": 14
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 167,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 167,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 167,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 167,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 168,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\compiledfmly_`yy'`q'.dta\"",
+        "line": 168,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 168,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*di \"`yy' `q' test if\" ",
+    "line": 169,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 171,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 171,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*di \"`yy' `q' test else\"",
+    "line": 172,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 173,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 173,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\compiledfmly_`yy'`q'.dta\"",
+        "line": 173,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* note cuid is *NOT* a unique identifier */",
+    "line": 179,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 180,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Compiled Data Files\\ICPSR_compiledfmly_all.dta\"",
+        "line": 180,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 180,
+        "column": 56
+      }
+    ]
+  }
+]

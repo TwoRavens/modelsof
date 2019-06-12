@@ -1,0 +1,2462 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\nNow that we have identified refis, we calculate cash-out statistics for these refis.\nFirst we add all loans linked to a particular refi together, to account for consolidation of two loans into one, etc.\nThen for a given consumer and refi date, we take only the largest refi, and then separately merge in any \"piggyback seconds.\"\nFinally we calculate different cash out statistics and indicators. \n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 3,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 3,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "**** Calculate cashouts",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 8,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "linked_nomoves.dta",
+        "line": 8,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 8,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 9,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_efx_loan_termdatem",
+        "line": 9,
+        "column": 12
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 9,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 9,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fm_efx_loan_lastbal",
+        "line": 10,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 10,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 10,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_type",
+        "line": 10,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 10,
+        "column": 61
+      },
+      {
+        "id": "string",
+        "value": "\"fm\"",
+        "line": 10,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* eliminate likely data errors in Efx -- loans that stick around less than 3 months  ",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "loan_length",
+        "line": 13,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_termdatem",
+        "line": 13,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 13,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_opendatem",
+        "line": 13,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 14,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "loan_length",
+        "line": 14,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 14,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 14,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi",
+        "line": 16,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 16,
+        "column": 10
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 16,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 16,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "num_refi_link",
+        "line": 16,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 16,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_opendatem",
+        "line": 16,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_termdatem",
+        "line": 16,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_bal_orig",
+        "line": 16,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 16,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_type",
+        "line": 16,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "loan_length",
+        "line": 16,
+        "column": 127
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**** Keep only one observation per equifax open/term/origination date (gets rid of two copies from the two owners)",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_loan_id",
+        "line": 19,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_opendatem",
+        "line": 19,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_termdatem",
+        "line": 19,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_bal_orig",
+        "line": 19,
+        "column": 55
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "not",
+        "line": 19,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 20,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`r(varlist)'",
+        "line": 20,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 20,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "refi_loan_id",
+        "line": 20,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_opendatem",
+        "line": 20,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_termdatem",
+        "line": 20,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_bal_orig",
+        "line": 20,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "fast",
+        "line": 20,
+        "column": 104
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* add last balances, and take one observation per refi",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* if two first mortgages, we take the one whose balance is closest to that of the refi mortgage",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "refi_loan_id",
+      "line": 24,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 24,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_type",
+        "line": 24,
+        "column": 18
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 24,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 24,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "loan_type_obs",
+        "line": 24,
+        "column": 37
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 24,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "loan_group",
+        "line": 25,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 25,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "refi_loan_id",
+        "line": 25,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_type",
+        "line": 25,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 26,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 26,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 26,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 26,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 26,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "loan_group",
+        "line": 28,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 28,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "loan_group",
+      "line": 29,
+      "column": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 29,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 29,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 29,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 29,
+        "column": 20
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 29,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 30,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 30,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 30,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 30,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 30,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_type",
+        "line": 30,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"fm\"",
+        "line": 30,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 32,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_bal_orig",
+        "line": 32,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "refi_loan_id",
+        "line": 32,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "refi_n",
+        "line": 32,
+        "column": 52
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "not",
+        "line": 32,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 33,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 33,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_bal_orig",
+        "line": 33,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 33,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "num_orig",
+        "line": 33,
+        "column": 59
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_n",
+        "line": 33,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 33,
+        "column": 78
+      },
+      {
+        "id": "`'",
+        "value": "`r(varlist)'",
+        "line": 33,
+        "column": 84
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 33,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "refi_loan_id",
+        "line": 33,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "fast",
+        "line": 33,
+        "column": 115
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cid",
+      "line": 34,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 34,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 34,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 34,
+        "column": 29
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 34,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 34,
+        "column": 44
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 34,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 34,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* take the largest refi amount for a particular consumer and close date, and then add any piggyback seconds to this loan",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 37,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 38,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 38,
+        "column": 8
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "not",
+        "line": 38,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 39,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`r(varlist)'",
+        "line": 39,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 39,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 39,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 39,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "fast",
+        "line": 39,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 40,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "close_datem_match",
+        "line": 40,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// from 5_piggybackseconds",
+    "line": 41,
+    "column": 71
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 41,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 41,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 41,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 41,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "close_datem_match",
+        "line": 41,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 41,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 41,
+        "column": 39
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 41,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "piggy.dta",
+        "line": 41,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 41,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 41,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 41,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 41,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "piggy_second_bal",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 42,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "piggy_second_bal",
+        "line": 42,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 42,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 42,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close_datem_match",
+        "line": 43,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 43,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 44,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 44,
+        "column": 25
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 44,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "piggy_second_bal",
+        "line": 44,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cid",
+        "line": 46,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 46,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 46,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "refi_msano",
+        "line": 46,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "efx",
+        "line": 46,
+        "column": 52
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 46,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "fm",
+        "line": 46,
+        "column": 57
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 46,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "refi_appraisal_amt",
+        "line": 46,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "piggy_second_bal",
+        "line": 46,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_type",
+        "line": 46,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 47,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 47,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "linked_col.dta",
+        "line": 47,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 47,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 49,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 49,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "linked_col.dta",
+        "line": 49,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 49,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_noseconds",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 51,
+        "column": 30
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 51,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "piggy_second_bal",
+        "line": 51,
+        "column": 46
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 51,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 51,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 52,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 52,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 52,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 52,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_nocashin",
+        "line": 53,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 53,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 53,
+        "column": 33
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 53,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 53,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 55,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 55,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 55,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 55,
+        "column": 33
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 55,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1e6",
+        "line": 55,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// allowing for 2% closing costs",
+    "line": 57,
+    "column": 60
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 57,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 57,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 57,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "0.98",
+        "line": 57,
+        "column": 36
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 57,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "efx_loan_lastbal",
+        "line": 57,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// AF definition: after 2% closing costs, have at least 5k left over.",
+    "line": 58,
+    "column": 59
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "g",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_af",
+        "line": 58,
+        "column": 3
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 58,
+        "column": 17
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 58,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "5000",
+        "line": 58,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 58,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 58,
+        "column": 43
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 58,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 58,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "alt_cash_out",
+        "line": 60,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 60,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 60,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "fm_efx_loan_lastbal",
+        "line": 60,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 62,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 62,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 62,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 62,
+        "column": 37
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 62,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "1e6",
+        "line": 62,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_bal_af",
+        "line": 64,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 64,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 64,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_af",
+        "line": 64,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabstat",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 66,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "st",
+        "line": 66,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "p10",
+        "line": 66,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "p25",
+        "line": 66,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "p50",
+        "line": 66,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "p75",
+        "line": 66,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "p90",
+        "line": 66,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "p99",
+        "line": 66,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 66,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabstat",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 67,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "st",
+        "line": 67,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 67,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "p10",
+        "line": 67,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "p25",
+        "line": 67,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "p50",
+        "line": 67,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "p75",
+        "line": 67,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "p90",
+        "line": 67,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "p99",
+        "line": 67,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 67,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* For text: descriptive stats on individual refinances -- in the aggregate we use the MSA-sum of \"cash_out_amt\" */",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 70,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 71,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 71,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2009m1",
+        "line": 71,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 71,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 71,
+        "column": 40
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 71,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 71,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "2009m6",
+        "line": 71,
+        "column": 60
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 71,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 71,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// first lien balance",
+    "line": 73,
+    "column": 31
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 73,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fm_efx_loan_lastbal",
+        "line": 73,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 73,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// first lien balance conditional on being positive -- mean 205, median 177",
+    "line": 74,
+    "column": 56
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 74,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fm_efx_loan_lastbal",
+        "line": 74,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fm_efx_loan_lastbal",
+        "line": 74,
+        "column": 29
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 74,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 74,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 74,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// median: 7300; mean 25k (when dropping outliers <-1M or >1M)",
+    "line": 76,
+    "column": 25
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 76,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 76,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 76,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 42% cash out",
+    "line": 77,
+    "column": 40
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 77,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_af",
+        "line": 77,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 77,
+        "column": 21
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 77,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 77,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// median 30k; mean 62k",
+    "line": 78,
+    "column": 44
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 78,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 78,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cash_out_af",
+        "line": 78,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 78,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 78,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// median 7k; mean 33k",
+    "line": 79,
+    "column": 50
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 79,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 79,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cash_out_amt_net",
+        "line": 79,
+        "column": 26
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 79,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 79,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 79,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 80,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "//////////////\n",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 84,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "num_lps_refis",
+        "line": 84,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 84,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 84,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_af",
+        "line": 84,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_bal_af",
+        "line": 84,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 84,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 84,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "refi_orig_amt",
+        "line": 84,
+        "column": 96
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 84,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "second_lien_cons",
+        "line": 84,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 84,
+        "column": 129
+      },
+      {
+        "id": "identifier",
+        "value": "avg_cash_out",
+        "line": 84,
+        "column": 135
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 84,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "p50",
+        "line": 84,
+        "column": 162
+      },
+      {
+        "id": "identifier",
+        "value": "median_cash_out",
+        "line": 84,
+        "column": 167
+      },
+      {
+        "id": "identifier",
+        "value": "cash_out_amt",
+        "line": 84,
+        "column": 183
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 84,
+        "column": 198
+      },
+      {
+        "id": "identifier",
+        "value": "refi_msano",
+        "line": 84,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 84,
+        "column": 212
+      },
+      {
+        "id": "identifier",
+        "value": "fast",
+        "line": 84,
+        "column": 230
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_msano",
+        "line": 85,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "msano",
+        "line": 85,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refi_close_datem",
+        "line": 86,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "datem",
+        "line": 86,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 87,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 87,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "cashout_panel.dta",
+        "line": 87,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 87,
+        "column": 30
+      }
+    ]
+  }
+]

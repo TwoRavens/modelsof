@@ -1,0 +1,6631 @@
+[
+  {
+    "id": "comment",
+    "value": "*** Data Analysis - Differential Effects of BITS",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Author: Sarah Bauerle Danzman",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Created: 5/19/2015",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Modified 11/5/2015",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* This do file runs analysis for \"The Differential Effects of Investment Treaties\"\nPlease use bitinfrastructurenov2015.dta to analyze these data.\nEach model is labeled by the table and model number from the paper \n\nAdditionally, an explanation of how substantive effects were computed is provided at the end \nof the document. I used R to perform the calcuations, but any calcuator that has a exp()\nfunction will be sufficent.*/",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Variables Used:\niso3n - country code (iso numerical code)\nyear - year\nlnfdi - natural log of FDI inflows (UNCTAD)\nlnpriv - natural log of Private Participation in Infrastructure (WB PPI)\nstrong_bits - count of ratified BITs with strong arbitration provisions (Yackee 2008)\nstrong_bits2 - strong_bits squared\nbitstodate_bit - count of all BITs to date (Graham 2015)\nbits_graham_2 - all BITs to date squared\nweakbits - count of BITs swithout strong arbitration provisions (Yackee 2008)\nweakbits2 - weak bits squared\npolconiii - Political Constraints (Henisz)\npolity2 - the Polity 2 measure from the Polity IV project\nlnpop - natural log of population (WDI)\nlngdppc - natural log of gdp per capita (WDI)\ngdpgr - gdp growth (WDI)\nlntrade - natural log of imports+exports/GDP (WDI)\nptacum2 - cumulative preferential trade agreements (Buthe and Milner 2008)\nckaopen2010 - Capital Account Openness (Karcher and Steinberg)\nlninfation - natural log of inflation (WDI)\nsavings - domestic savings/gdp (WDI)\nworldbits_ni - cumulative number of strong BITs worldwide minus strong BITs in country i\nlnworldfdi_ni - natural log of world FDI inflows in time t minus FDI inflows in country i\nlnworldpriv_ni - natural log of world infrastructure privatization inflows in tiem t minus inflows in country i\nworld_bits_graham_ni - cumulative number of all BITs worldwide minus BITs in country i\nworld_weakbits_ni - cumulative number of weak BITs worldwide minus BITs in country i\nmaworldsbits_ni - 3 year moving world average of strong BITs in time t minus strong BITs in country i\navgregionsbit_ni - 3 year moving regional average of strong BITs in time t minus strong BITs in country i \n(for the regional referent group for country i)\nmaworldbits_graham_ni - 3 year moving world average of all BITs in time t minus all BITs in country i\nmaregionsbits_graham_ni - 3 year moving regional average of all BITs in time t minus all BITs in country i\n(for the regional referent group for country i)\neast_asia  - dummy for East Asia\neurope - dummy for Europe\nmena - dummy for Middle East/North Africa\nsouth_asia - dummy for South Asia\nssa - dummy for Subsaharan Africa\n\nAdditionally, to run Driscoll Kraay regressions (xtscc), you cannot use lags. Therefore,\nall variables are also converted to lags; this is denoted with an \"l\" in front of the respective\nvariable name. The xtscc may not come pre-installed on your Stata software. type \"findit xtscc\" to\ninstall. */",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************ Table 1 *****************",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 14,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 14,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** FE (Model 1, Table 1)",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 16,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 16,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 16,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 16,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 16,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 16,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 16,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 17,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 17,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 17,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 17,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 17,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 17,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 17,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 18,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 18,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 18,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 18,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 18,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 18,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** gls (Model 2, Table 1)",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtgls",
+      "line": 20,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 20,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 20,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 20,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 20,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 20,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 21,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 21,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 21,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 21,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 21,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 21,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 21,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 22,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 22,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 22,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 22,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "corr",
+        "line": 22,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "psar1",
+        "line": 22,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 22,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** FE (Model 3, Table 1)",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 24,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 24,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 24,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 24,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 24,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 24,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 24,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 25,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 25,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 25,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 25,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 25,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 25,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 25,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 26,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 26,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 26,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 26,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 26,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 26,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** GLS",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtgls",
+      "line": 28,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 28,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 28,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 28,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 28,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 28,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 29,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 29,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 29,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 29,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 29,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 29,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 29,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 30,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 30,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 30,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 30,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "corr",
+        "line": 30,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "psar1",
+        "line": 30,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 30,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************ Table 2 *****************",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************",
+    "line": 34,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 5 (FDI, All BITs, FE)",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 36,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 36,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 36,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 36,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.bits_graham_2",
+        "line": 36,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 36,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 37,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 37,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 37,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 37,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 37,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 37,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 37,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 37,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 38,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_bits_graham_ni",
+        "line": 38,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 38,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 38,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 38,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 38,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 6 (FDI, Weak BITs, FE) ",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 40,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 40,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 40,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits",
+        "line": 40,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits2",
+        "line": 40,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 40,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 41,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 41,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 41,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 41,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 41,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 41,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 41,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 41,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 42,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_weakbits_ni",
+        "line": 42,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 42,
+        "column": 31
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 42,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 42,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 42,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 7 (PRIV, All BITs, FE)",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 44,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 44,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 44,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 44,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.bits_graham_2",
+        "line": 44,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 44,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 45,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 45,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 45,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 45,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 45,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 45,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 45,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 45,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 46,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_bits_graham_ni",
+        "line": 46,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 46,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 46,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 46,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 46,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 8 (PRIV, Weak BITs, FE)",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 48,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 48,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 48,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits",
+        "line": 48,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits2",
+        "line": 48,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 48,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 49,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 49,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 49,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 49,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 49,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 49,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 49,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 49,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 50,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_weakbits_ni",
+        "line": 50,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 50,
+        "column": 31
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 50,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 50,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 50,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "****************************************",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************ Table 3 *******************",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****************************************",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* The following 8 models (models 9 through 16) are instrumental\nvariable regressions. The information I report in Table 3 are\nthe regression statistics that evaluate whether instruments are needed\nfor these data. As the following tests show, BITs are not \nendogenous to investment flows. The closest we come to concerns over endogeneity \nis in Model 9, when the p-values on the Wooldridge and Robust regression tests get \nrelatively close to rejecting the null hypothesis of exogeneity (p-values around .15). */",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* The instruments used in each model are the three year moving average of all world bits\nin all countries not i (maworldsbits_ni for strong bits and maworldbits_graham_ni for all bits)\nand the three year moving average of the number of bits in i's region, not including i. \n\nThe code used to create these measures is as follows (commented out because I already\ncreated these measure for the purposes of the stata file):\n\n***To create maworldbits_graham_ni****\nsort year\nby year: egen world_bits_graham=total(bitstodate_BIT)\ngen world_bits_graham_ni=world_bits_graham-bitstodate_BIT\nsort iso3n year\ngen maworldbits_graham_ni=(F1.world_bits_graham_ni+world_bits_graham_ni+ L1.world_bits_graham_ni)/3\n\n*** To create maregionsbits_graham_ni***\nsort region_code year\nby region_code year: egen regionsbits_graham=total(bitstodate_BIT)\nsort iso3n year\ngen regionsbits_graham_ni=regionsbits_graham-bitstodate_BIT\ngen maregionsbits_graham_ni=(F1.regionsbits_graham_ni+regionsbits_graham_ni+ L1.regionsbits_graham_ni)/3\n\n*** To create maworldsbits_ni***\nsort year\nby year: egen world_sbits=total(strong_bits)\ngen world_sbits_ni=world_sbits-strong_bits\nsort iso3n year\ngen maworldsbits_ni=(F1.world_sbits_ni+world_sbits_ni+ L1.world_sbits_ni)/3\n\n*** To create avgregionsbit_ni***\nsort region_code year\nby region_code year: egen regionsbits=total(strong_bits)\nsort iso3n year\ngen regionsbits_ni=regionsbits-strong_bits\ngen avgregionsbit_ni=(F1.regionsbits_ni+regionsbits_ni+ L1.regionsbits_ni)/3\n*/",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 9 (FDI, 2sls, strong bits)",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 62,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "2sls",
+        "line": 62,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 62,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 62,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 62,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 62,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 62,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 62,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 62,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 63,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 63,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 63,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 63,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 63,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 63,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi",
+        "line": 64,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 64,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 64,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 64,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 64,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "l.avgregionsbit_ni",
+        "line": 64,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldsbits_ni",
+        "line": 64,
+        "column": 63
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 64,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 64,
+        "column": 87
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 65,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Robust score chi2(1)            =  2.01853  (p = 0.1554)\nRobust regression F(1,2317)     =   1.8909  (p = 0.1692) */",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* F=46252.4 */",
+    "line": 67,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 67,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* TScore chi2(1) =  3.22828  (p = 0.0724) */",
+    "line": 68,
+    "column": 14
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "overid",
+        "line": 68,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 10 (FDI, gmm, strong bits)",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 71,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gmm",
+        "line": 71,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 71,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 71,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 71,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 71,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 71,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 71,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 71,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 72,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 72,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 72,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 72,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 72,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 72,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi",
+        "line": 73,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 73,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 73,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 73,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 73,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "l.avgregionsbit_ni",
+        "line": 73,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldsbits_ni",
+        "line": 73,
+        "column": 63
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 73,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 73,
+        "column": 87
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* GMM C statistic chi2(1) =  1.76938  (p = 0.1835) */",
+    "line": 74,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 74,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* F statistic = 46252.4 */",
+    "line": 75,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 75,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*  Hansen's J chi2(1) = 3.22829 (p = 0.0724) */",
+    "line": 76,
+    "column": 14
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "overid",
+        "line": 76,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 11 (FDI, 2sls, all bits)",
+    "line": 78,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 79,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "2sls",
+        "line": 79,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 79,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 79,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 79,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 79,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 79,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 79,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 79,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 79,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 79,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 80,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 80,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 80,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 80,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi",
+        "line": 80,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 80,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 80,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 81,
+        "column": 2
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 81,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "l.maregionsbits_graham_ni",
+        "line": 81,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldbits_graham_ni",
+        "line": 81,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 81,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 81,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 82,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Robust score chi2(1)            =  .520936  (p = 0.4704)\n  Robust regression F(1,2244)     =  .484502  (p = 0.4865) */",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* F statistic = 77107.1 */",
+    "line": 84,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 84,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Score chi2(1) =  1.17724  (p = 0.2779) */",
+    "line": 85,
+    "column": 14
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "overid",
+        "line": 85,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 12 (FDI, gmm, all bits)",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 88,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gmm",
+        "line": 88,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 88,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 88,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 88,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 88,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 88,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 88,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 88,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 88,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 88,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 89,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 89,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 89,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 89,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi",
+        "line": 89,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 89,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 89,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 90,
+        "column": 2
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 90,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "l.maregionsbits_graham_ni",
+        "line": 90,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldbits_graham_ni",
+        "line": 90,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 90,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 90,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* GMM C statistic chi2(1) =  .478831  (p = 0.4890) */",
+    "line": 91,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 91,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* F=  77107.1 */",
+    "line": 92,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 92,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Hansen's J chi2(1) = 1.17724 (p = 0.2779) */",
+    "line": 93,
+    "column": 14
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "overid",
+        "line": 93,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 13 (PRIV, 2sls, strong bits)",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 96,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "2sls",
+        "line": 96,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 96,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 96,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 96,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 96,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 96,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 96,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 96,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 96,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 96,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 97,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 97,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 97,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 97,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 97,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 97,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 97,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 98,
+        "column": 2
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 98,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "l.maregionsbit_ni",
+        "line": 98,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldsbits_ni",
+        "line": 98,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 98,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 98,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 99,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Robust Durbin (score) chi2(1)          =  .224268  (p = 0.6348)\n  Robust Wu-Hausman F(1,2323)            =  .210344  (p = 0.6454)*/",
+    "line": 100,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*    F = 46962.8 */",
+    "line": 101,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 101,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Score chi2(1) =  .945419  (p = 0.3309) */",
+    "line": 102,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "over",
+        "line": 102,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 14 (Priv, gmm, strong bits)",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 105,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gmm",
+        "line": 105,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 105,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 105,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 105,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 105,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 105,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 105,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 105,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 105,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 105,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 106,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 106,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 106,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 106,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 106,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 106,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 106,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 107,
+        "column": 2
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 107,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "l.maregionsbit_ni",
+        "line": 107,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldsbits_ni",
+        "line": 107,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 107,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 107,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* GMM C statistic chi2(1) =  .164553  (p = 0.6850) */",
+    "line": 108,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 108,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*    F = 46962.8 */",
+    "line": 109,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 109,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Score chi2(1) =  .945419  (p = 0.3309) */",
+    "line": 110,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "over",
+        "line": 110,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******* Model 15 (Priv, 2sls, weak bits)",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 113,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "2sls",
+        "line": 113,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 113,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 113,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 113,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 113,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 113,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 113,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 113,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 113,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 113,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 114,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 114,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 114,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 114,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 114,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 114,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 114,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 115,
+        "column": 2
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 115,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "l.maregionsbits_graham_ni",
+        "line": 115,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldbits_graham_ni",
+        "line": 115,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 115,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 115,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 116,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Robust score chi2(1)            =  .041697  (p = 0.8382)\n  Robust regression F(1,2250)     =  .039022  (p = 0.8434) */",
+    "line": 117,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* F = 77358.5 */",
+    "line": 118,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 118,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*  Score chi2(1)          =  3.65661  (p = 0.0558) */",
+    "line": 119,
+    "column": 12
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "over",
+        "line": 119,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 16 (PRIV, gmm, weak bits) ",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ivregress",
+      "line": 122,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gmm",
+        "line": 122,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 122,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 122,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 122,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 122,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 122,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 122,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 122,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 122,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 122,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 123,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 123,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 123,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 123,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 123,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 123,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 123,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 124,
+        "column": 2
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 124,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "l.maregionsbits_graham_ni",
+        "line": 124,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.maworldbits_graham_ni",
+        "line": 124,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 124,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "robust",
+        "line": 124,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* GMM C statistic chi2(1) =   .10011  (p = 0.7804) */",
+    "line": 125,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 125,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endogenous",
+        "line": 125,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*   F =  77358.5   */",
+    "line": 126,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 126,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Hansen's J chi2(1) =  3.6566 (p = 0.0558) */",
+    "line": 127,
+    "column": 14
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "overid",
+        "line": 127,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***** Descriptive Statistic **********",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****** (Tables 6&7 - Appendix) *******",
+    "line": 131,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 133,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 133,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "strong_bits",
+        "line": 133,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "polconiii",
+        "line": 133,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "polity",
+        "line": 133,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 133,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr",
+        "line": 133,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "lngdppc",
+        "line": 133,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "lntrade",
+        "line": 134,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ptacum2",
+        "line": 134,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ckaopen2010",
+        "line": 134,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lninflation",
+        "line": 134,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "savings",
+        "line": 134,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "worldsbits",
+        "line": 134,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "lnworldfdi",
+        "line": 134,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "lnworldpriv",
+        "line": 134,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "corr",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 136,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 136,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "strong_bits",
+        "line": 136,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "polconiii",
+        "line": 136,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "polity",
+        "line": 136,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 136,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "lngdppc",
+        "line": 136,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr",
+        "line": 136,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "lntrade",
+        "line": 137,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ptacum2",
+        "line": 137,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ckaopen",
+        "line": 137,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lninflation",
+        "line": 137,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "savings",
+        "line": 137,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************",
+    "line": 140,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**** Table 8 (Appendix) *****************",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************",
+    "line": 142,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 17 (RE, Regional dummies - FDI)",
+    "line": 143,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 144,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 144,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 144,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 144,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 144,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 144,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 144,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 145,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 145,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 145,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 145,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 145,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 145,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 145,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 146,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 146,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 146,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "east_asia",
+        "line": 146,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "europe",
+        "line": 146,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "mena",
+        "line": 146,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "south_asia",
+        "line": 147,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ssa",
+        "line": 147,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 147,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 18 (Driscoll Kraay - FDI )",
+    "line": 148,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 149,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "llnfdi",
+        "line": 149,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "lsbits",
+        "line": 149,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "lsbits2",
+        "line": 149,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "lpolconiii",
+        "line": 149,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "lpolity2",
+        "line": 149,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "llnpop",
+        "line": 149,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "llngdppc",
+        "line": 149,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "lgdpgr",
+        "line": 149,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "llntrade",
+        "line": 149,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "lptacum2",
+        "line": 150,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "lckaopen2010",
+        "line": 150,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "llninflation",
+        "line": 150,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "lsavings",
+        "line": 150,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lworldsbits_ni",
+        "line": 150,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "llnworldfdi_ni",
+        "line": 150,
+        "column": 60
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 150,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 19 (Country and Year Fixed Effects - FDI )",
+    "line": 151,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 152,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 152,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 152,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 152,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 152,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 152,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 152,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 152,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 152,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 153,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 153,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 153,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 153,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 153,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 153,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 153,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 154,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 154,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 154,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 154,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 154,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 20 (RE, Regional dummies - Priv)",
+    "line": 155,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 156,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 20
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 156,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 156,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 156,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 156,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 156,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 156,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 157,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 157,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 157,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 157,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 157,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 157,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 157,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 158,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 158,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 158,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "east_asia",
+        "line": 158,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "europe",
+        "line": 158,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "mena",
+        "line": 158,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "south_asia",
+        "line": 159,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ssa",
+        "line": 159,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 159,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 21 (Driscoll Kraay - Priv)",
+    "line": 160,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 161,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "llnpriv",
+        "line": 161,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "lsbits",
+        "line": 161,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "lsbits2",
+        "line": 161,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "lpolconiii",
+        "line": 161,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "lpolity2",
+        "line": 161,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "llnpop",
+        "line": 161,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "llngdppc",
+        "line": 161,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "lgdpgr",
+        "line": 161,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "llntrade",
+        "line": 161,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "lptacum2",
+        "line": 162,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "lckaopen2010",
+        "line": 162,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "llninflation",
+        "line": 162,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "lsavings",
+        "line": 162,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lworldsbits_ni",
+        "line": 162,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "llnworldpriv_ni",
+        "line": 162,
+        "column": 60
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 162,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***** Model 22 (Country and year fixed effects - priv)",
+    "line": 163,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 164,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 164,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 164,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 164,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 164,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 164,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 164,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 165,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 165,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 165,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 165,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 165,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 165,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 165,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 166,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 166,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 166,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "i.year",
+        "line": 166,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 166,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 166,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 166,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*****************************",
+    "line": 168,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**** Table 9 (Appendix) *****",
+    "line": 169,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************",
+    "line": 170,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 23 (FE - FDI)",
+    "line": 171,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 172,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 172,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 172,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 172,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 172,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 172,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 172,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 172,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 173,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 173,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 173,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 173,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 173,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 173,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 173,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 173,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 174,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 174,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 174,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 174,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 174,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 24 (GLS - FDI)",
+    "line": 175,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtgls",
+      "line": 176,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 176,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 176,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 176,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 176,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 176,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 176,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 177,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 177,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 177,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 177,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 177,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 177,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 177,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 178,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 178,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 178,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 178,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "corr",
+        "line": 178,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "psar1",
+        "line": 178,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 178,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 25 (FE - Priv)",
+    "line": 179,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 180,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 180,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 180,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 180,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 180,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 180,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 180,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 180,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 181,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 181,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 181,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 181,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 181,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 181,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 181,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 181,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 182,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 182,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 182,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 182,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 182,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 26 (GLS - Priv)",
+    "line": 183,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtgls",
+      "line": 184,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 184,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 184,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 184,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 184,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 184,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 184,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 185,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 185,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 185,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 185,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 185,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 185,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 185,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 186,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits_ni",
+        "line": 186,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 186,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "i.iso3n",
+        "line": 186,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "corr",
+        "line": 186,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "psar1",
+        "line": 186,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 186,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************",
+    "line": 190,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**** Table 10 (Appendix) *****",
+    "line": 191,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************",
+    "line": 192,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 27 (FDI, Checks, Dem)",
+    "line": 193,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 194,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 194,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 194,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 194,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 194,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 194,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "l.checks",
+        "line": 194,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "l.dem",
+        "line": 194,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 194,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 194,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 194,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 194,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 195,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 195,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 195,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 195,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits",
+        "line": 195,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi",
+        "line": 195,
+        "column": 62
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 195,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 195,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 195,
+        "column": 87
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 28 (Priv, Check, Dem)",
+    "line": 196,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 197,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 16
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 197,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 197,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 197,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 197,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 197,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "l.checks",
+        "line": 197,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "l.dem",
+        "line": 197,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 197,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 197,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 197,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 197,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 198,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 198,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 198,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 198,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits",
+        "line": 198,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 198,
+        "column": 62
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 198,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 198,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 198,
+        "column": 88
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 29 (Priv, exclude Argentina, Brazil, India)",
+    "line": 199,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 200,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 15
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 200,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 200,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 200,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 200,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 200,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 200,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 200,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 200,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 200,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 200,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 201,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 201,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 201,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 201,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits",
+        "line": 201,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 201,
+        "column": 62
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 201,
+        "column": 79
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 201,
+        "column": 84
+      },
+      {
+        "id": "number",
+        "value": "76",
+        "line": 201,
+        "column": 86
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 201,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 201,
+        "column": 91
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 201,
+        "column": 96
+      },
+      {
+        "id": "number",
+        "value": "32",
+        "line": 201,
+        "column": 98
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 201,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 201,
+        "column": 103
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 201,
+        "column": 108
+      },
+      {
+        "id": "number",
+        "value": "356",
+        "line": 201,
+        "column": 110
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 201,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 201,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 201,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 30 (FDI, Tertiary, Resource Rents)",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 203,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 17
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 203,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 203,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 203,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 203,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 203,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 203,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 203,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 203,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 203,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 203,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 204,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 204,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntert",
+        "line": 204,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.natresource_rents_wb",
+        "line": 204,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 204,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 204,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits",
+        "line": 204,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi",
+        "line": 204,
+        "column": 94
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 204,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 204,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 204,
+        "column": 119
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 31 (Priv, Tertiary, Resource Rents) ",
+    "line": 205,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 206,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 17
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 206,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 206,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits",
+        "line": 206,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "l.strong_bits2",
+        "line": 206,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 206,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 206,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 206,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 206,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 206,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 206,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 207,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 207,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntert",
+        "line": 207,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "l.natresource_rents_wb",
+        "line": 207,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 207,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 207,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "l.worldsbits",
+        "line": 207,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv",
+        "line": 207,
+        "column": 94
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 207,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 207,
+        "column": 112
+      },
+      {
+        "id": "identifier",
+        "value": "iso3n",
+        "line": 207,
+        "column": 120
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************",
+    "line": 209,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**** Table 11 (Appendix) *****",
+    "line": 210,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************",
+    "line": 211,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 32 (FDI, All Bits, RE with regional dummies)",
+    "line": 212,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 213,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 21
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 213,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 213,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 213,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 213,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.bits_graham_2",
+        "line": 213,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 213,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 213,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 214,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 214,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 214,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 214,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 214,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 214,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 214,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 214,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_bits_graham_ni",
+        "line": 215,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 215,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "east_asia",
+        "line": 215,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "europe",
+        "line": 215,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "mena",
+        "line": 215,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "south_asia",
+        "line": 216,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ssa",
+        "line": 216,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 216,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 33 (FDI, All BITs, Driscoll Kraay)",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 218,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "llnfdi",
+        "line": 218,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "llnpriv",
+        "line": 218,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "lbitstodate_bit",
+        "line": 218,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "lbits_graham_2",
+        "line": 218,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "lpolconiii",
+        "line": 218,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "lpolity2",
+        "line": 218,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "llnpop",
+        "line": 219,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llngdppc",
+        "line": 219,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "lgdpgr",
+        "line": 219,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "llntrade",
+        "line": 219,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "lptacum2",
+        "line": 219,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lckaopen2010",
+        "line": 219,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "llninflation",
+        "line": 219,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lsavings",
+        "line": 219,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "lworld_bits_graham_ni",
+        "line": 220,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llnworldfdi_ni",
+        "line": 220,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 220,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 34 (Priv, All BITs, RE with regional dummies)",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 222,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 21
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 222,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 222,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 222,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.bitstodate_bit",
+        "line": 222,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.bits_graham_2",
+        "line": 222,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 222,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 222,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 223,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 223,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 223,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 223,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 223,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 223,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 223,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 223,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_bits_graham_ni",
+        "line": 224,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 224,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "east_asia",
+        "line": 224,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "europe",
+        "line": 224,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "mena",
+        "line": 224,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "south_asia",
+        "line": 225,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ssa",
+        "line": 225,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 225,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 35 (Priv, All BITs, Driscoll Kraay)",
+    "line": 226,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 227,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "llnfdi",
+        "line": 227,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "llnpriv",
+        "line": 227,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "lbitstodate_bit",
+        "line": 227,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "lbits_graham_2",
+        "line": 227,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "lpolconiii",
+        "line": 227,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "lpolity2",
+        "line": 227,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "llnpop",
+        "line": 228,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llngdppc",
+        "line": 228,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "lgdpgr",
+        "line": 228,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "llntrade",
+        "line": 228,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "lptacum2",
+        "line": 228,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lckaopen2010",
+        "line": 228,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "llninflation",
+        "line": 228,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lsavings",
+        "line": 228,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "lworld_bits_graham_ni",
+        "line": 229,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llnworldpriv_ni",
+        "line": 229,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 229,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 36 (FDI, Weak BITs, RE with regional dummies) ",
+    "line": 230,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 231,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 21
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 231,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 231,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 231,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits",
+        "line": 231,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits2",
+        "line": 231,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 231,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 231,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 232,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 232,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 232,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 232,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 232,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 232,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 232,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 232,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_weakbits_ni",
+        "line": 233,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldfdi_ni",
+        "line": 233,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "east_asia",
+        "line": 233,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "europe",
+        "line": 233,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "mena",
+        "line": 233,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "south_asia",
+        "line": 234,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ssa",
+        "line": 234,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 234,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 37 (FDI, Weak BITs, Driscoll Kraay)",
+    "line": 235,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnfdi",
+        "line": 236,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "llnfdi",
+        "line": 236,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "llnpriv",
+        "line": 236,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "lweakbits",
+        "line": 236,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "lweakbits2",
+        "line": 236,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "lpolconiii",
+        "line": 236,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "lpolity2",
+        "line": 236,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "llnpop",
+        "line": 237,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llngdppc",
+        "line": 237,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "lgdpgr",
+        "line": 237,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "llntrade",
+        "line": 237,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "lptacum2",
+        "line": 237,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lckaopen2010",
+        "line": 237,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "llninflation",
+        "line": 237,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lsavings",
+        "line": 237,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "lworld_weakbits_ni",
+        "line": 238,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llnworldfdi_ni",
+        "line": 238,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 238,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 38 (PRIV, Weak BITS, Re with regional dummies)",
+    "line": 239,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 240,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 21
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 240,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnfdi",
+        "line": 240,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpriv",
+        "line": 240,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits",
+        "line": 240,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.weakbits2",
+        "line": 240,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "l.polconiii",
+        "line": 240,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "l.polity2",
+        "line": 240,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnpop",
+        "line": 241,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lngdppc",
+        "line": 241,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "l.gdpgr",
+        "line": 241,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "l.lntrade",
+        "line": 241,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "l.ptacum2",
+        "line": 241,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.ckaopen2010",
+        "line": 241,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l.lninflation",
+        "line": 241,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "l.savings",
+        "line": 241,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "l.world_weakbits_ni",
+        "line": 242,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "l.lnworldpriv_ni",
+        "line": 242,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "east_asia",
+        "line": 242,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "europe",
+        "line": 242,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "mena",
+        "line": 242,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "south_asia",
+        "line": 243,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ssa",
+        "line": 243,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 243,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Model 39 (Priv, Weak BITs, Driscoll Kraay)",
+    "line": 244,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 245,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnpriv",
+        "line": 245,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "llnfdi",
+        "line": 245,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "llnpriv",
+        "line": 245,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "lweakbits",
+        "line": 245,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "lweakbits2",
+        "line": 245,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "lpolconiii",
+        "line": 245,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "lpolity2",
+        "line": 245,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "llnpop",
+        "line": 246,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llngdppc",
+        "line": 246,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "lgdpgr",
+        "line": 246,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "llntrade",
+        "line": 246,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "lptacum2",
+        "line": 246,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lckaopen2010",
+        "line": 246,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "llninflation",
+        "line": 246,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lsavings",
+        "line": 246,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "lworld_weakbits_ni",
+        "line": 247,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "llnworldpriv_ni",
+        "line": 247,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 247,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********* Determining Substantive Effects *******",
+    "line": 250,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* BIT effect on infrastructure flows. Need to exponentiation coefficients from the \nrespective models and then multiply by std deviation to report substantive effect of\na one standard deviation increase in independent variable:\n1. Model 3 - BIT .1448, BIT^2 -0.0099: exp(.1148)= 1.121649 or about 12%; exp(-0.0099)=.9901488 or about -1%.\nAn average country has 3.5 BITs, which means Model 3 predicts it has 3.5*12.165-(1*3.5) = 39.007% increase in\ninfrastructre investment.\nA country one std deviation above the mean has 7.8 BITs (or 4.3 more BITs than the average country), which means\nModel 3 predicts it has 4.3*12.165-(1*4.3)= 48% more infrastructure investment than a country with average number\nof BITs\n2. Model 4 - BIT .2708, BIT^2 -.0154: exp (.2708)= 1.311 or 31.1%; exp(-.0154)= .985 or about -1.5%\nAn average country has 3.5 BITs, which means Model 4 predicts it has 3.5*31.1-(1.5*3.5)=103.6% increase in\ninfrastructure investment.\nA country one std deviation above the mean has 4.3 more BITs than the average country, which means Model 4\npredicts it has 4.3*31.1-(1.5*4.3)=127.3% increase in infrastructure investment. */",
+    "line": 251,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* POLCON effect: \nModel 3: exp(.5341)=1.70 or  70%, std is .2102 so 70*.2101=14.7 or 15% (effect of a 1 std dev increase in POLCON)\nModel 4: exp(.6149)=1.85 or  85% std is .2102 os 85*.2102= 17.867 or 18% (effec of a 1 std dev increase in POLCON on PRIV)\n*/",
+    "line": 253,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* ALL BIT Effect:\nModel 7: exp(.0575)=1.059 or 5.9%, std is 12.93 (can find this by command sum bitstodate_bit).\nBIT^2: exp(-0.0007)=0.9993002 or -0.1%.\nA country one std dev above the mean is predicted to increase infrastructure investment (5.9*12.93)-(-.1*12.93)=75%\nGLS Model (this model was not reported in the appendix, but can be check with the following code:\nxtgls lnpriv l.lnpriv l.bitstodate_bit l.bits_graham_2 l.polconiii ///\nl.polity2 l.lnpop l.lngdppc l.gdpgr l.lntrade l.ptacum2 l.ckaopen2010 l.lninflation ///\nl.savings l.world_bits_graham_ni l.lnworldpriv_ni, corr(psar1) force)\n\nexp(.0291) = 1.0295 or 3% and BIT^2: exp(-0.0004)=.9996 or 0\nA country one std dev above the mean is predicted to increase infrastructure investment 3*12.93 or 38.79%\n\nTo figure out the effect between the average country (10 BITS) and a country with no BITs, do the same thing \nsubstituting 10 for 12.93:\n(5.9*10)-(-.1*10)=58%\n(3*10)= 30%\n\n",
+    "line": 255,
+    "column": 1
+  }
+]

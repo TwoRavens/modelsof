@@ -1,0 +1,2723 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\nTable 5: Covariate Balance Before and After Inverse Propensity Score Weighting\n\nThe Plan\n1) Fit a logit model of the probability that a person responds to the survey\nas a function of covariates from the sampling frame. These covariates are available\nfor every person in the sample.\n\n2) The predicted probabilities from the model are the estimated propensity scores.\nUse the propensity scores to form weights using the formula:\nw = r x (1/phat) + (1-r) x (1/(1-phat)), where r = 1 for respondents and r = 0 for nonrespondents.\n\n3) Compute the means of the frame covariates among respondents and non-respondents.\nAlso compute difference in means and the standardized mean difference \nfor each covariate. These are Cohen's d statistics.\n\n4) Compute inverse propensity score weighted means for respondents and \nnon-respondents. Also compute the mean difference and the Cohen's d statistics.\n\n5) Display the results in table 5.\n\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 3,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "timer",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 4,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "timer",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 5,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 5,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"/Users/coadywing/Dropbox/Censored LATE/dataset_600\"",
+        "line": 7,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*cd \"C:\\Users\\cwing\\Dropbox\\Censored LATE\\dataset_600\\\"",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clean_sesExperiment.dta",
+        "line": 9,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 9,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********************************************************************************",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Estimate propensity scores using a logit model.",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 13,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 13,
+        "column": 12
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 13,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 13,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maleXage",
+        "line": 14,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 14,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 14,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 14,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maleXage2",
+        "line": 15,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 15,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 15,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 15,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Non-Response probabilities by age, gender, language population size, region.",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "logit",
+      "line": 18,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 29
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 18,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 18,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 18,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 18,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "maleXage",
+        "line": 18,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "maleXage2",
+        "line": 18,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "age2534",
+        "line": 19,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "age3544",
+        "line": 19,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "age4554",
+        "line": 19,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "age5564",
+        "line": 19,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "age6574",
+        "line": 19,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "age75p",
+        "line": 19,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "french",
+        "line": 19,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "italian",
+        "line": 19,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "othMunicAgg",
+        "line": 20,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "isolatedTown",
+        "line": 20,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "ruralMunic",
+        "line": 20,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "popGT100k",
+        "line": 21,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "pop50_lt100",
+        "line": 21,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "pop20_lt50",
+        "line": 21,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "pop10_lt20",
+        "line": 21,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "pop5_lt10",
+        "line": 21,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "pop2_lt5",
+        "line": 21,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "poplt1k",
+        "line": 21,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "gr_reg_lemanique",
+        "line": 22,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "gr_espace_mittelland",
+        "line": 22,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "gr_northwest",
+        "line": 22,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "gr_ostschweiz",
+        "line": 22,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "gr_zentralschweiz",
+        "line": 22,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "gr_ticino",
+        "line": 22,
+        "column": 84
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "phat",
+        "line": 24,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Compute inverse propensity score weights.",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wate",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 27,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 27,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "phat",
+        "line": 27,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 27,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 27,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 27,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wate",
+        "line": 28,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 28,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 28,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 28,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 28,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "phat",
+        "line": 28,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 28,
+        "column": 30
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 28,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 28,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********************************************************************************",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Assemble stuff for TABLE 5: Covariate balance before and after weighting",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "covariates",
+        "line": 33,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "male",
+        "line": 33,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 33,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "age1824",
+        "line": 33,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "age2534",
+        "line": 33,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age3544",
+        "line": 33,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "age4554",
+        "line": 33,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "age5564",
+        "line": 33,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "age6574",
+        "line": 33,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "age75p",
+        "line": 33,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "german",
+        "line": 34,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "french",
+        "line": 34,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "italian",
+        "line": 34,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "centCityAgg",
+        "line": 34,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "othMunicAgg",
+        "line": 34,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "isolatedTown",
+        "line": 34,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "ruralMunic",
+        "line": 34,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "popGT100k",
+        "line": 34,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "pop50_lt100",
+        "line": 35,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "pop20_lt50",
+        "line": 35,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "pop10_lt20",
+        "line": 35,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "pop5_lt10",
+        "line": 35,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "pop2_lt5",
+        "line": 35,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "pop1_lt2",
+        "line": 35,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "poplt1k",
+        "line": 35,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "gr_reg_lemanique",
+        "line": 36,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "gr_espace_mittelland",
+        "line": 36,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "gr_northwest",
+        "line": 36,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "gr_zurich",
+        "line": 36,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "gr_ostschweiz",
+        "line": 37,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "gr_zentralschweiz",
+        "line": 37,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "gr_ticino",
+        "line": 37,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Unweighted means and standard deviations among non-respondents.",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mean",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`covariates'",
+        "line": 40,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 40,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 40,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 41,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "nonresp",
+      "line": 42,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 42,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_mean",
+        "line": 43,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 43,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 43,
+        "column": 25
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 43,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_sd",
+        "line": 44,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 44,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 44,
+        "column": 23
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 44,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Unweighted means and standard deviations among respondents.",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mean",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`covariates'",
+        "line": 47,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 47,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 47,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 47,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 48,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "resp",
+      "line": 49,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 49,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_mean",
+        "line": 50,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 50,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 50,
+        "column": 22
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 50,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_sd",
+        "line": 51,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 51,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 51,
+        "column": 20
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 51,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Compute unweighted mean differences and store it as a model.",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanDiff",
+        "line": 54,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_mean",
+        "line": 54,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 54,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "nonresp_mean",
+        "line": 54,
+        "column": 32
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 54,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 55,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post",
+        "line": 56,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "meanDiff",
+        "line": 56,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "meanDiff",
+      "line": 57,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 57,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Weighted means and standard deviations among non-respondents.",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mean",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`covariates'",
+        "line": 60,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wate",
+        "line": 60,
+        "column": 23
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 60,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 60,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 60,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 60,
+        "column": 46
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 60,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 61,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "nonrespw",
+      "line": 62,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 62,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_mean",
+        "line": 63,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 63,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 63,
+        "column": 27
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 63,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_sd",
+        "line": 64,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 64,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 64,
+        "column": 25
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 64,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Weighted means and standard deviations among respondents.",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mean",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`covariates'",
+        "line": 67,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wate",
+        "line": 67,
+        "column": 24
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 67,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "anyresponse",
+        "line": 67,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 67,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 67,
+        "column": 46
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 67,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 68,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "respw",
+      "line": 69,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 69,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_w_mean",
+        "line": 70,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 70,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 70,
+        "column": 24
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 70,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_w_sd",
+        "line": 71,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 71,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 71,
+        "column": 22
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 71,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Compute weighted mean differences and store it as a model.",
+    "line": 73,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanDiff_w",
+        "line": 74,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_w_mean",
+        "line": 74,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 74,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "nonresp_w_mean",
+        "line": 74,
+        "column": 36
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 74,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 75,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post",
+        "line": 76,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "meanDiff_w",
+        "line": 76,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "meanDiff_w",
+      "line": 77,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 77,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Drop all the variables. (Don't need them after this point.)",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 80,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Store the means and SD as variables.",
+    "line": 82,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_mean",
+        "line": 83,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_sd",
+        "line": 84,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_mean",
+        "line": 86,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_sd",
+        "line": 87,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_mean",
+        "line": 89,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_sd",
+        "line": 90,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_w_mean",
+        "line": 92,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_w_sd",
+        "line": 93,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Compute unweighted covariate-specific pooled variances and standard deviations",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_var",
+        "line": 96,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nonresp_sd",
+        "line": 96,
+        "column": 19
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 96,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 96,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_var",
+        "line": 97,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_sd",
+        "line": 97,
+        "column": 16
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 97,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 97,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "poolvar",
+        "line": 100,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nonresp_var",
+        "line": 100,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 100,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "resp_var",
+        "line": 100,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 100,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 100,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "poolsd",
+        "line": 101,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sqrt",
+        "line": 101,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "poolvar",
+        "line": 101,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Compute weighted covariate-specific  pooled variances and standard deviations",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_var",
+        "line": 104,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_sd",
+        "line": 104,
+        "column": 21
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 104,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 104,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resp_w_var",
+        "line": 105,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_w_sd",
+        "line": 105,
+        "column": 18
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 105,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 105,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "poolvar_w",
+        "line": 107,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nonresp_w_var",
+        "line": 107,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 107,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "resp_w_var",
+        "line": 107,
+        "column": 34
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 107,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 107,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "poolsd_w",
+        "line": 108,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sqrt",
+        "line": 108,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "poolvar_w",
+        "line": 108,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Mean Differences",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanDiff",
+        "line": 111,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_mean",
+        "line": 111,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 111,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "nonresp_mean",
+        "line": 111,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanDiff_w",
+        "line": 112,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resp_w_mean",
+        "line": 112,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 112,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "nonresp_w_mean",
+        "line": 112,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Cohen's D",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dstat",
+        "line": 115,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "meanDiff",
+        "line": 115,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 115,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "poolsd",
+        "line": 115,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Cohen's D (Weighted Data)",
+    "line": 118,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dstat_w",
+        "line": 119,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "meanDiff_w",
+        "line": 119,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 119,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "poolsd_w",
+        "line": 119,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Put the unweighted Cohen's D statistics into a matrix",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Transpose the matrix from a column to a row.",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Store it as a model.",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mkmat",
+      "line": 124,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dstat",
+        "line": 124,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 125,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 125,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dstat",
+        "line": 125,
+        "column": 12
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 125,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "colnames",
+        "line": 126,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 126,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`covariates'",
+        "line": 126,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 127,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post",
+        "line": 128,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 128,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "d",
+      "line": 129,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 129,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Put the weighted Cohen's D statistics into a matrix",
+    "line": 131,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Transpose the matrix from a column to a row.",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Store it as a model.",
+    "line": 133,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mkmat",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dstat_w",
+        "line": 134,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d_w",
+        "line": 135,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dstat_w",
+        "line": 135,
+        "column": 14
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 135,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "colnames",
+        "line": 136,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "d_w",
+        "line": 136,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`covariates'",
+        "line": 136,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 137,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ereturn",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post",
+        "line": 138,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "d_w",
+        "line": 138,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "d_w",
+      "line": 139,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 139,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Make Table 5",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanDiff",
+        "line": 142,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 142,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "meanDiff_w",
+        "line": 142,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "d_w",
+        "line": 142,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 142,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "table5.rtf",
+        "line": 142,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 142,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "nose",
+        "line": 142,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "not",
+        "line": 142,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "nostar",
+        "line": 142,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 142,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "a1",
+        "line": 142,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "nonumbers",
+        "line": 143,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "mtitles",
+        "line": 143,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"Raw Mean Diff\"",
+        "line": 143,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"Cohen's D\"",
+        "line": 143,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"Weighted Mean Diff\"",
+        "line": 143,
+        "column": 47
+      },
+      {
+        "id": "string",
+        "value": "\"Cohen's D\"",
+        "line": 143,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "timer",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 145,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "timer",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 146,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 146,
+        "column": 12
+      }
+    ]
+  }
+]
