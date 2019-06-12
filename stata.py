@@ -382,27 +382,37 @@ class Encoder(json.JSONEncoder):
 
 if __name__ == '__main__':
     journal = sys.argv[1]
-    pattern = f'out/{journal}/**/*'
-    cmds, regs, stats, others = Counter(), Counter(), [], Counter()
+    pattern = f'out/*/downloads/2018/**/*'
+    others = Counter()
     for file in glob.glob(f'{pattern}.do', recursive=True):
+        if '__MACOSX' in file:
+            continue
+
+        journal1 = file.split('/')[1]
+        if journal != journal1:
+            if stats:
+                with open(f'out/{journal}/stats.json', 'w') as f:
+                    json.dump([{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
+
+                for cmds in [('commands', cmds), ('regressions', regs)]:
+                    with open(f'out/{journal}/{cmds[0]}.csv', 'wt') as f:
+                        w = csv.writer(f)
+                        w.writerow(('year', 'command', 'count'))
+                        w.writerows((year, cmd, n) for ((year, cmd), n) in cmds[1].most_common())
+
+            nournal = journal1 
+            cmds, regs, stats = Counter(), Counter(), []
+
         try:
             stat = run(file, cmds, regs)
         except Exception as e:
             print('error:', e)
             input('ENTER TO CONTINUE')
             stat = dict(file=file, error=str(e))
+
         stats.append(stat)
         others.update(stat.get('other', []))
-
-    with open(f'out/{journal}/stats.json', 'w') as f:
-        json.dump([{k: v for k, v in s.items() if v} for s in stats], f, indent=2)
 
     categories['no category'] = dict({k: dict(num=v) for k, v in others.most_common()})
     with open('categories.json', 'w') as f:
         json.dump(categories, f, indent=2)
-
-    for cmds in [('commands', cmds), ('regressions', regs)]:
-        with open(f'out/{journal}/{cmds[0]}.csv', 'wt') as f:
-            w = csv.writer(f)
-            w.writerow(('year', 'command', 'count'))
-            w.writerows((year, cmd, n) for ((year, cmd), n) in cmds[1].most_common())

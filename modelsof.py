@@ -36,12 +36,16 @@ def attempt(url, stream=False):
     while True:
         try:
             print(url)
-            r = requests.get(url, stream, timeout=45)
+            r = requests.get(url, stream, timeout=10)
+            if r.status_code in (403, 404):
+                return r
+
             r.raise_for_status()
             return r
         except:
-            if attempts > 10:
-                raise
+            if attempts > 4:
+                break  
+
             attempts += 1
 
 def get_ext(file):
