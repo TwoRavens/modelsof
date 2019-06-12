@@ -381,8 +381,9 @@ class Encoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 if __name__ == '__main__':
-    journal = sys.argv[1]
+    journal = ''
     pattern = f'out/*/downloads/2018/**/*'
+    cmds, regs, stats = Counter(), Counter(), []
     others = Counter()
     for file in glob.glob(f'{pattern}.do', recursive=True):
         if '__MACOSX' in file:
@@ -400,7 +401,7 @@ if __name__ == '__main__':
                         w.writerow(('year', 'command', 'count'))
                         w.writerows((year, cmd, n) for ((year, cmd), n) in cmds[1].most_common())
 
-            nournal = journal1 
+            journal = journal1 
             cmds, regs, stats = Counter(), Counter(), []
 
         try:

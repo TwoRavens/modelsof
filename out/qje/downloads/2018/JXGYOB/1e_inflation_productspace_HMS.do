@@ -1,0 +1,235 @@
+****************************************************************************
+***** This do.file generates measures of entry and exit of 
+***** goods across the product space (Quality-Modules/Modules/Groups/Dep.)
+****************************************************************************
+
+global db "D:\Dropbox\unequal_gains\main_data"
+
+* (A) Main datasets
+foreach i of numlist 2004(1)2014 {
+
+display "Starting Tornqvist computation for year `i', all consumers at different aggregation levels"
+
+local var=`i'+1
+
+use "$db/Important Price Datasets/price_index_household_income_`i'_2004_modules_final.dta", clear
+rename total_quantity total_quantity_old
+rename average_unit_price average_unit_price_old
+rename average_unit_price_all average_unit_price_all_old
+rename total_quantity_all total_quantity_all_old
+
+* bring in info on UPC price decile (within product module) in base period:
+merge m:1 upc upc_ver_uc using "$db/Important Lists/upc_brand_size_final.dta"
+keep if _merge==3
+drop _merge
+sum size1_amount, d
+drop if size1_amount<r(p1) | size1_amount>r(p99)
+* need to create "average_unit_price_all" (for consistency with what we do in other files)
+bysort upc upc_ver_uc: gen projection_factor*total_quantity
+gen average_unit_price_adj=average_unit_price/(size1_amount*multi)
+* create quality ranks without weights
+sort product_module_code average_unit_price_adj
+bysort product_module_code: gen double temp=[_N]
+bysort product_module_code: gen double temp2=[_n]
+gen rank=temp2/temp*100
+gen quality_rank=.
+foreach r of numlist 1(1)10 {
+replace quality_rank=`r' if rank<=`r'*10 & missing(quality_rank)
+}
+
+merge 1:1 upc upc_ver income_quintile using "$db/Important Price Datasets/price_index_household_income_`var'_2004_modules_final.dta"
+keep if _merge==3
+drop total_spending
+
+gen double price_ratio = average_unit_price/average_unit_price_old
+gen double price_ratio_all = average_unit_price_all/average_unit_price_all_old
+gen double quantity_ratio_all = total_quantity_all/total_quantity_all_old
+* get rid of outliers
+sum price_ratio_all, d
+gen p1_p=r(p1)
+gen p99_p=r(p99)
+sum quantity_ratio_all, d
+gen p1_q=r(p1)
+gen p99_q=r(p99)
+drop if price_ratio_all<p1_p | price_ratio_all>p99_p | ///
+quantity_ratio_all<p1_q | quantity_ratio_all>p99_q
+
+* collapse to UPC level 
+drop total_spending_all
+bysort upc upc_ver_uc: egen double total_spending_all=sum(average_unit_price_all*total_quantity)
+bysort upc upc_ver_uc: egen double total_spending_all_old=sum(average_unit_price_all_old*total_quantity_old)
+
+keep upc upc_ver_uc total_spending_all total_spending_all_old total_quantity_all total_quantity_all_old ///
+average_unit_price_all average_unit_price_all_old price_ratio_all product_module_code product_group_code ///
+department_code quality_rank quantity_ratio_all
+duplicates drop
+
+* (i) compute Tornqvist/Laspeyres/Paasche/CES price-quantity by quality_module
+bysort product_module quality: egen double total_spending_QM=sum(total_spending_all)
+bysort product_module quality: egen double total_spending_QM_old=sum(total_spending_all_old)
+gen double share_QM=total_spending_all/total_spending_QM
+gen double share_QM_old=total_spending_all_old/total_spending_QM_old
+* tornqvist
+gen double weight_QM=1/2*(share_QM+share_QM_old)
+gen double numerator_temp=weight*log(price_ratio_all)
+bysort product_module quality: egen double numerator=sum(numerator_temp)
+gen double tornqvist_price_index=exp(numerator)
+drop numerator numerator_temp weight*
+* ces price
+gen double weight_num=(share_QM-share_QM_old)/(ln(share_QM)-ln(share_QM_old))
+bysort product_module quality: egen double weight_den=sum(weight_num)
+gen double weight=weight_num/weight_den
+gen double numerator_temp=weight*log(price_ratio_all)
+bysort product_module quality: egen double numerator=sum(numerator_temp)
+gen double ces_price_index=exp(numerator)
+* ces quantity
+gen double numerator_temp_q=weight*log(quantity_ratio_all)
+bysort product_module quality: egen double numerator_q=sum(numerator_temp_q)
+gen double ces_quantum_index=exp(numerator_q)
+drop numerator* numerator_temp* weight*
+* laspeyres
+gen double numerator_temp=average_unit_price_all*total_quantity_all_old 
+gen double denominator_temp=average_unit_price_all_old*total_quantity_all_old
+bysort product_module quality: egen double numerator=sum(numerator_temp)
+bysort product_module quality: egen double denominator=sum(denominator_temp)
+gen laspeyres_price_index=numerator/denominator
+drop numerator denominator numerator_temp denominator_temp
+* paasche
+gen double numerator_temp=average_unit_price_all*total_quantity_all
+gen double denominator_temp=average_unit_price_all_old*total_quantity_all
+bysort product_module quality: egen double numerator=sum(numerator_temp)
+bysort product_module quality: egen double denominator=sum(denominator_temp)
+gen paasche_price_index=numerator/denominator
+drop numerator denominator numerator_temp denominator_temp
+
+preserve
+keep tornqvist_price_index ces_quantum ces_price_index laspeyres_price_index paasche_price_index ///
+product_module quality product_group department total_spending_QM total_spending_QM_old
+duplicates drop
+save "$db/Important Price Datasets/inflation_QM_`i'.dta", replace
+restore
+drop tornqvist ces_p ces_q laspeyres paasche
+
+* (ii) compute Tornqvist by module (note that this is effectively "nested" Tornqvist)
+bysort product_module : egen double total_spending_M=sum(total_spending_all)
+bysort product_module : egen double total_spending_M_old=sum(total_spending_all_old)
+gen double share_M=total_spending_all/total_spending_M
+gen double share_M_old=total_spending_all/total_spending_M_old
+
+gen weight_M=1/2*(share_M+share_M_old)
+gen double numerator_temp=weight*log(price_ratio_all)
+bysort product_module : egen double numerator=sum(numerator_temp)
+gen double tornqvist_price_index=exp(numerator)
+
+preserve
+keep tornqvist_price_index product_module product_group department total_spending_M total_spending_M_old
+duplicates drop
+save "$db/Important Price Datasets/inflation_M_`i'.dta", replace
+restore
+drop numerator numerator_temp weight tornqvist
+
+* (iii) compute Tornqvist by group
+bysort product_group : egen double total_spending_G=sum(total_spending_all)
+bysort product_group : egen double total_spending_G_old=sum(total_spending_all_old)
+gen double share_G=total_spending_all/total_spending_G
+gen double share_G_old=total_spending_all/total_spending_G_old
+
+gen weight_G=1/2*(share_G+share_G_old)
+gen double numerator_temp=weight*log(price_ratio_all)
+bysort product_group : egen double numerator=sum(numerator_temp)
+gen double tornqvist_price_index=exp(numerator)
+
+preserve
+keep tornqvist_price_index product_group department total_spending_G total_spending_G_old
+duplicates drop
+save "$db/Important Price Datasets/inflation_G_`i'.dta", replace
+restore
+drop numerator numerator_temp weight tornqvist
+
+* (iv) compute Tornqvist by department
+bysort department : egen double total_spending_D=sum(total_spending_all)
+bysort department : egen double total_spending_D_old=sum(total_spending_all_old)
+gen double share_D=total_spending_all/total_spending_D
+gen double share_D_old=total_spending_all/total_spending_D_old
+
+gen weight_D=1/2*(share_D+share_D_old)
+gen double numerator_temp=weight*log(price_ratio_all)
+bysort department : egen double numerator=sum(numerator_temp)
+gen double tornqvist_price_index=exp(numerator)
+
+keep tornqvist_price_index department total_spending_D total_spending_D_old
+duplicates drop
+save "$db/Important Price Datasets/inflation_D_`i'.dta", replace
+}
+
+* (B) Inflation across QM by computing average price over both years
+foreach i of numlist 2004(1)2014 {
+
+display "Starting Tornqvist computation for year `i', all consumers at different aggregation levels"
+
+local var=`i'+1
+
+use "$db/Important Price Datasets/price_index_household_income_`i'_2004_modules_final.dta", clear
+rename total_quantity total_quantity_old
+rename average_unit_price average_unit_price_old
+rename average_unit_price_all average_unit_price_all_old
+
+merge 1:1 upc upc_ver income_quintile using "$db/Important Price Datasets/price_index_household_income_`var'_2004_modules_final.dta"
+keep if _merge==3
+drop total_spending
+drop _merge
+
+* bring in info on UPC price decile (within product module) [for continued products, taking the average price in both periods]:
+merge m:1 upc upc_ver_uc using "$db/Important Lists/upc_brand_size_final.dta"
+keep if _merge==3
+drop _merge
+sum size1_amount, d
+drop if size1_amount<r(p1) | size1_amount>r(p99)
+gen average_unit_price_adj=(average_unit_price_all+average_unit_price_all_old)/(2*size1_amount*multi)
+* create quality ranks without weights
+sort product_module_code average_unit_price_adj
+bysort product_module_code: gen double temp=[_N]
+bysort product_module_code: gen double temp2=[_n]
+gen rank=temp2/temp*100
+gen quality_rank=.
+foreach r of numlist 1(1)10 {
+replace quality_rank=`r' if rank<=`r'*10 & missing(quality_rank)
+}
+
+gen double price_ratio=average_unit_price/average_unit_price_old
+gen double price_ratio_all=average_unit_price_all/average_unit_price_all_old
+* get rid of outliers
+sum price_ratio_all, d
+drop if price_ratio_all<r(p1) | price_ratio_all>r(p99)
+
+* collapse to UPC level 
+drop total_spending_all
+bysort upc upc_ver_uc: egen double total_spending_all=sum(average_unit_price_all*total_quantity)
+bysort upc upc_ver_uc: egen double total_spending_all_old=sum(average_unit_price_all_old*total_quantity_old)
+keep upc upc_ver_uc total_spending_all total_spending_all_old price_ratio_all product_module_code product_group_code department_code quality_rank
+duplicates drop
+
+* (i) compute Tornqvist by quality_module
+bysort product_module quality: egen double total_spending_QM=sum(total_spending_all)
+bysort product_module quality: egen double total_spending_QM_old=sum(total_spending_all_old)
+gen double share_QM=total_spending_all/total_spending_QM
+gen double share_QM_old=total_spending_all_old/total_spending_QM_old
+
+gen weight_QM=1/2*(share_QM+share_QM_old)
+gen double numerator_temp=weight*log(price_ratio_all)
+bysort product_module quality: egen double numerator=sum(numerator_temp)
+gen double tornqvist_price_index=exp(numerator)
+drop weight_QM numerator_temp numerator
+
+* (ii) compute CES by quality_module
+gen double weight_num_QM=(share_QM-share_QM_old)/(ln(share_QM)-ln(share_QM_old))
+bysort product_module quality: egen double weight_den_QM=sum(weight_num_QM)
+gen double weight_QM=weight_num_QM/weight_den_QM
+gen double numerator_temp=weight_QM*log(price_ratio_all)
+bysort product_module quality: egen double numerator=sum(numerator_temp)
+gen double ces_price_index=exp(numerator)
+
+keep tornqvist_price_index ces_price_index product_module quality product_group department total_spending_QM total_spending_QM_old
+duplicates drop
+save "$db/Important Price Datasets/inflation_QM_`i'_2yrs.dta", replace
+}

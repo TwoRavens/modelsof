@@ -1,0 +1,1 @@
+twoway (line blue_votes time) (line green_votes time, clcolor(gs8) clpat(longdash_dot)) (line yellow_votes time, clcolor(gs10)), ytitle(Number of Negotiator Votes) ylabel(0(5)20) xtitle(Time) xlabel(0(25)200) legend(textfirst cols(1) order(1 "Blue" 2 "Green" 3 "Yellow") size(small)) legend(position(1) ring(0) symxsize(7) region(lcolor(none))) scheme(s2mono)

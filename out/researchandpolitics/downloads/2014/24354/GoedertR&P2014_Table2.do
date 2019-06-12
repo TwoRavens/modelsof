@@ -1,0 +1,3 @@
+//The first three commands replicate Table 2 when used with the 2012 Congressional Results data set 
+
+regress PercDiff DemG RepG Hisp if ~exclude [aweight=seats]regress PercDiff DemG RepG PercBlack PercHisp Urban DemVote seats if ~exclude [aweight=seats]regress PercDiff DemG RepG PercBlack PercHisp Urban DemVote seats if ~exclude&seats>6 [aweight=seats]regress PercDiff DemG RepG Hisp exclude if seats>2 [aweight=seats]regress PercDiff DemG RepG PercBlack PercHisp Urban DemVote seats exclude if seats>2 [aweight=seats]regress PercDiff DemG RepG PercBlack PercHisp Urban DemVote seats exclude if seats>6 [aweight=seats]regress PercDiff DemG RepG PercBlack PercHisp Urban DemVote seats if ~South&~exclude&seats>6 [aweight=seats]

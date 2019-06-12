@@ -1,0 +1,7 @@
+
+
+/* DO FILE FOR FIELD EXPERIMENT */
+
+prtest ACTION if (CONTROL==1 | LOSSES==1), by(LOSSES)
+
+prtest ACTION if (CONTROL==1 | GAINS==1), by(GAINS)
