@@ -1,4 +1,0 @@
-*Women*
-xtmelogit repgenderD grind00zip_01 discpolnei2_01 grind00zip_01Xdiscpolnei2_01 medhinc00zip_01 pctunemp00zip_01 pubsector00zip_01 ginicnty00_01 pctfembus07cnty2_01 bsf00zip_01 bush04cnty_01 totpop00zip_01 popden00zip_01 womgov05 pwomstleg05 education2_01 INCOMEC_01 age2_01 black hispanic asian married unemployed partyid2_01 Ideology_01 religattend_01 if female==1 || zip: discpolnei2_01, cov (unstructured)
-*Men*
-xtmelogit repgenderD grind00zip_01 discpolnei2_01 grind00zip_01Xdiscpolnei2_01 medhinc00zip_01 pctunemp00zip_01 pubsector00zip_01 ginicnty00_01 pctfembus07cnty2_01 bsf00zip_01 bush04cnty_01 totpop00zip_01 popden00zip_01 womgov05 pwomstleg05 education2_01 INCOMEC_01 age2_01 black hispanic asian married unemployed partyid2_01 Ideology_01 religattend_01 if female==0 || zip: discpolnei2_01, cov (unstructured)

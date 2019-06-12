@@ -1,0 +1,31 @@
+replace fips = 	51019	if fips ==	51515
+replace fips = 	51191	if fips ==	51520
+replace fips = 	51163	if fips ==	51530
+replace fips = 	51003	if fips ==	51540
+replace fips = 	51053	if fips ==	51570
+replace fips = 	51005	if fips ==	51580
+replace fips = 	51143	if fips ==	51590
+replace fips = 	51081	if fips ==	51595
+replace fips = 	51059	if fips ==	51600
+replace fips = 	51059	if fips ==	51610
+replace fips = 	51175	if fips ==	51620
+replace fips = 	51177	if fips ==	51630
+replace fips = 	51035	if fips ==	51640
+replace fips = 	51165	if fips ==	51660
+replace fips = 	51149	if fips ==	51670
+replace fips = 	51163	if fips ==	51678
+replace fips = 	51031	if fips ==	51680
+replace fips = 	51153	if fips ==	51683
+replace fips = 	51153	if fips ==	51685
+replace fips = 	51089	if fips ==	51690
+replace fips = 	51195	if fips ==	51720
+replace fips = 	51053	if fips ==	51730
+replace fips = 	51199	if fips ==	51735
+replace fips = 	51121	if fips ==	51750
+replace fips = 	51161	if fips ==	51775
+replace fips = 	51015	if fips ==	51790
+replace fips = 	51015	if fips ==	51820
+replace fips = 	51095	if fips ==	51830
+replace fips = 	51069	if fips ==	51840
+
+

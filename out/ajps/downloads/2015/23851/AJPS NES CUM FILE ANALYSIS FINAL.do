@@ -1,6 +1,0 @@
-mlogit presdemindrepvote fehisps  libcons ptyid7  econlastyear presapproval defensespend govtspending womenrights guarjob fewhites feblacks year income  educ age gender unemployed union jewish catholic protestant married if white==1 & hispanic==0, base (1)
-logit votepresintend fehisps  libcons ptyid7  econlastyear presapproval defensespend govtspending womenrights guarjob fewhites feblacks year income  educ age gender unemployed union jewish catholic protestant married if white==1 & hispanic==0
-logit votecong fehisps  libcons ptyid7  econlastyear presapproval defensespend govtspending womenrights guarjob fewhites feblacks year income  educ age gender unemployed union jewish catholic protestant married if white==1 & hispanic==0
-logit votegov fehisps  libcons ptyid7  econlastyear presapproval defensespend govtspending womenrights guarjob fewhites feblacks year income  educ age gender unemployed union jewish catholic protestant married if white==1 & hispanic==0
-logit votesen fehisps  libcons ptyid7  econlastyear presapproval defensespend govtspending womenrights guarjob fewhites feblacks year income  educ age gender unemployed union jewish catholic protestant married if white==1 & hispanic==0
-

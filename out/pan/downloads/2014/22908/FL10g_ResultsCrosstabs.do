@@ -1,7 +1,0 @@
-use "FL10g_ResultsCrosstabs.dta"
-
-hist yhat_10
-
-egen senate_few_total = rowtotal(senate_few_early senate_few)egen gov_total = rowtotal(gov_early gov)egen attgen_total = rowtotal(attgen attgen_early)egen cfo_total = rowtotal(cfo cfo_early)egen ammend1_total = rowtotal(amend1_early ammend1)egen ammend6_total = rowtotal(amend6_early ammend6)
-
-*tabs of the poll predictionstab senate_few_total if senate_few_total==1 | senate_few_total==2 | senate_few_total==3tab gov_total if gov_total==1 | gov_total==2 | gov_total==3tab attgen_total if attgen_total==1 | attgen_total==2 | attgen_total==3tab cfo_total if cfo_total==1 | cfo_total==2 | cfo_total==3tab ammend1_total if ammend1_total==1 | ammend1_total==2tab ammend6_total if ammend6_total==1 | ammend6_total==2gen fill1=senate_all_early1gen fill2=senate_all_early2gen fill3=senate_all1gen fill4=senate_all2replace fill1=. if inlist(fill1, 3, 4, 5, 6, 7, 10, 11, 12)replace fill2=. if inlist(fill2, 3, 4, 5, 6, 7, 10, 11, 12)replace fill3=. if inlist(fill3, 3, 4, 5, 6, 7, 10, 11, 12)replace fill4=. if inlist(fill4, 3, 4, 5, 6, 7, 10, 11, 12)recode fill1 (9=3)recode fill2 (9=3)recode fill3 (9=3)recode fill4 (9=3)egen senate_total = rowtotal(senate_few_total fill1 fill2 fill3 fill4)tab senate_total if senate_total==1 | senate_total==2 | senate_total==3

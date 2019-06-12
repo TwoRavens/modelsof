@@ -1,2 +1,0 @@
-// Replicates Supplemental Table A1 and Figure A1 when run with the Historic Congressional Results Data Set
-probit gopseat popularvoteprobit gopseat popularvote s80 s90 s00 probit gopseat StateGOPMarginprobit gopseat StateGOPMargin preVRAsouth preVRAsouthXStateGOPMargin postVRAsouth postVRAsouthXStateGOPMarginprobit gopseat StateGOPMargin s80 s90 s00 s80XStateGOPMargin s90XStateGOPMargin s00XStateGOPMarginscatter MeanGOPSeat StateGOPMargin if cd==1&weight>2, msize(vsmall)

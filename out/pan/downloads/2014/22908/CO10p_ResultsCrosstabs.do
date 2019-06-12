@@ -1,3 +1,0 @@
-use "CO10p_ResultsCrosstabs.dta", clear
-
-tab rep_senate_early, noltab rep_senate, nolegen rep_senate_total = rowtotal(rep_senate_early rep_senate)tab rep_senate_total if rep_senate_total==1 | rep_senate_total==2 | rep_senate_total==3tab rep_gov_early, noltab rep_gov, nolegen rep_gov_total = rowtotal(rep_gov_early rep_gov)tab rep_gov_total if rep_gov_total==1 | rep_gov_total==2 | rep_gov_total==3tab dem_senate_early, noltab dem_senate, nolegen dem_senate_total = rowtotal(dem_senate_early dem_senate)tab dem_senate_total if dem_senate_total==1 | dem_senate_total==2 | dem_senate_total==3

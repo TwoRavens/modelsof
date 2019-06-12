@@ -1,4 +1,0 @@
-*WOMEN*
-xtmelogit repgenderD grind00cnty_01 discpolnei2_01 grind00cnty_01Xdiscpolnei2_01 medhinc00cnty_01 pctunemp00cnty_01 pubsector00cnty_01 ginicnty00_01 pctfembus07cnty2_01 bsf00cnty_01 bush04cnty_01 totpop00cnty_01 popden00cnty_01 womgov05 pwomstleg05 education2_01 INCOMEC_01 age2_01 black hispanic asian married unemployed partyid2_01 Ideology_01 religattend_01 if female==1 || fips: discpolnei2_01, cov(unstructured)
-*MEN*
-xtmelogit repgenderD grind00cnty_01 discpolnei2_01 grind00cnty_01Xdiscpolnei2_01 medhinc00cnty_01 pctunemp00cnty_01 pubsector00cnty_01 ginicnty00_01 pctfembus07cnty2_01 bsf00cnty_01 bush04cnty_01 totpop00cnty_01 popden00cnty_01 womgov05 pwomstleg05 education2_01 INCOMEC_01 age2_01 black hispanic asian married unemployed partyid2_01 Ideology_01 religattend_01 if female==0 || fips: discpolnei2_01, cov(unstructured)

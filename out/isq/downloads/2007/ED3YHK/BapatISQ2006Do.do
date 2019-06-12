@@ -1,5 +1,0 @@
-table Commit
-table Fulfill
-summarize State_Sponsor Host_Capacity HostCapacitySquare Strategic_Similarity Hostages Peace_Yrs
-heckprob Fulfill State_Sponsor HostCapacitySquare Strategic_Similarity Peace_Yrs, sel(Commit=Host_Capacity HostCapacitySquare Strategic_Similarity Peace_Yrs Hostages)
- 
