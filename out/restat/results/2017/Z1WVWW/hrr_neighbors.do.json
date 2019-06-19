@@ -1,0 +1,734 @@
+[
+  {
+    "id": "comment",
+    "value": "* David Molitor 4/17/2012",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Input: hrr_neighbors.dta",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* \t1. First, I downloaded the HRR shape file from http://www.dartmouthatlas.org/tools/downloads.aspx#boundaries",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* \t2. Second, I calculated neighbors using ArcMap and the python script \"Find Adjacent & Neighboring Polygons\" at http://resources.arcgis.com/gallery/file/geoprocessing/details?entryID=50F58FCF-1422-2418-884B-A053393CEF92",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t3. I converted the csv file to xlsx, then used stattransfer to convert to state",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t4. The final file is hrr_neighbors.dta, which is what this do file requires to process.",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Convert the original HRR neighbor file into \"long\" format, where each obs is an (hrr,neighbor) pair.  ",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Both level 1 and 2 neighbors included",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* What is the region id?",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 13,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "hrrnum",
+        "line": 13,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Load the data. Varnames are id, Neighbors1, and Neighbors2",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrr_neighbors.dta",
+        "line": 16,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 16,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 17,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`id'",
+        "line": 17,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Reshape so that each hrrnum has an observation for level 1 and level 2 neighbors",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 20,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Neighbors",
+        "line": 20,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 20,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`id'",
+        "line": 20,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 20,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "neighbor_level",
+        "line": 20,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create list of neighbors, replacing semi-colons with spaces",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "neighbors",
+        "line": 23,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 23,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Neighbors",
+        "line": 23,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 23,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\";\"",
+        "line": 23,
+        "column": 36
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 23,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 23,
+        "column": 41
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 23,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 23,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create a separate neighbor variable for each neighbor",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numneighbors",
+        "line": 26,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wordcount",
+        "line": 26,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "neighbors",
+        "line": 26,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numneighbors",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 27,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 28,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 28,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 28,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`r(max)'",
+        "line": 28,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 28,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 29,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "neighbor",
+        "line": 29,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 29,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 29,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "neighbors",
+        "line": 29,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 29,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 29,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 30,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "neighbor",
+        "line": 30,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 30,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 30,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Neighbors",
+        "line": 32,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "neighbors",
+        "line": 32,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Save wide version",
+    "line": 34,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* observations identified by (`id', neighbor_level)",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "saveold",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrr_neighbors_wide",
+        "line": 36,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 36,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Convert to long",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 39,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "neighbor",
+        "line": 39,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 39,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`id'",
+        "line": 39,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "neighbor_level",
+        "line": 39,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 39,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 39,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Drop missing neighbors (will drop regions that have no neighbors)",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 42,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 42,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "`'",
+            "value": "`id'",
+            "line": 42,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 42,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "neighbor",
+        "line": 42,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 43,
+      "column": 26
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 43,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "`'",
+            "value": "`id'",
+            "line": 43,
+            "column": 5
+          },
+          {
+            "id": "identifier",
+            "value": "neighbor_level",
+            "line": 43,
+            "column": 10
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 43,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 43,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "numneighbors",
+        "line": 43,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 43,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "numneighbors",
+        "line": 43,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 43,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 43,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numneighbors",
+        "line": 44,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 44,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Save long version",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* observations identified by (`id', neighbor)",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "saveold",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrr_neighbors_long",
+        "line": 48,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 48,
+        "column": 29
+      }
+    ]
+  }
+]

@@ -1,0 +1,3082 @@
+[
+  {
+    "id": "comment",
+    "value": "/* Barjamovic-Chaney-Cosar-Hortacsu, June 2017\nConstruct gridded graph of elevations in Anatolia, middle east and wider geography around\nin order to find least cost paths between random nodes and construct road crossing\nscores for locations. We drop the desert with no population to avoid drawing nodes,\nmake lakes inpassable (unless sailing defined and allowed), make rivers inpassable\nexcept for crossings, and may allow sailing across the coast (by dropping elevations < -100\nto drop sailing across the sea. The output of this script is an input to the matlab code.\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"/Users/ke.3747/Desktop/data_for_roadknots/\"",
+        "line": 5,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Grid points in polygons for the entire map",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Constructed an even grid with 0.1 degree distances in the ETOPO1 extract ETOPO1-extract.png",
+    "line": 8,
+    "column": 27
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"gridpointscoord.dta\"",
+        "line": 8,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 9,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 9,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// elevation data from ETOPO comes as a raster which converted into a vector layer in QGIS with polygons. ",
+    "line": 11,
+    "column": 42
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "geoinpoly",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 11,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 11,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 11,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "elevationpolycoord",
+        "line": 11,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// These polygons are unevenly shaped, though most of them squares. Find the polygongs in which ",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// the grid points lie...",
+    "line": 13,
+    "column": 12
+  },
+  {
+    "id": "comment",
+    "value": "// ...and then get the elevation of these polygons (mean)",
+    "line": 15,
+    "column": 40
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 15,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 15,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 15,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 15,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 15,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "elevationpoly.dta",
+        "line": 15,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 16,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 16,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 16,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 16,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 17,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 17,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 18,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 19,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 19,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 19,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 19,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 20,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 20,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "grid_with_elevation",
+        "line": 22,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 22,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Grid points in lakes",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// grid points in major lakes in Turkey",
+    "line": 25,
+    "column": 41
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "geoinpoly",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 25,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 25,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 25,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lakes_turkeycoord",
+        "line": 25,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 26,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 26,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 26,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 26,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 26,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "lakes_turkey.dta",
+        "line": 26,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 26,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 26,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 27,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "lakename",
+        "line": 27,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lakename",
+        "line": 28,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// we put a high friction to the lakes to make them inpassable",
+    "line": 29,
+    "column": 43
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 29,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "99999",
+        "line": 29,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "lakename",
+        "line": 29,
+        "column": 30
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 29,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 29,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 30,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 30,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 31,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "grid_with_elevation",
+        "line": 33,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 33,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Grid points in rivers ",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Buffer polygons rivers_turkey_buffer.shp created from rivers_turkey.shp using \nbuffer distance of 0.1 thick enough so as to prevent movement across rivers through \ndiagonal points that are not within buffer zones. Inspect the grid vector file overlaid\nwith the buffer vector file along rivers to make sure that doesn't happen. Otherwise \nfast marching algorithm will cross through those routes but that will be totally due to computing error \n*/",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// two river line files ne_10m_rivers_europe.shp and ne_10m_rivers_lake_centerlines.shp ",
+    "line": 37,
+    "column": 60
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "geoinpoly",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 37,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 37,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 37,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "rivers_buffer_1coord",
+        "line": 37,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "unique",
+        "line": 37,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "inside",
+        "line": 37,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// from http//www.naturalearthdata.com/download/10m; all major rivers and their tributaries.",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// In QGIS, we keep Euphrates with Murat tributary, Sakarya with Porsuk tributary, ",
+    "line": 39,
+    "column": 18
+  },
+  {
+    "id": "comment",
+    "value": "// Seyhan, Kizilirmak, Yesilirmak with Kelkit tributary. Then create buffer polygons around the ",
+    "line": 40,
+    "column": 18
+  },
+  {
+    "id": "comment",
+    "value": "// river lines so that thick enough grid points are contained within these polygons ",
+    "line": 41,
+    "column": 18
+  },
+  {
+    "id": "comment",
+    "value": "// which then can be assigned a movement friction (high elevation) below except for crossings.",
+    "line": 42,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 43,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 43,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 43,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 43,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 43,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "rivers_buffer_1.dta",
+        "line": 43,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 43,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 43,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 44,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 44,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 45,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 45,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 45,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 45,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 46,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 46,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "geoinpoly",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 48,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 48,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 48,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "rivers_buffer_2coord",
+        "line": 48,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "unique",
+        "line": 48,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "inside",
+        "line": 48,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 49,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 49,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 49,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 49,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "rivers_buffer_2.dta",
+        "line": 49,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 49,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 49,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 50,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 50,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 51,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 51,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 51,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 51,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 52,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_ID",
+        "line": 52,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 54,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Define crossings",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// rename intersecting points where tributary Kelkit joins the main river Yesilirmak as Yesilirmak for matching with the crossing data.",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 58,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 58,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 59,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 59,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 59,
+        "column": 35
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 59,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 59,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 59,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 59,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 59,
+        "column": 62
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 59,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 60,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 60,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 60,
+        "column": 35
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 60,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 60,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 60,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 60,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 60,
+        "column": 62
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 60,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 61,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 61,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 61,
+        "column": 35
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 61,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 61,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 61,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 61,
+        "column": 52
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 61,
+        "column": 62
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 61,
+        "column": 64
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 61,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 61,
+        "column": 70
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 61,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 61,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 62,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 62,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 62,
+        "column": 35
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 62,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 62,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 62,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 62,
+        "column": 52
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 62,
+        "column": 62
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 62,
+        "column": 64
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 62,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 62,
+        "column": 70
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 62,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 62,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 64,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Yesilirmak\"",
+        "line": 64,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 64,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 64,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"Kelkit\"",
+        "line": 64,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 65,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Firat\"",
+        "line": 65,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 65,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 65,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"Murat\"",
+        "line": 65,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 66,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Sakarya\"",
+        "line": 66,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 66,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 43
+      },
+      {
+        "id": "string",
+        "value": "\"Porsuk\"",
+        "line": 66,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 67,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 67,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 67,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 67,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 67,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername1",
+        "line": 68,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "rivername2",
+        "line": 68,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 69,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 70,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 70,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Merge with river crossing data",
+    "line": 73,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 74,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// Coordinates of historical crossing points, data from Gojko Barjamovic ",
+    "line": 75,
+    "column": 105
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "import",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 75,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"/Users/ke.3747/Desktop/data_for_roadknots/crossing_coord.xlsx\"",
+        "line": 75,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sheet",
+        "line": 75,
+        "column": 79
+      },
+      {
+        "id": "string",
+        "value": "\"Sheet2\"",
+        "line": 75,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "firstrow",
+        "line": 75,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 77,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Yesilirmak\"",
+        "line": 77,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 77,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 77,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"Kelkit\"",
+        "line": 77,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 78,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Firat\"",
+        "line": 78,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 78,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"Murat\"",
+        "line": 78,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 79,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Sakarya\"",
+        "line": 79,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 79,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 43
+      },
+      {
+        "id": "string",
+        "value": "\"Porsuk\"",
+        "line": 79,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "obs",
+        "line": 81,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`=_N+1'",
+        "line": 81,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 82,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 82,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "crossing_X",
+        "line": 82,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 82,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 82,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Join grid with crossings, pairwise for every river",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Note: merge doesn't work here. we want all possible crossing-river points. If you merge, it randomly matches and 'tab crossing' below varies.",
+    "line": 85,
+    "column": 31
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "joinby",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 85,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 85,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"temp\"",
+        "line": 85,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 86,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 87,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp.dta",
+        "line": 88,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 90,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 90,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// how many degrees buffer we allow for crossings. has to be wide enough to make sure we get a passage",
+    "line": 91,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tolerance",
+        "line": 91,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0.15",
+        "line": 91,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 92,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 92,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "tolerance",
+        "line": 92,
+        "column": 63
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 92,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 92,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 92,
+        "column": 79
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 92,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "crossing_Y",
+        "line": 92,
+        "column": 82
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 92,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "tolerance",
+        "line": 92,
+        "column": 97
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 92,
+        "column": 25
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 92,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 92,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 92,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 92,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 92,
+        "column": 45
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 92,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "crossing_X",
+        "line": 92,
+        "column": 48
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 92,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 93,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 93,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 93,
+        "column": 25
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 93,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 93,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 93,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 93,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 93,
+        "column": 46
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 93,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "crossing_X",
+        "line": 93,
+        "column": 49
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 93,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "tolerance",
+        "line": 93,
+        "column": 63
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 93,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 93,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 93,
+        "column": 79
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 93,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "crossing_Y",
+        "line": 93,
+        "column": 82
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 93,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "tolerance",
+        "line": 93,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tolerance",
+        "line": 94,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*tab crossing // should get higher numbers for crossing = 1 as tolerance increases. Also joinby is important above!",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Define crossings in all upstream and downstream grid points after a certain location ",
+    "line": 98,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// anywhere below Adana",
+    "line": 99,
+    "column": 64
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 99,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 99,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 99,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 99,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Seyhan\"",
+        "line": 99,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 99,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 99,
+        "column": 47
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 99,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "36.98333333",
+        "line": 99,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Clears both north of Firat above Keban and relevant part of upstream Murat;  past Malazgirt",
+    "line": 100,
+    "column": 55
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 100,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 100,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 100,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Firat\"",
+        "line": 100,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 100,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 100,
+        "column": 47
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 100,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "39",
+        "line": 100,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// valid for both Kelkit and main Yesilirmak",
+    "line": 101,
+    "column": 62
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 101,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 101,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 101,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Yesilirmak\"",
+        "line": 101,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 101,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 101,
+        "column": 52
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 101,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "36.9",
+        "line": 101,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// valid for the Porsuk tributary",
+    "line": 102,
+    "column": 79
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 102,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 102,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 102,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 102,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Sakarya\"",
+        "line": 102,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 102,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 102,
+        "column": 49
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 102,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "30.53333333",
+        "line": 102,
+        "column": 54
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 102,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 102,
+        "column": 69
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 102,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "39.9",
+        "line": 102,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// anywhere above Eskisehir ",
+    "line": 103,
+    "column": 59
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 103,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 103,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 103,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 103,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Sakarya\"",
+        "line": 103,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 103,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 103,
+        "column": 48
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 103,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "39.15",
+        "line": 103,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Penalties for rivers ",
+    "line": 105,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Rivers present a high friction to mobility except for crossing points ",
+    "line": 106,
+    "column": 59
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 106,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "99999",
+        "line": 106,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 106,
+        "column": 30
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 106,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 106,
+        "column": 41
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 106,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 106,
+        "column": 47
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 106,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 106,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// if a gridID (duplicated through joinby) was assigned a crossing above, ",
+    "line": 108,
+    "column": 78
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 108,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 108,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 108,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 108,
+        "column": 32
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 108,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 108,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 108,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 108,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 108,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "lakename",
+        "line": 108,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// then its elevation is preserved at its original lower than 99999 values, ",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// so taking min is a way to collapse these to unique grid points. Those that ",
+    "line": 110,
+    "column": 20
+  },
+  {
+    "id": "comment",
+    "value": "// are not crossing points are all 99999 so their collapse min gets this value.",
+    "line": 111,
+    "column": 19
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 114,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 114,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 114,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"meters,99999=lake/river\"",
+        "line": 114,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 115,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "lakename",
+        "line": 115,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 115,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 116,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 116,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 116,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossing",
+        "line": 117,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 119,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 119,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 119,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 119,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gridID",
+        "line": 120,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_X",
+        "line": 120,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "_Y",
+        "line": 120,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "elevation",
+        "line": 120,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "rivername",
+        "line": 120,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "lakename",
+        "line": 120,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Figures for inspection */",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* scatter _Y _X",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\ntwoway (scatter _Y _X if rivername!=\"\",msize(tiny) msymbol(Oh) mcolor(red)) ///\n  (scatter _Y _X if rivername!=\"\" & elevation<99999,msize(tiny) legend(off) mcolor(green)) ///\n  (scatter _Y _X if lakename!=\"\" & elevation==99999,msize(tiny) legend(off) mcolor(blue))\n*/",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "grid_with_elevation",
+        "line": 126,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 126,
+        "column": 27
+      }
+    ]
+  }
+]

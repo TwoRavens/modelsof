@@ -1,0 +1,3544 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 1,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 1,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "$log",
+        "line": 1,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 1,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "bhps_construction",
+        "line": 1,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 1,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\t01_bhps_construction.do :\n\n\tThis do file merges waves 1-18 of the British Household Panel Survey (BHPS). \n\t\n -- In a given wave, we only keep obs for whom both indiv AND hhold is available.  (Only keep if _merge==3.)  \n\tIn very rare cases, all indiv information is missing for a given hid, or hhold information is missing for a pid.\n\n -- Wave-specific notes:\n\t>> Wave 9  (prefix \"i\") and following: sample size is larger due to Scotland and Wales Extension Samples [II.2.2]\n\t>> Wave 11 (prefix \"k\") and following: includes substantial new sample in Northern Ireland, the Northern Ireland Household Panel [II.2.3]\n\t>> Wave 12 (prefix \"l\") and following: sample size decreases due to end of ECHP sub-sample [II.2.1]\n\t\n -- The final products of this do-file are all individual level datasets:\n\t\tcomplete_bhps.dta : combines indresp, hhresp, and xw datasets\n\t\tindallcomplete: non-surveyed hhold members\n\t\tegoaltcomplete.dta: relationships \n\t\tcomplete_bhps_youth.dta : combines youth, hhresp, and xw datasets  */",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 8,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "a",
+        "line": 8,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 8,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 8,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 8,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 8,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "f",
+        "line": 8,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "g",
+        "line": 8,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "h",
+        "line": 8,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 8,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 8,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "k",
+        "line": 8,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "l",
+        "line": 8,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 8,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 8,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "o",
+        "line": 8,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 8,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 8,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 8,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Part ONE: xw datasets\n\t\tThese are variables constructed by BHPS (that is, not simply survey responses) and often include their best guess of \n\t\tan individual's time-invariant characteristics.  */",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 14,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "xwavedat",
+        "line": 14,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 14,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 15,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 15,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 15,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 15,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 15,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 15,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 15,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "xwlsten.dta",
+        "line": 15,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogenerate",
+        "line": 15,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 16,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 16,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 16,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 16,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 16,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 16,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 16,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "xwaveid.dta",
+        "line": 16,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogenerate",
+        "line": 16,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 17,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "xw_",
+        "line": 17,
+        "column": 10
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 17,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xw_pid",
+        "line": 18,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 18,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 19,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xwavedatasets",
+        "line": 20,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`xwavedatasets'",
+        "line": 21,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Part TWO: indall  */",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 26,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 26,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 27,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 27,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 27,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 27,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 27,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 29,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 29,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "indallcomplete",
+        "line": 29,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Save indall datasets */",
+    "line": 31,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 32,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 32,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 32,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 32,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "indall",
+        "line": 32,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 32,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "renpfix",
+      "line": 33,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 33,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* We don't want to remove the \"p\" in pid for wave p */",
+    "line": 34,
+    "column": 37
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 34,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 34,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"p\"",
+        "line": 34,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "rename",
+        "line": 34,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 34,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 34,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 35,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wave",
+        "line": 35,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 35,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 36,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 36,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "indallcomplete",
+        "line": 36,
+        "column": 16
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 36,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 37,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 8
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 37,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Append the waves ... can also use -merge- in place of -append- */",
+    "line": 40,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 41,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 41,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 41,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 41,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 41,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 41,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 42,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 42,
+        "column": 6
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 42,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"a\"",
+        "line": 42,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "use",
+        "line": 42,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 42,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "indallcomplete",
+        "line": 42,
+        "column": 37
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 42,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 43,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 43,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 43,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 43,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "indallcomplete",
+        "line": 43,
+        "column": 30
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 43,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 46,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 46,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 46,
+        "column": 18
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 46,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 46,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Fix errors in benefit unit head.  3 individuals have been assigned the wrong buno */",
+    "line": 47,
+    "column": 43
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "buno",
+        "line": 47,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pno",
+        "line": 47,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "inrange",
+        "line": 47,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "butype",
+        "line": 47,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 47,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 47,
+        "column": 36
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 47,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "17",
+        "line": 47,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$cleandta",
+        "line": 49,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 49,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "indallcomplete",
+        "line": 49,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 49,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Part THREE: Household (hhresp) and Individual (indresp).  We first merge hhold and indiv for each wave, then append all waves. */",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 56,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 56,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 56,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 56,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 56,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 58,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 58,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "indrespcomplete",
+        "line": 58,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 58,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "hhrespcomplete",
+        "line": 58,
+        "column": 43
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 58,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "hholdindivcomplete",
+        "line": 58,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Indiv datasets */",
+    "line": 60,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 62,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 62,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 62,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 62,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "indresp",
+        "line": 62,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 62,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 63,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 63,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 64,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 64,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 64,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"p\"",
+        "line": 64,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 64,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* We don't want to remove the \"p\" in pid for wave p */",
+    "line": 65,
+    "column": 17
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 65,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 65,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 65,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "recode",
+      "line": 66,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hlhti",
+        "line": 66,
+        "column": 10
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 66,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 66,
+        "column": 18
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 66,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 66,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 66,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 66,
+        "column": 25
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 66,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 66,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Height information for wave 16 was incorrectly inputted.  We follow the recommendation of BHPS user support.  \n\t\t\t   In response to our inquiry, they advise to recode the value -1 to 8 and -2 to 9.  \n\t\t\t   For reference, see https://www.understandingsociety.ac.uk/support/issues/48           */",
+    "line": 67,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 69,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 69,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "indrespcomplete",
+        "line": 69,
+        "column": 16
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 69,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Household datasets */",
+    "line": 71,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 73,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 73,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 73,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 73,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "hhresp",
+        "line": 73,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 73,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 74,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 74,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 74,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 74,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 75,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 75,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "hhrespcomplete",
+        "line": 75,
+        "column": 16
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 75,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Merging hhold and indiv */",
+    "line": 77,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 79,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 79,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 79,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 79,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "hid",
+        "line": 79,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 79,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 79,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "indrespcomplete",
+        "line": 79,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 79,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 80,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 80,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 80,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 80,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 81,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "notany",
+        "line": 81,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 81,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 81,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "disp",
+      "line": 82,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"There are `notany' hholds in wave `prefix' in which no indiv information exists\"",
+        "line": 82,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 83,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 83,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 83,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 84,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "notany",
+        "line": 84,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 84,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 84,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "disp",
+      "line": 85,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"There are `notany' indivs in wave `prefix' for whom no hhold information exists\"",
+        "line": 85,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 86,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 86,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 86,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 86,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 87,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 87,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "waveletter",
+        "line": 88,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"`prefix'\"",
+        "line": 88,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 89,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 89,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "hholdindivcomplete",
+        "line": 89,
+        "column": 16
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 89,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Append the waves ... can also use -merge- in place of -append- */",
+    "line": 92,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 94,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 94,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 94,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 94,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 94,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 95,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 95,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 95,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"a\"",
+        "line": 95,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "use",
+        "line": 95,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 95,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "hholdindivcomplete",
+        "line": 95,
+        "column": 36
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 95,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 96,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 96,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 96,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 96,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "hholdindivcomplete",
+        "line": 96,
+        "column": 29
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 96,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wave",
+        "line": 99,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 99,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "waveletter",
+        "line": 99,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Merge xw datasets to completely assemble dataset */",
+    "line": 101,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 103,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 103,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 103,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 103,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 103,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`xwavedatasets'",
+        "line": 103,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 104,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 104,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 104,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 104,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Keeping only observations for which we have xw_ and political information.\n\t\t\t\t\t  We drop one person pid is listed who has no information in xw_ but is in indresp for waves l,m,n,o. */",
+    "line": 105,
+    "column": 20
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 105,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 105,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 105,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 105,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 106,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* for use when merging bhps data with ukhls */",
+    "line": 109,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bhps",
+        "line": 109,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 109,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* for use when merging bhps data with ukhls */",
+    "line": 110,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ukhls",
+        "line": 110,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 110,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 111,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$cleandta",
+        "line": 112,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 112,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "complete_bhps",
+        "line": 112,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 112,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Part FOUR: egoalt  */",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 117,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 118,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 118,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 118,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 118,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 118,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 119,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 119,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "egoalt",
+        "line": 119,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Save egoalt datasets */",
+    "line": 121,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 122,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 122,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 122,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 122,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "egoalt",
+        "line": 122,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 122,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "renpfix",
+      "line": 123,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 123,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* We don't want to remove the \"p\" in pid for wave p */",
+    "line": 124,
+    "column": 37
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 124,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 124,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 124,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"p\"",
+        "line": 124,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "rename",
+        "line": 124,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 124,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 124,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 125,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wave",
+        "line": 125,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 125,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 126,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 126,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "egoalt",
+        "line": 126,
+        "column": 16
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 126,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 127,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "+",
+        "value": "+",
+        "line": 127,
+        "column": 8
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 127,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 127,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Append the waves ... can also use -merge- in place of -append- */",
+    "line": 130,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 131,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 131,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 131,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 131,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 131,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 132,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 132,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 132,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"a\"",
+        "line": 132,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "use",
+        "line": 132,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 132,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "egoalt",
+        "line": 132,
+        "column": 36
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 132,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 133,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 133,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 133,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 133,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "egoalt",
+        "line": 133,
+        "column": 29
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 133,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 136,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$cleandta",
+        "line": 136,
+        "column": 7
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 136,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "egoaltcomplete",
+        "line": 136,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 136,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Part FIVE: Youth datasets (conducted from wave d onward) */",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 143,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 143,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "excluding",
+        "line": 144,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "a",
+        "line": 144,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 144,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 144,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "youthwaveprefixes",
+        "line": 145,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 145,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 145,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "waveprefixes",
+        "line": 145,
+        "column": 32
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 145,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "excluding",
+        "line": 145,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 147,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 147,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 147,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 147,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "youthwaveprefixes",
+        "line": 147,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 147,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 148,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 148,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "youth",
+        "line": 148,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 150,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rawdta",
+        "line": 150,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 150,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 150,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "youth",
+        "line": 150,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 150,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 151,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`prefix'",
+        "line": 151,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 151,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 151,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* We don't want to remove the \"p\" in pid for wave p */",
+    "line": 152,
+    "column": 37
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 152,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 152,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 152,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"p\"",
+        "line": 152,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "rename",
+        "line": 152,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 152,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 152,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 153,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wave",
+        "line": 153,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 153,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 154,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 154,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 154,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "hid",
+        "line": 154,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 154,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 154,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "hhrespcomplete",
+        "line": 154,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 154,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Keep hholds for which we have a youth */",
+    "line": 155,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 155,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 155,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 155,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 156,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 156,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 157,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 157,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "youth",
+        "line": 157,
+        "column": 16
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 157,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 158,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "+",
+        "value": "+",
+        "line": 158,
+        "column": 8
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 158,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 158,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Append the waves ... can also use -merge- in place of -append- */",
+    "line": 161,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prefix",
+        "line": 163,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 163,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 163,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "youthwaveprefixes",
+        "line": 163,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 163,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 164,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "`\"`prefix'\"'",
+        "line": 164,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 164,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"d\"",
+        "line": 164,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "use",
+        "line": 164,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 164,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "youth",
+        "line": 164,
+        "column": 36
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 164,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 164,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 165,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 165,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 165,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "``prefix'",
+        "line": 165,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "youth",
+        "line": 165,
+        "column": 29
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 165,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Merge xw datasets to completely assemble dataset */",
+    "line": 168,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 170,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 170,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 170,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 170,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 170,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`xwavedatasets'",
+        "line": 170,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Keeping only observations for which we have xw_ and other information */",
+    "line": 171,
+    "column": 20
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 171,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 171,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 171,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 171,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 172,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 172,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 174,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 174,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 174,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "pid",
+        "line": 174,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "wave",
+        "line": 174,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 174,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "$cleandta",
+        "line": 174,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 174,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "indallcomplete",
+        "line": 174,
+        "column": 36
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 174,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "buno",
+        "line": 174,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 175,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 175,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 175,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 175,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 176,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 178,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 179,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$cleandta",
+        "line": 179,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 179,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "complete_bhps_youth",
+        "line": 179,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 179,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 183,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 183,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "exit",
+      "line": 184,
+      "column": 1
+    }
+  }
+]

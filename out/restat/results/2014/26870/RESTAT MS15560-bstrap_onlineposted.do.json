@@ -1,0 +1,7073 @@
+[
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tBoot-strap Routine for Generating Figure  5 Quantile Price Difference Analysis\t\t\t\t\t *",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* \t\t\tNote: This program uses a bootstrap routine to obtain quantile and OLS estimates",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t  and standard errors for Figure 5.  Setps 1-4 below generate 200 bootstrap ",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t  estimates with regressions run separately for each car type.  The standard",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t  errors are obtained by taking the weighted average across car types over ",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t  these 200 iterations. The point estimates are obtained in steps 5 - 8 and",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t  are based on a weighted average across car types of estiamtes using the full",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t  observed sample for that car type.  ",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 14,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matrix",
+        "line": 15,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 16,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 16,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 16,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 17,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "5000",
+        "line": 17,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tLoad the data and do initial data cleaning steps\t\t\t\t\t\t\t \t\t\t\t\t *",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// LOAD DATA -- CHANGE THE PATH AS NEEDED",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//REDACTED//",
+    "line": 26,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 26,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// Load the dataset saved in the full_analysis .do file.  This is the final regression sample",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_final.dta",
+        "line": 30,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Keep only the variables needed for this analysis",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_sale",
+        "line": 33,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 33,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 33,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "miles",
+        "line": 33,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "miles2",
+        "line": 33,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "miles3",
+        "line": 33,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 33,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "make",
+        "line": 33,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 33,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "body",
+        "line": 33,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "model_year",
+        "line": 33,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "auction",
+        "line": 33,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "carid2",
+        "line": 33,
+        "column": 91
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Save a copy of the dataset with only the needed variables",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_restr_final.dta",
+        "line": 37,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 37,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 1: 200 BOOTSTRAP REPETITIONS TO GENERATE S.E.'S FOR SQREG'S\t\t\t\t\t\t\t \t *",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 44,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 45,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 45,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 45,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Log file will hold the results as text",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 48,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "results_bsampleQreg_final.log",
+        "line": 48,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 48,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 50,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "200",
+        "line": 50,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 50,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Open the regression data set reduced to useable variables.  ",
+    "line": 52,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 53,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_restr_final.dta",
+        "line": 53,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 53,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the number of observations in the dataset and draw a bootstrap sample",
+    "line": 55,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 56,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 56,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 56,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 57,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 57,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 57,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 57,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Note: we set the same seed through thte do file that varies by iteration.",
+    "line": 58,
+    "column": 23
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 58,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "seed",
+        "line": 58,
+        "column": 6
+      },
+      {
+        "id": "number",
+        "value": "4444",
+        "line": 58,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 58,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "bsample",
+      "line": 59,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 59,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Restrict to car types (make model body model_year year auction) with at least 20 sold observations",
+    "line": 61,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 62,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 62,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 62,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 62,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 62,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 62,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 62,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 63,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 63,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "bys",
+            "line": 63,
+            "column": 6
+          },
+          {
+            "id": "identifier",
+            "value": "carid2",
+            "line": 63,
+            "column": 10
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 63,
+        "column": 23
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 63,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 63,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 64,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 64,
+          "column": 2
+        }
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 64,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 64,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 64,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate a new car-type id that will have consecutive numbering useful for loop below",
+    "line": 65,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 66,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 66,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 66,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "make",
+        "line": 66,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 66,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "body",
+        "line": 66,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "model_year",
+        "line": 66,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 66,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "auction",
+        "line": 66,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the number of unique carids for the limits of the loop below",
+    "line": 68,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 69,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 69,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 69,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 70,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 70,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 70,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 70,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Run the simultaneous quantile regression separately for each carid",
+    "line": 72,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 73,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid",
+        "line": 73,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 73,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 73,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`max'",
+        "line": 73,
+        "column": 24
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 73,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 74,
+      "column": 3
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 75,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 75,
+          "column": 3
+        }
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 75,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 75,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 76,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 76,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid2",
+        "line": 76,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Local variable to track original carid2 so we can compare across samples ",
+    "line": 77,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 77,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cc",
+        "line": 77,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 77,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 77,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sqreg",
+      "line": 78,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 78,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_sale",
+        "line": 78,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 78,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "miles",
+        "line": 78,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "miles2",
+        "line": 78,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "miles3",
+        "line": 78,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 78,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": ".1",
+        "line": 78,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 78,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": ".5",
+        "line": 78,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": ".75",
+        "line": 78,
+        "column": 65
+      },
+      {
+        "id": "number",
+        "value": ".9",
+        "line": 78,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "reps",
+        "line": 78,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 78,
+        "column": 78
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 79,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 79,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 79,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 79,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Display the results so they are captured as text in the log file",
+    "line": 80,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 81,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 81,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 81,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 81,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 81,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 81,
+        "column": 36
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 67
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 84
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 93
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`cc'",
+        "line": 81,
+        "column": 45
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 81,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 81,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 61
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 81,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 81,
+        "column": 65
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 81,
+        "column": 69
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 81,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 81,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 81,
+        "column": 77
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 81,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 81,
+        "column": 82
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 81,
+        "column": 86
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 81,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 81,
+        "column": 91
+      },
+      {
+        "id": "number",
+        "value": "21",
+        "line": 81,
+        "column": 95
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 81,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 81,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 81,
+        "column": 102
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 82,
+      "column": 3
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 86,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 86,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 86,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 2: Using txt file with results from step 1 create the weighted average\t\t\t\t\t \t *",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 91,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 93,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "sqreg_se_bsample_final.log",
+        "line": 93,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 93,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This step reads in a text file with the results from Step 1.  That text file is simply a cleaned version",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//      of the log-file output from step 1.  ",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "insheet",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 97,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "bs_sqreg_results.txt",
+        "line": 97,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delimiter",
+        "line": 97,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 97,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 97,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v1",
+        "line": 99,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 99,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v2",
+        "line": 100,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "carid2",
+        "line": 100,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v3",
+        "line": 101,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rep",
+        "line": 101,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v4",
+        "line": 102,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta10",
+        "line": 102,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v5",
+        "line": 103,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta25",
+        "line": 103,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v6",
+        "line": 104,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta50",
+        "line": 104,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v7",
+        "line": 105,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta75",
+        "line": 105,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v8",
+        "line": 106,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta90",
+        "line": 106,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v9",
+        "line": 107,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 107,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// For each quantile cut in the quantile regressions, trim out the top and bottom 1% outliers",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tThis step is useful simply because a few iterations will draw samples that produce",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   \tdivergent results.  ",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 112,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 112,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 112,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 112,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "75",
+        "line": 112,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "90",
+        "line": 112,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 112,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Identify outlier estimates",
+    "line": 113,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 114,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p1_",
+        "line": 114,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 114,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 114,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 114,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 114,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 114,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 114,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 115,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p99_",
+        "line": 115,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 115,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 115,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 115,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 115,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 115,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "99.9",
+        "line": 115,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Drop outlier estimates ",
+    "line": 117,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 118,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 118,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 118,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 118,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p1_",
+        "line": 118,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 118,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 119,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 119,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 119,
+        "column": 14
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 119,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p99_",
+        "line": 119,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 119,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//For remaining estimates get a variable weighting the estimate by number of car-type obs",
+    "line": 121,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 122,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 122,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 122,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 122,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 122,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 122,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 122,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Get the sum of the weighted estimates for each quantile cut",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 126,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e10",
+        "line": 126,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e25",
+        "line": 126,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e50",
+        "line": 126,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e75",
+        "line": 126,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e90",
+        "line": 126,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 126,
+        "column": 81
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 126,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "rep",
+        "line": 126,
+        "column": 89
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Calculate the weighted average estimate by dividing by total number of observations",
+    "line": 128,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tThe standard deviation of the weighted estimate is the bootstrap estimate of ",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tthe standard error of the estimate we use in Figure 5.",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 131,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 131,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 131,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 131,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "75",
+        "line": 131,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "90",
+        "line": 131,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 131,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 132,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 132,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 132,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 132,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 132,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 132,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 132,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 133,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 133,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 133,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 133,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 134,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 134,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 134,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 134,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 135,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 135,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 135,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 135,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 135,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 135,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`se'",
+        "line": 135,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 140,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 140,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 140,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 143,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 3: Repeat Step 1 but now for OLS esimtates \t\t\t\t\t\t\t\t\t\t\t \t *",
+    "line": 144,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 145,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 148,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 149,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 149,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 149,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Log file will hold the results as text",
+    "line": 151,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 152,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 152,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "results_bsampleOLS_final.log",
+        "line": 152,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 152,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 154,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "200",
+        "line": 154,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 154,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Open the regression data set reduced to useable variables. ",
+    "line": 155,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 156,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_restr_final.dta",
+        "line": 156,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 156,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the number of observations in the dataset and draw a bootstrap sample",
+    "line": 158,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 159,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 159,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 159,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 160,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 160,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 160,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 160,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Seed is same as in Step 1 to ensure consistent sample comparison between sqreg and ols",
+    "line": 161,
+    "column": 19
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 161,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "seed",
+        "line": 161,
+        "column": 6
+      },
+      {
+        "id": "number",
+        "value": "4444",
+        "line": 161,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 161,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "bsample",
+      "line": 162,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 162,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Restrict to car types (make model body model_year year auction) with at least 20 sold observations",
+    "line": 164,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 165,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 165,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 165,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 165,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 165,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 166,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 166,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "bys",
+            "line": 166,
+            "column": 6
+          },
+          {
+            "id": "identifier",
+            "value": "carid2",
+            "line": 166,
+            "column": 10
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 166,
+        "column": 23
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 166,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 166,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 167,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 167,
+          "column": 2
+        }
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 167,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 167,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 167,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate a new car-type id that will have consecutive numbering useful for loop below",
+    "line": 168,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 169,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 169,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 169,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "make",
+        "line": 169,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 169,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "body",
+        "line": 169,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "model_year",
+        "line": 169,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 169,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "auction",
+        "line": 169,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the number of unique carids for the limits of the loop below",
+    "line": 171,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 172,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 172,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 172,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 173,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 173,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 173,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 173,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Run the OLS regression separately for each carid",
+    "line": 175,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 176,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid",
+        "line": 176,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 176,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 176,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`max'",
+        "line": 176,
+        "column": 24
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 176,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 177,
+      "column": 3
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 178,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 178,
+          "column": 3
+        }
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 178,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 178,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 178,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 179,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 179,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid2",
+        "line": 179,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Local variable to track original carid2 so we can compare across samples",
+    "line": 180,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 180,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cc",
+        "line": 180,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 180,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 180,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 181,
+      "column": 11
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 181,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_sale",
+        "line": 181,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 181,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "miles",
+        "line": 181,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "miles2",
+        "line": 181,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "miles3",
+        "line": 181,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Display the results so they are captured as text in the log file",
+    "line": 182,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 183,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 183,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 183,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 183,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 183,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 183,
+        "column": 36
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 183,
+        "column": 59
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 183,
+        "column": 62
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`cc'",
+        "line": 183,
+        "column": 45
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 183,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 183,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 183,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 183,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 184,
+      "column": 3
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 189,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 189,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 189,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 191,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 4: Repeat Step 2 above for the OLS \t\t\t\t\t\t\t\t\t\t\t\t\t \t *",
+    "line": 192,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 193,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 195,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 195,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "reg_se_bsample_final.log",
+        "line": 195,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 195,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This step reads in a text file with the results from Step 3.  That text file is simply a cleaned version",
+    "line": 197,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//      of the log-file output from step 3.  ",
+    "line": 198,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "insheet",
+      "line": 200,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 200,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "bs_ols_results.txt",
+        "line": 200,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delimiter",
+        "line": 200,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 200,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 200,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 202,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v1",
+        "line": 202,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 202,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 203,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v2",
+        "line": 203,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "carid2",
+        "line": 203,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 204,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v3",
+        "line": 204,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rep",
+        "line": 204,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 205,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v4",
+        "line": 205,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 205,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 206,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v5",
+        "line": 206,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 206,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rep",
+        "line": 207,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "carid2_new",
+        "line": 207,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Remove outliers of estimates above and below the .1 and 99.9 percentile",
+    "line": 209,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tThis step is useful for dealing with divergent estimates generated in some",
+    "line": 210,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tsmall bootrstrap samples.",
+    "line": 211,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// This removes observations for samples where OLS estimates did not generate",
+    "line": 212,
+    "column": 17
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 212,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 212,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 212,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 212,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 213,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 213,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 213,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 213,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 213,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p99",
+        "line": 214,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 214,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 214,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 214,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "99.9",
+        "line": 214,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 215,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 215,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 215,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 215,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 216,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 216,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 216,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "p99",
+        "line": 216,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//For remaining estimates get a variable weighting the estimate by number of car-type obs",
+    "line": 218,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 219,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 219,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 219,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 219,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Get the sum of the weighted estimates ",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 222,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 222,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 222,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 222,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 222,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "rep",
+        "line": 222,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Calculate the weighted average estimate by dividing by total number of observations",
+    "line": 224,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tThe standard deviation of the weighted estimate is the bootstrap estimate of ",
+    "line": 225,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tthe standard error of the estimate we use in Figure 5.",
+    "line": 226,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 227,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 227,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 227,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 227,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 228,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 228,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 228,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 229,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 229,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 229,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 230,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 230,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 230,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 230,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 230,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"ols\"",
+        "line": 230,
+        "column": 33
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`se'",
+        "line": 230,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 232,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 232,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 232,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 235,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 5: Generate the point estimates for SQREG  \t\t\t\t\t\t\t\t\t\t\t \t *",
+    "line": 236,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 237,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 239,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// Log file will hold the results as text",
+    "line": 241,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 242,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "sqreg_point_final.log",
+        "line": 242,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 242,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Open the regression data set reduced to useable variables. ",
+    "line": 244,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 245,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_restr_final.dta",
+        "line": 245,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Restrict to car types (make model body model_year year auction) with at least 20 sold observations",
+    "line": 247,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 248,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 248,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 248,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 248,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 248,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 249,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 249,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "carid2",
+            "line": 249,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 249,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 249,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 249,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 250,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 250,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 250,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 250,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate a new car-type id that will have consecutive numbering useful for loop below",
+    "line": 251,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 252,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid1_new",
+        "line": 252,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 252,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "make",
+        "line": 252,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 252,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "body",
+        "line": 252,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "model_year",
+        "line": 252,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 252,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "auction",
+        "line": 252,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the number of unique carids for the limits of the loop below",
+    "line": 254,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 255,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid1_new",
+        "line": 255,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 256,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 256,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 256,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 256,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Run the simultaneous quantile regression separately for each carid\t",
+    "line": 258,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 259,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid",
+        "line": 259,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 259,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 259,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`max'",
+        "line": 259,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 259,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sqreg",
+      "line": 260,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 260,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_sale",
+        "line": 260,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 260,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "miles",
+        "line": 260,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "miles2",
+        "line": 260,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "miles3",
+        "line": 260,
+        "column": 44
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "carid1_new",
+        "line": 260,
+        "column": 54
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 260,
+        "column": 64
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 260,
+        "column": 66
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 260,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": ".1",
+        "line": 260,
+        "column": 77
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 260,
+        "column": 80
+      },
+      {
+        "id": "number",
+        "value": ".5",
+        "line": 260,
+        "column": 84
+      },
+      {
+        "id": "number",
+        "value": ".75",
+        "line": 260,
+        "column": 87
+      },
+      {
+        "id": "number",
+        "value": ".9",
+        "line": 260,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "reps",
+        "line": 260,
+        "column": 95
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 260,
+        "column": 100
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 261,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 261,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 261,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 261,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Display the results so they are captured as text in the log file",
+    "line": 262,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 263,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 263,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 263,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 263,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 263,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 263,
+        "column": 35
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 63
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 81
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 263,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 263,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 263,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 263,
+        "column": 57
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 263,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 263,
+        "column": 61
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 263,
+        "column": 65
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 263,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 263,
+        "column": 70
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 263,
+        "column": 74
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 263,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 263,
+        "column": 79
+      },
+      {
+        "id": "number",
+        "value": "21",
+        "line": 263,
+        "column": 83
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 263,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 263,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 263,
+        "column": 90
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 266,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 6: Generate the weighted averages of piont estimates for quantile regs\t\t\t\t\t \t *",
+    "line": 267,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 268,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 270,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 270,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 270,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 272,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 272,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "sqreg_est_full_final.log",
+        "line": 272,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 272,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This step reads in a text file with the results from Step 5.  That text file is simply a cleaned version",
+    "line": 274,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//      of the log-file output from step 5.  ",
+    "line": 275,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "insheet",
+      "line": 276,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 276,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "sqregpointest_final.txt",
+        "line": 276,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delimiter",
+        "line": 276,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 276,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 276,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 278,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v1",
+        "line": 278,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rep",
+        "line": 278,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 279,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v2",
+        "line": 279,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta10",
+        "line": 279,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 280,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v3",
+        "line": 280,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta25",
+        "line": 280,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 281,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v4",
+        "line": 281,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta50",
+        "line": 281,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 282,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v5",
+        "line": 282,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta75",
+        "line": 282,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 283,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v6",
+        "line": 283,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta90",
+        "line": 283,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 284,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v7",
+        "line": 284,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 284,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Remove outliers of estimates above and below the .1 and 99.9 percentile",
+    "line": 286,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tThis step is useful for dealing with divergent estimates generated in some",
+    "line": 287,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tsmall carid samples.",
+    "line": 288,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 289,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 289,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 289,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 289,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 289,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "75",
+        "line": 289,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "90",
+        "line": 289,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 289,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Identify outlier estimates",
+    "line": 291,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 292,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p1_",
+        "line": 292,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 292,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 292,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 292,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 292,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 292,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 292,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 293,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p99_",
+        "line": 293,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 293,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 293,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 293,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 293,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 293,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "99.9",
+        "line": 293,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Drop outlier estimates ",
+    "line": 295,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 296,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 296,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 296,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 296,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p1_",
+        "line": 296,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 296,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 297,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 297,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 297,
+        "column": 14
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 297,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p99_",
+        "line": 297,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 297,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//For remaining estimates get a variable weighting the estimate by number of car-type obs",
+    "line": 299,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 300,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 300,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 300,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 300,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 300,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 300,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 300,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Get the sum of the weighted estimates for each quantile cut",
+    "line": 303,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 304,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 304,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e10",
+        "line": 304,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e25",
+        "line": 304,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e50",
+        "line": 304,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e75",
+        "line": 304,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e90",
+        "line": 304,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 304,
+        "column": 81
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Calculate the weighted average estimate by dividing by total number of observations",
+    "line": 306,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// \t\tThe point estimate is this weighted average for each quantile",
+    "line": 307,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 308,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 308,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 308,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 308,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 308,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "75",
+        "line": 308,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "90",
+        "line": 308,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 308,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 309,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 309,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 309,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 309,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 309,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 309,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 309,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 310,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 310,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 310,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 310,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 311,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "point_est",
+        "line": 311,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 311,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 311,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 312,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 312,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 312,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 312,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 312,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`q'",
+        "line": 312,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`point_est'",
+        "line": 312,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 315,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 315,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 315,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 317,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 7: Generate the point estimates for OLS\t  \t\t\t\t\t\t\t\t\t\t\t \t *",
+    "line": 318,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************\t\t",
+    "line": 319,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Log file will hold the results as text",
+    "line": 321,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 322,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 322,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "olsreg_point_final.log",
+        "line": 322,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 322,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Open the regression data set reduced to useable variables. ",
+    "line": 324,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 325,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_restr_final.dta",
+        "line": 325,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Restrict to car types (make model body model_year year auction) with at least 20 sold observations",
+    "line": 327,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 328,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 328,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 328,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 328,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 328,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 328,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 329,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 329,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "carid2",
+            "line": 329,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 329,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 329,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 329,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 330,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 330,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 330,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 330,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate a new car-type id that will have consecutive numbering useful for loop below",
+    "line": 331,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 332,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid1_new",
+        "line": 332,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 332,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "make",
+        "line": 332,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 332,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "body",
+        "line": 332,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "model_year",
+        "line": 332,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 332,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "auction",
+        "line": 332,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the number of unique carids for the limits of the loop below",
+    "line": 334,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 335,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid1_new",
+        "line": 335,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 336,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 336,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 336,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 336,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Run the OLS regression separately for each carid\t",
+    "line": 338,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 339,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "carid",
+        "line": 339,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 339,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 339,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`max'",
+        "line": 339,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 339,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 341,
+      "column": 10
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 341,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_sale",
+        "line": 341,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 341,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "miles",
+        "line": 341,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "miles2",
+        "line": 341,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "miles3",
+        "line": 341,
+        "column": 42
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "carid1_new",
+        "line": 341,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 341,
+        "column": 62
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 341,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Display the results so they are captured as text in the log file",
+    "line": 342,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 343,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 343,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 343,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 343,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 343,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`carid'",
+        "line": 343,
+        "column": 35
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 343,
+        "column": 47
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 343,
+        "column": 50
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 343,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 343,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 343,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 348,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 348,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 348,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 350,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tStep 8: Generate the weighted average of OLS point estimates\t  \t\t\t\t\t\t\t \t *",
+    "line": 351,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************\t",
+    "line": 352,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 354,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 354,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "olsreg_est_full_final.log",
+        "line": 354,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 354,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This step reads in a text file with the results from Step 7.  That text file is simply a cleaned version",
+    "line": 356,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//      of the log-file output from step 7.  ",
+    "line": 357,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "insheet",
+      "line": 358,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 358,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "olsregpointest_final.txt",
+        "line": 358,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delimiter",
+        "line": 358,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 358,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 358,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 360,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v1",
+        "line": 360,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "carid",
+        "line": 360,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 361,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v2",
+        "line": 361,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 361,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 362,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "v3",
+        "line": 362,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 362,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Remove outliers of estimates above and below the .1 and 99.9 percentile",
+    "line": 364,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tThis step is useful for dealing with divergent estimates generated in some",
+    "line": 365,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tsmall carid samples.",
+    "line": 366,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// This removes observations for samples where OLS estimates did not generate",
+    "line": 368,
+    "column": 17
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 368,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 368,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 368,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 368,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 369,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 369,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 369,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 369,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 369,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 369,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 370,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "p99",
+        "line": 370,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 370,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 370,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 370,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "99.9",
+        "line": 370,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 371,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 371,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 371,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "p1",
+        "line": 371,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 372,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 372,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 372,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "p99",
+        "line": 372,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//For remaining estimates get a variable weighting the estimate by number of car-type obs",
+    "line": 374,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 375,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 375,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 375,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 375,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 375,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Get the sum of the weighted estimates",
+    "line": 377,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 378,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 378,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 378,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 378,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Get the final piont estimate by dividing by the number of observations",
+    "line": 380,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 381,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 381,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "weighted_e",
+        "line": 381,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 381,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "nob",
+        "line": 381,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 383,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 383,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estimate",
+        "line": 383,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 384,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "point_est",
+        "line": 384,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 384,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 384,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 385,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 385,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 385,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 385,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 385,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"ols\"",
+        "line": 385,
+        "column": 33
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`point_est'",
+        "line": 385,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 387,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 387,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 387,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************",
+    "line": 390,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\tRun our standard regression framework on similar sample for comparison  \t\t\t\t\t \t *",
+    "line": 391,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************************************************\t",
+    "line": 392,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*COMPARE WITH REGRESSION RESULTS*/",
+    "line": 393,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 395,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 395,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "reg_bscomparison.log",
+        "line": 395,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 395,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 397,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdataset_restr_final.dta",
+        "line": 397,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 397,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 399,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 399,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 399,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sold",
+        "line": 399,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 399,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 399,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 400,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 400,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "carid2",
+            "line": 400,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 400,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 400,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "temp5",
+        "line": 400,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 402,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_sale",
+        "line": 402,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "jap",
+        "line": 402,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "miles",
+        "line": 402,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "miles2",
+        "line": 402,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "miles3",
+        "line": 402,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "agem",
+        "line": 402,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 402,
+        "column": 45
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "20",
+        "line": 402,
+        "column": 56
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "n2",
+        "line": 402,
+        "column": 50
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 402,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 402,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "carid2",
+        "line": 402,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 402,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "carid3",
+        "line": 402,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 404,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 404,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 404,
+        "column": 13
+      }
+    ]
+  }
+]

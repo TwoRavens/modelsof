@@ -1,0 +1,3204 @@
+[
+  {
+    "id": "comment",
+    "value": "//==============================================================================",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// ANALYSIS OF RA DATA, WITH CORRECTION FOR ATTRITION",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// EUT MODEL: CRRA u(X) = x^(1-rra)/(1-rra)",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Contextual utility. Allow for observed heterogeneity w.r.t. treatment indicators.",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//==============================================================================",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// globals for LHS variables of RA models",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "LHS_RA",
+        "line": 8,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "choices",
+        "line": 8,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "rowproba",
+        "line": 8,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "vprizea1",
+        "line": 8,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "vprizea2",
+        "line": 8,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "vprizeb1",
+        "line": 8,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "vprizeb2",
+        "line": 8,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// globals for RHS variables in selection (RHS_1) and attrition (RHS_2A) equations",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RHS_1",
+        "line": 11,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"female young middle old high_fee dist distsq\"",
+        "line": 11,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RHS_2A",
+        "line": 12,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"female young middle old IncLow IncHigh earnings\"",
+        "line": 12,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// globals for order & stake treatment indicators in RA models",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 15,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"RAfirst RAhigh\"",
+        "line": 15,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// global for background consumption",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "omega",
+        "line": 18,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 18,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// global for contextual utility",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "contextual",
+        "line": 21,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"y\"",
+        "line": 21,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// globals for initial MSL estimation settings",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 24,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 24,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 25,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "50",
+        "line": 25,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 26,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "20",
+        "line": 26,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// load data",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DK2009_SS.dta",
+        "line": 29,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 29,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// For non-participants, recode rowproba and RAfirst as 0s: doesn't affect non-missing log-likelihood values",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rowproba",
+        "line": 32,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 32,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 32,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "rowproba",
+        "line": 32,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RAfirst",
+        "line": 33,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 33,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 33,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "RAfirst",
+        "line": 33,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Replace non-selector's missing earnings with 0s: doesn't affect non-missing log-likelihood values",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "earnings",
+        "line": 36,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 36,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 36,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "earnings",
+        "line": 36,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// To avoid division by zero problem, replace a zero prize with a small positive prize (0.04): doesn't affect non-missing log-likelihood values ",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vprize",
+        "line": 39,
+        "column": 5
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 39,
+        "column": 11
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rowproba",
+        "line": 39,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 39,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 39,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vprize",
+        "line": 40,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 40,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 40,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "vprize",
+        "line": 40,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 40,
+        "column": 33
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 40,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 41,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rowproba",
+        "line": 41,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`vprize'",
+        "line": 41,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 41,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 41,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vprize",
+        "line": 44,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 44,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 44,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "vprizea1",
+        "line": 44,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "vprizeb1",
+        "line": 44,
+        "column": 36
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 44,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 45,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`vprize'",
+        "line": 45,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0.04",
+        "line": 45,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`vprize'",
+        "line": 45,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 45,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 45,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vprize",
+        "line": 48,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 48,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 48,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "vprizea2",
+        "line": 48,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "vprizeb2",
+        "line": 48,
+        "column": 36
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 48,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 49,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`vprize'",
+        "line": 49,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0.03",
+        "line": 49,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`vprize'",
+        "line": 49,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 49,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 49,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// To keep Mata code simple, generate numeric ID (instead of current string)",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 53,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 53,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Identify first observation on a particular subject within each wave",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 56,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "repeat",
+        "line": 56,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 56,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 57,
+      "column": 15
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 57,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "id",
+            "line": 57,
+            "column": 4
+          },
+          {
+            "id": "identifier",
+            "value": "repeat",
+            "line": 57,
+            "column": 7
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "byte",
+        "line": 57,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 57,
+        "column": 24
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 57,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 57,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 57,
+        "column": 39
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 57,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Only keep people who participated in the first experiment",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 60,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sample_1",
+        "line": 60,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 60,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 60,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//==============================================================================",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// B. Models correcting for attrition",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//==============================================================================",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//-------------------------",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Sample selection probit",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//-------------------------",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "probit",
+      "line": 69,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sample_2",
+        "line": 69,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 69,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 69,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "RHS_2A",
+        "line": 69,
+        "column": 19
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 69,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "repeat",
+        "line": 69,
+        "column": 30
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 69,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 69,
+        "column": 40
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 69,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 69,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 69,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 69,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 70,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 70,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 70,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 70,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "probit_sample_2.ster",
+        "line": 70,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 70,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//-------------------------------------------------------",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// RC model with sample selection: no control, nrep = 50",
+    "line": 73,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//-------------------------------------------------------",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 75,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "50",
+        "line": 75,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "MSLinit",
+      "line": 76,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 76,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 76,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 76,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 76,
+        "column": 15
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 76,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 76,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 76,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 76,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 76,
+        "column": 27
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 76,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 76,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 76,
+        "column": 39
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 76,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 76,
+        "column": 41
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 76,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 76,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 76,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 78,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 78,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 78,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 78,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "probit_sample_2.ster",
+        "line": 78,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "start_SEL",
+        "line": 79,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 79,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 79,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 81,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 81,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 81,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 81,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "ML_CRRA_12_C0.ster",
+        "line": 81,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "start_REST",
+        "line": 82,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 82,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 82,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 82,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 82,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 82,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 82,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 82,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "start",
+        "line": 84,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "start_SEL",
+        "line": 84,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "start_REST",
+        "line": 84,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ml",
+      "line": 86,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 32
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 86,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "gf0",
+        "line": 86,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "MSL_CRRA_RC_A12",
+        "line": 86,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sel2",
+        "line": 86,
+        "column": 33
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 86,
+        "column": 39
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 86,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "LHS_RA",
+        "line": 86,
+        "column": 41
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 86,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "sample_2",
+        "line": 86,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "repeat",
+        "line": 86,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 86,
+        "column": 65
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 86,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 86,
+        "column": 73
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 86,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "RHS_2A",
+        "line": 86,
+        "column": 75
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 86,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "rra1",
+        "line": 86,
+        "column": 85
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "rra2",
+        "line": 86,
+        "column": 94
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "LNmuRA",
+        "line": 86,
+        "column": 103
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "c21",
+        "line": 86,
+        "column": 114
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "c22",
+        "line": 86,
+        "column": 122
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "c31",
+        "line": 86,
+        "column": 130
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 133
+      },
+      {
+        "id": "identifier",
+        "value": "c32",
+        "line": 86,
+        "column": 138
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 141
+      },
+      {
+        "id": "identifier",
+        "value": "c33",
+        "line": 86,
+        "column": 146
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 86,
+        "column": 149
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 87,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 87,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 87,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 87,
+        "column": 21
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 87,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 87,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "maximize",
+        "line": 87,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 87,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "technique",
+        "line": 87,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "bfgs",
+        "line": 87,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 87,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "nr",
+        "line": 87,
+        "column": 65
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 87,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "init",
+        "line": 87,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "start",
+        "line": 87,
+        "column": 76
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 87,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "copy",
+        "line": 87,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ml",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "display",
+        "line": 88,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 89,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 89,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 89,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 89,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "nrep$",
+        "line": 89,
+        "column": 18
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 89,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 89,
+        "column": 24
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 89,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "_MSL_CRRA_RC_A12_CA0.ster",
+        "line": 89,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//-------------------------------------------------------------------",
+    "line": 91,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// RC model with sample selection: control for treatments, nrep = 50",
+    "line": 92,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//-------------------------------------------------------------------",
+    "line": 93,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 94,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 94,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "50",
+        "line": 94,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "MSLinit",
+      "line": 95,
+      "column": 2
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 95,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 95,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 95,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 95,
+        "column": 16
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 95,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 95,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 95,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 95,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 95,
+        "column": 28
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 95,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 95,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 95,
+        "column": 40
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 95,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 95,
+        "column": 42
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 95,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 95,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 95,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 97,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 97,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 97,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 97,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "nrep50_MSL_CRRA_RC_A12_CA0.ster",
+        "line": 97,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ml",
+      "line": 99,
+      "column": 2
+    },
+    "meta": {
+      "predictors": 46
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 99,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "gf0",
+        "line": 99,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "MSL_CRRA_RC_A12",
+        "line": 99,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "sel2",
+        "line": 99,
+        "column": 34
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 99,
+        "column": 40
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 99,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "LHS_RA",
+        "line": 99,
+        "column": 42
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 99,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "sample_2",
+        "line": 99,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "repeat",
+        "line": 99,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 99,
+        "column": 66
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 99,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 99,
+        "column": 74
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 99,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "RHS_2A",
+        "line": 99,
+        "column": 76
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 99,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "rra1",
+        "line": 99,
+        "column": 86
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 90
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 99,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 99,
+        "column": 94
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 99,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 99,
+        "column": 96
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 99,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "rra2",
+        "line": 99,
+        "column": 109
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 113
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 99,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 99,
+        "column": 117
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 99,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 99,
+        "column": 119
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 99,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "LNmuRA",
+        "line": 99,
+        "column": 132
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 138
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 99,
+        "column": 140
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 99,
+        "column": 141
+      },
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 99,
+        "column": 142
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 99,
+        "column": 151
+      },
+      {
+        "id": "identifier",
+        "value": "c21",
+        "line": 99,
+        "column": 155
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 158
+      },
+      {
+        "id": "identifier",
+        "value": "c22",
+        "line": 99,
+        "column": 163
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "c31",
+        "line": 99,
+        "column": 171
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 174
+      },
+      {
+        "id": "identifier",
+        "value": "c32",
+        "line": 99,
+        "column": 179
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 182
+      },
+      {
+        "id": "identifier",
+        "value": "c33",
+        "line": 99,
+        "column": 187
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 99,
+        "column": 190
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 100,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 100,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 100,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 100,
+        "column": 22
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 100,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 100,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "maximize",
+        "line": 100,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 100,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "technique",
+        "line": 100,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "bfgs",
+        "line": 100,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 100,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "nr",
+        "line": 100,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 100,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "continue",
+        "line": 100,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ml",
+      "line": 101,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "display",
+        "line": 101,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 102,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 102,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 102,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 102,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "nrep$",
+        "line": 102,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 102,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 102,
+        "column": 25
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 102,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "_MSL_CRRA_RC_A12_CA1.ster",
+        "line": 102,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//--------------------------------------------------------------------",
+    "line": 104,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// RC model with sample selection: control for treatments, nrep = 100",
+    "line": 105,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//--------------------------------------------------------------------",
+    "line": 106,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 107,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 107,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "100",
+        "line": 107,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "MSLinit",
+      "line": 108,
+      "column": 2
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 108,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 108,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 108,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 108,
+        "column": 16
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 108,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 108,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 108,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 108,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 108,
+        "column": 28
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 108,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 108,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 108,
+        "column": 40
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 108,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 108,
+        "column": 42
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 108,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 108,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 108,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 110,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 110,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 110,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 110,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "nrep50_MSL_CRRA_RC_A12_CA1.ster",
+        "line": 110,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 111,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "start",
+        "line": 111,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 111,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 111,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ml",
+      "line": 113,
+      "column": 2
+    },
+    "meta": {
+      "predictors": 46
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "model",
+        "line": 113,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "gf0",
+        "line": 113,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "MSL_CRRA_RC_A12",
+        "line": 113,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "sel2",
+        "line": 113,
+        "column": 34
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 113,
+        "column": 40
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 113,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "LHS_RA",
+        "line": 113,
+        "column": 42
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 113,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "sample_2",
+        "line": 113,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "repeat",
+        "line": 113,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 113,
+        "column": 66
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 113,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 113,
+        "column": 74
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 113,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "RHS_2A",
+        "line": 113,
+        "column": 76
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 113,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "rra1",
+        "line": 113,
+        "column": 86
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 90
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 113,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 113,
+        "column": 94
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 113,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 113,
+        "column": 96
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 113,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "rra2",
+        "line": 113,
+        "column": 109
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 113
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 113,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 113,
+        "column": 117
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 113,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 113,
+        "column": 119
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 113,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "LNmuRA",
+        "line": 113,
+        "column": 132
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 138
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 113,
+        "column": 140
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 113,
+        "column": 141
+      },
+      {
+        "id": "identifier",
+        "value": "treat2_RA",
+        "line": 113,
+        "column": 142
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 113,
+        "column": 151
+      },
+      {
+        "id": "identifier",
+        "value": "c21",
+        "line": 113,
+        "column": 155
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 158
+      },
+      {
+        "id": "identifier",
+        "value": "c22",
+        "line": 113,
+        "column": 163
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "c31",
+        "line": 113,
+        "column": 171
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 174
+      },
+      {
+        "id": "identifier",
+        "value": "c32",
+        "line": 113,
+        "column": 179
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 182
+      },
+      {
+        "id": "identifier",
+        "value": "c33",
+        "line": 113,
+        "column": 187
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 190
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 114,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "$",
+        "line": 114,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 114,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 114,
+        "column": 22
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 114,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 114,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "maximize",
+        "line": 114,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 114,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "technique",
+        "line": 114,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "bfgs",
+        "line": 114,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 114,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "nr",
+        "line": 114,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 114,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "init",
+        "line": 114,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "start",
+        "line": 114,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ml",
+      "line": 115,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "display",
+        "line": 115,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 116,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 116,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 116,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 116,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "nrep$",
+        "line": 116,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 116,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 116,
+        "column": 25
+      },
+      {
+        "id": "}",
+        "value": "}",
+        "line": 116,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "_MSL_CRRA_RC_A12_CA1.ster",
+        "line": 116,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "exit",
+      "line": 118,
+      "column": 1
+    }
+  }
+]

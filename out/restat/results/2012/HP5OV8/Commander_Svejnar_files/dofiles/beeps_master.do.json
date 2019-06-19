@@ -1,0 +1,812 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\ndofiles for Commander and Svejnar \"Business Environment, Export, Ownership and Firm Performance\"\n\n* Running this \"beeps_master\" do file should produce all tables for which no further data is required in addition to the data in the data folder (tables\n\tA3 and A4 are produced by table_3.do and table4.do respectively)\n* To use the dofiles a general directory has to be specified in global dir, with subdirectories \"data\" (for the raw data), \"dofiles\" (for the dofiles),\n\t\"tables\" (for the output) and \"logs\" (for the logfiles).\n* The principal source of Data is the BEEPS survey from the EBRD (raw data provided in cleaned1999.dta, cleaned2002.dta and cleaned2005.dta;\n\t1999 data is not used for the paper). The paper also uses additional economic data from the EBRD as well as from the World Bank (Doing Business database)\n\tBureau van Dijk's Amadeus database and the World Development indicators. Where possible, the data is included. If that was not possible due to copyright\n\trestrictions, the relevant do file contains a note on where to find the data and on how it was prepared for use in the paper.\n* All do files were run on Stata release 10.1. The do files make use of ivreg2 (Baum, Schaffer and Stillman, 2007), version 2.2.08, 15 October 2007 and outreg2 (Wada, 2009), version 2.1.3,\n\t21 October 2009.\n* The Instrumental Variables / GMM estimates also use two additional ado files. \"tests.ado\" generates a file with the test-statistics reported in the lower\n\tpart of the tables, including the J-test (J, J-pvalue), the Durbin-Wu-Hausman test (H, H-pvalue) and the first stage F-statistics. for the J-test,\n\ttests.ado makes a degrees of freedom adjustment. The matrix of excluded instruments includes interactions between region and skill ratio and region and\n\tthe skill-ratio-age interaction. Stata \"counts\" this as six instruments while for any given firm, four of the instruments are always zero (e.g. a firm\n\tin the CIS region has a zero skill-ratio for the CEB and SEE regions). Rather than using the degrees of freedom counted by Stata, tests.ado uses the\n\tnumber of degrees of freedom provided in the command line to calculated the p-value of the J-statistic. tests.ado also calls a second ado file,\n\t\"robust_hausman.ado\". This file implements a regression-based version of the Durbin-Wu-Hausman test for endogeneity (see e.g. Wooldridge, 2002) while\n\tallowing for heterogeneity of and clustering in the standard errors.\n\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 4,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "cap",
+          "line": 4,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 4,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 5,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 5,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 6,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "300m",
+        "line": 6,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "seed",
+        "line": 7,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "123456789",
+        "line": 7,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dir",
+        "line": 10,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"XXX\"",
+        "line": 10,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 11,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"data\"",
+        "line": 11,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dofiles",
+        "line": 12,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"dofiles\"",
+        "line": 12,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tables",
+        "line": 13,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"tables\"",
+        "line": 13,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logs",
+        "line": 14,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"logs\"",
+        "line": 14,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$dir\"",
+        "line": 16,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* data */",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 21,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 21,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "data.recoding.do",
+        "line": 21,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* recodes data from different waves of the BEEPS survey and gives variables consistent names (numbering of questions varies across surveys) */",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 23,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 23,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "data.merging.do",
+        "line": 23,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* merges additional (country level) data into the file; the data are drawn from the EBRD transition indicators, economic indicators and structural\n\tchange indicators */",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 25,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 25,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "data.panel.do",
+        "line": 25,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* identifies the firms that are part of the panel surveyed both in 2002 and 2005 */",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 27,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 27,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "data.final_data.do",
+        "line": 27,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* creates the final set of variables to be used in the analyses */",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* tables */",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 32,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 32,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_1.do",
+        "line": 32,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 33,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 33,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_2.do",
+        "line": 33,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 34,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 34,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_3.do",
+        "line": 34,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 35,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 35,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_4.do",
+        "line": 35,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 36,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 36,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_5.do",
+        "line": 36,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 37,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 37,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_6.do",
+        "line": 37,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 38,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 38,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_7.do",
+        "line": 38,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 39,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 39,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_8.do",
+        "line": 39,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 40,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 40,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_9.do",
+        "line": 40,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 42,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 42,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_A1.do",
+        "line": 42,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 43,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 43,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_A2.do",
+        "line": 43,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 44,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 44,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_A5.do",
+        "line": 44,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 45,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 45,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_A6.do",
+        "line": 45,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 46,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 46,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_A7.do",
+        "line": 46,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$dofiles",
+        "line": 47,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 47,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "table_A8.do",
+        "line": 47,
+        "column": 13
+      }
+    ]
+  }
+]

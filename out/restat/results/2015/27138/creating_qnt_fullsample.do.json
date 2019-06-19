@@ -1,0 +1,42 @@
+[
+  {
+    "id": "comment",
+    "value": "* This script contains the code to obtain the file qnt_fullsample to be used in the script \"Allnetworkvariables.R\" in Ductor, L., Fafchamps, M., Goyal S. and M. van der Leij. Social Networks and Research Output. The Review of Economics and Statistics.",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "insheet",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 3,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"networkdatac.csv, clear\n\n/*CREATING THE SAMPLE: Adjusted by the journal quality impact factor*/\n/*Constructing the panel*/\ngen t=_n\nreshape long auth, i(t) \n\nsort auth year \ndrop t _j \n\nby auth year: egen sprod=sum(prod)\n\ndrop prod articleid journalid \nrename sprod prod \nduplicates drop  /*Dropping duplicates: 600793 observations deleted*/\ndrop if missing(auth)  /*Dropping missing values for authors: 30 observations deleted*/\nsave prod_nodt,replace /*Saving the productivity variable no discounted*/\n\n\negen ystart=min(year), by(auth) /*first year publication*/\negen yend=max(year), by(auth) /*last year publication*/\n\nsort auth year \nsave prod_nodt, replace\n\n/* generate a list of all author idcodes in the data */\ncollapse (mean) year, by(auth)\nkeep auth\nsave authorlist, replace\n\n/* create a file with each author by year, and identify the beginning\n   and end of publishing career */\n\nclear\nset obs 33\ngen year=_n+1968\ntab year\n\ncross using authorlist\nmore\n\nsort auth year\nmerge auth year using prod_nodt, sort\ntab _merge\ndrop _merge\ncompress\n\n*sum\n\negen mystart=mean(ystart), by(auth)\ndrop if year<mystart\n\negen myend=mean(yend), by(auth)\n\ndrop ystart yend\nrename mystart ystart\nrename myend yend\n\ndrop if year>1999\nsum\ntsset auth year, yearly\n\n/*Creating the restricted productivity*/\ngen cprod5=prod+L.prod+L2.prod+L3.prod+L4.prod\nbys auth: gen cprod=sum(prod)\ngen cprodl5=L5.cprod\norder auth year prod cprod5 cprod cprodl5\n\n\nsave prod_nodt, replace\n\n/*Creating experience variable*/\n\ngen t=(year-ystar)+1\norder auth year t\nsave prod_nodt, replace\n\n\n/******************CREATING QUANTILES PER AUTHOR********************/\n\n*histogram lcprod5, fraction\n\n_pctile cprod5 if cprod5!=., p(50, 80, 90, 95, 99)\n\nreturn list \n\n\ngen qnt = 1 if (cprod5>=r(r5)) & cprod5!=. \nreplace qnt = 2 if (cprod5<r(r5) & cprod5>=r(r4)) & cprod5!=.\nreplace qnt = 3 if (cprod5<r(r4) & cprod5>=r(r3)) & cprod5!=.\nreplace qnt = 4 if (cprod5<r(r3) & cprod5>=r(r2)) & cprod5!=.\nreplace qnt = 5 if (cprod5<r(r2) & cprod5>=r(r1)) & cprod5!=.\n\n\n/*Notice that the quantiles are not defined for the first four academic years*/\n/*Defining the quantiles for the first four years depending on the productivity of the first academic year*/\ntab qnt\ngen prodfa=prod if t==1\n_pctile prodfa, p(50, 80, 90, 95, 99)\ngen qnty = 1 if (prodfa>=r(r5)) & prodfa!=. \nreplace qnty = 2 if (prodfa<r(r5) & prodfa>=r(r4)) & prodfa!=.\nreplace qnty = 3 if (prodfa<r(r4) & prodfa>=r(r3)) & prodfa!=.\nreplace qnty = 4 if (prodfa<r(r3) & prodfa>=r(r2)) & prodfa!=.\nreplace qnty = 5 if (prodfa<r(r2) & prodfa>=r(r1)) & prodfa!=.\nreplace qnty = 6 if prodfa<r(r1) & prodfa!=.\nbys auth: egen mqnty=max(qnty)\ndrop qnty\nreplace qnt=mqnty if qnt==.\ndrop mqnty prodfa\ncompress\nkeep auth year qnt\noutsheet using \"",
+        "line": 3,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "qnt_fullsample.csv",
+        "line": 3,
+        "column": 2770
+      },
+      {
+        "id": "string",
+        "value": "\", comma replace \n\n\n",
+        "line": 3,
+        "column": 2788
+      }
+    ]
+  }
+]

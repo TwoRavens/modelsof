@@ -1,0 +1,6784 @@
+[
+  {
+    "id": "comment",
+    "value": "/* \nMonte Carlo for aggregated 2 variable system Part 1:\n\nFrom Bergin:\n\n1) First: do a MC study specific to our empirical estimates, which is basically the same as the bootstrapping above. \nUse draws of our actual residuals, do the DGP with our estimated parameters as the truth.  Do for both disaggregated \nand aggregated systems, where for the disaggregated data do it for each of our 100 goods and report averages. (all as \nwe are currently doing). I don\u2019t see a need to include a common factor. Report: the assumed rhos in the DGP, and the \nmean and confidence band of the estimated rhos.\n\nSteps:\n\n1) Run 2 var system on aggregate data and get estimates and residuals (ccep_2var.ado file)\n2) Bootstrap from the residuals (demeaned). (b_res_t1.ado and b_block_t2 files)\n3) Using the ACTUAL parameter values obtained from 1) generate a dataset (b_res_t1.ado and b_block_t2 files)\n4) Then run Pesaran method to generate biased estimates of the values. Get confidence bands(ccep_2v_alt.ado file)\n5) Repeat steps 2-4 1000 times\n\nOutput\n1) Assumed rhos (Pesaran coefficients returned in Step 1)\n2) Mean of 1000 estimated coefficients, along w/ 5 and 95% confidence bands\n\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 3,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 3,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "results",
+        "line": 5,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mata",
+        "line": 6,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 7,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 7,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 7,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 8,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 8,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 9,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "700m",
+        "line": 9,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "varabbrev",
+        "line": 10,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 10,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "descrip",
+        "line": 12,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"indust\"",
+        "line": 12,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "programpath",
+        "line": 14,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"P:\\BerginGlickWu Replication\\Table 4\\programs\"",
+        "line": 14,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outpath1",
+        "line": 15,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"P:\\BerginGlickWu Replication\\Table 4\\results\"",
+        "line": 15,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "datapath",
+        "line": 16,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"P:\\BerginGlickWu Replication\\data_creation\\datasets\"",
+        "line": 16,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "program",
+      "line": 18,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 18,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 18,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 18,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`programpath'\"",
+        "line": 20,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxvar",
+        "line": 21,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "30000",
+        "line": 21,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 22,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "5000",
+        "line": 22,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** initializing values",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//number of goods",
+    "line": 26,
+    "column": 29
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "goods",
+        "line": 26,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "101",
+        "line": 26,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//number of pairs",
+    "line": 27,
+    "column": 29
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pairs",
+        "line": 27,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "20",
+        "line": 27,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//time observations",
+    "line": 28,
+    "column": 29
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tsobs",
+        "line": 28,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "35",
+        "line": 28,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tsobs2",
+        "line": 29,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 29,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 29,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 29,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 30,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "420",
+        "line": 30,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//num. of simulations for Monte Carlo",
+    "line": 31,
+    "column": 30
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sims",
+        "line": 31,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 31,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//num. of variables in system",
+    "line": 32,
+    "column": 28
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vars",
+        "line": 32,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 32,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//for creation of coefficient matrix",
+    "line": 33,
+    "column": 33
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rr",
+        "line": 33,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`vars'",
+        "line": 33,
+        "column": 12
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 33,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 33,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// block size",
+    "line": 34,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bk",
+        "line": 34,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 34,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// number of iterations to burn in",
+    "line": 35,
+    "column": 29
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dropd",
+        "line": 35,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 35,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// number of regressors in each equation",
+    "line": 36,
+    "column": 32
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nregressor",
+        "line": 36,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 36,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lag",
+        "line": 37,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 37,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t\t\t *",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****************** Traded Goods ******************",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\t\t\t\t\t *",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************",
+    "line": 44,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************* Seminnual - Traded - PW - Filter 1 ************",
+    "line": 49,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`datapath'\\aggregate_semiannual_lc_drop1_f1_wide_`descrip'.dta\"",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 51,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Transfer variable to matrix",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* adjusting the exchange rate series\nit is currently in the form (LC/USD) so q = p - s\ncurrently it is log(nom price(i))-log(nom price(j)) - (log(lc(i)/USD) - log(lc(j)/USD))\nwe will flip the exchange rate series by multiplying by negative 1\nso that the calculation for q is q = p + s\nWe also want to check for any series that have missing values\nif there is at least on missing value we will drop the variable\n*/",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** creating e, p matrices and running the 2 var equation",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 59,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 59,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 59,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`group'",
+        "line": 59,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 59,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 60,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 60,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 60,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 60,
+        "column": 20
+      }
+    ],
+    "=": [
+      {
+        "id": "-",
+        "value": "-",
+        "line": 60,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 60,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 60,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 61,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 61,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 61,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 61,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 61,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 61,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 62,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 62,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 62,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 62,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 62,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 62,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 63,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 63,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 63,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 63,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 63,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 63,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 63,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 63,
+        "column": 30
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 63,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 63,
+        "column": 35
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 63,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 63,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 66,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 66,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "series_title",
+        "line": 66,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 68,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 68,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** cleaning up the data",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 70,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 70,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 70,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`group'",
+        "line": 70,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 70,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 71,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 71,
+          "column": 2
+        }
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 71,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 71,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 71,
+        "column": 23
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 71,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 71,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 72,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 72,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 72,
+        "column": 7
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 72,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 72,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 72,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 73,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 73,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 73,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 73,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 73,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 73,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 74,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 74,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 74,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 74,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 74,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 74,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 75,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 75,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 75,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 75,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 75,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 75,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 76,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 76,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 76,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 76,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 76,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 78,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 78,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 78,
+        "column": 7
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 78,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 78,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 79,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 79,
+          "column": 3
+        }
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 79,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 79,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 79,
+        "column": 24
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 79,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 79,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 80,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 80,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 80,
+        "column": 8
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 80,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 80,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 80,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 82,
+      "column": 20
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 82,
+          "column": 4
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 82,
+          "column": 12
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 82,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 82,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 82,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 83,
+      "column": 20
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 83,
+          "column": 4
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 83,
+          "column": 12
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 83,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 83,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 83,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 84,
+      "column": 20
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 84,
+          "column": 4
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 84,
+          "column": 12
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 84,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 84,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 84,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 85,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 85,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 85,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 85,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 85,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 88,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ERprod_PWonecity",
+        "line": 88,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 88,
+        "column": 21
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 88,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 28
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 88,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 88,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 88,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 88,
+        "column": 38
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 88,
+        "column": 41
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 88,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 89,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 89,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 89,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 89,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 89,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 89,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 90,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 90,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 90,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 90,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 90,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 90,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 91,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 91,
+          "column": 3
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 91,
+          "column": 11
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 91,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 91,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 91,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 92,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 92,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 92,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 92,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 92,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 94,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 94,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 95,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "exchange",
+        "line": 95,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`exchange'",
+        "line": 95,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 95,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 95,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 95,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 96,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 96,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 96,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "q",
+        "line": 96,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 96,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "_0",
+        "line": 96,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 100,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 100,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ERprod_PWonecity",
+        "line": 100,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 100,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** creating matrices here",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mkmat",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`exchange'",
+        "line": 103,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "mat",
+        "line": 103,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "exchange",
+        "line": 103,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mkmat",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 104,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "mat",
+        "line": 104,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 104,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************************",
+    "line": 106,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Step 1: Run 2 var system on aggregate data and get adjusted estimates and residuals (ccep_main_adj.ado file)",
+    "line": 107,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************************",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* cointegrating vector",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coefi",
+        "line": 110,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 110,
+        "column": 14
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 110,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 110,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* running 2 var system",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data2",
+        "line": 113,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "exchange",
+        "line": 113,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 113,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 114,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tc",
+        "line": 114,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "colsof",
+        "line": 114,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "data2",
+        "line": 114,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ccep_2v",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data2",
+        "line": 115,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "coefi",
+        "line": 115,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dropdata",
+        "line": 115,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`dropd'",
+        "line": 115,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* saving the actual parameter values and demeaned residuals for running a bootstrap",
+    "line": 117,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_1",
+        "line": 118,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 118,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 118,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "res",
+        "line": 119,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 119,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "res",
+        "line": 119,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* creating a demeaned list of residuals",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 122,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tavg2",
+        "line": 122,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 122,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 122,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 122,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`lag'",
+        "line": 122,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 122,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 122,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 33
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 122,
+        "column": 35
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 122,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 122,
+        "column": 45
+      },
+      {
+        "id": "`'",
+        "value": "`lag'",
+        "line": 122,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resavg",
+        "line": 123,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "res",
+        "line": 123,
+        "column": 15
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 123,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 123,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "tavg2",
+        "line": 123,
+        "column": 20
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 123,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 125,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resavgmat",
+        "line": 125,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 125,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs'",
+        "line": 125,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 125,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 125,
+        "column": 28
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 125,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`tc'",
+        "line": 125,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 125,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 125,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 126,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 126,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 126,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`tsobs2'",
+        "line": 126,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 126,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 127,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "resavgmat",
+        "line": 127,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "resavg",
+        "line": 127,
+        "column": 25
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 127,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 127,
+        "column": 20
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 127,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "res_demean",
+        "line": 130,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "res",
+        "line": 130,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 130,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "resavgmat",
+        "line": 130,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* outputting estimates",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "list",
+        "line": 133,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "actual_beta_1",
+        "line": 133,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* saving a coef matrix to feed the bootstrap program",
+    "line": 135,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 136,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_1",
+        "line": 136,
+        "column": 12
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "....",
+        "line": 136,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "....",
+        "line": 136,
+        "column": 61
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1..",
+        "line": 136,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`rr'",
+        "line": 136,
+        "column": 34
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 136,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "coefi",
+        "line": 136,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "actual_beta_1",
+        "line": 136,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`rr'",
+        "line": 136,
+        "column": 67
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 136,
+        "column": 71
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 136,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "...",
+        "line": 136,
+        "column": 74
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 136,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************************",
+    "line": 138,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Step 2 + 3 + 4: Bootstrap residuals and generate a dataset and running it through biased estimator",
+    "line": 139,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************************",
+    "line": 140,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betasims_1",
+        "line": 142,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 142,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 142,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 142,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`=`vars'",
+        "line": 142,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 142,
+        "column": 35
+      },
+      {
+        "id": "`'",
+        "value": "`nregressor'",
+        "line": 142,
+        "column": 36
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 142,
+        "column": 48
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 142,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 142,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "se_eqn1_sims_1",
+        "line": 143,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 143,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 143,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 143,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`nregressor'",
+        "line": 143,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 143,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 143,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "se_eqn2_sims_1",
+        "line": 144,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 144,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 144,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 144,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`nregressor'",
+        "line": 144,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 144,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 144,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mod_check_1",
+        "line": 145,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 145,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 145,
+        "column": 21
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 145,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 145,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 145,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 1000 simulations",
+    "line": 147,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 148,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 148,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 148,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 148,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 148,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* bootstrap from residuals and create a dataset",
+    "line": 150,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "b_res_t1",
+      "line": 151,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "res_demean",
+        "line": 151,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 151,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "data2",
+        "line": 151,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dr",
+        "line": 151,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`dropd'",
+        "line": 151,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "bs",
+        "line": 151,
+        "column": 46
+      },
+      {
+        "id": "`'",
+        "value": "`bk'",
+        "line": 151,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "sss",
+        "line": 151,
+        "column": 55
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 151,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 152,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "simd",
+        "line": 152,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 152,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "bsimd",
+        "line": 152,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* running the 2 var unrestricted CCEP estimator on the generated data",
+    "line": 154,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ccep_2v_alt",
+      "line": 155,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "simd",
+        "line": 155,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "coefi",
+        "line": 155,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dr",
+        "line": 155,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`dropd'",
+        "line": 155,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* saving the simulated betas",
+    "line": 157,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 158,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betasims",
+        "line": 158,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 158,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 158,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 159,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betasims_1",
+        "line": 159,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "vec",
+        "line": 159,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "betasims",
+        "line": 159,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 159,
+        "column": 39
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 159,
+        "column": 42
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 159,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 159,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 159,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 160,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "se_eqn1_sims_1",
+        "line": 160,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "vecdiag",
+        "line": 160,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 160,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cov_eqn1",
+        "line": 160,
+        "column": 41
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 160,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 160,
+        "column": 25
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 160,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 161,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "se_eqn2_sims_1",
+        "line": 161,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "vecdiag",
+        "line": 161,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 161,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cov_eqn2",
+        "line": 161,
+        "column": 41
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 161,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 161,
+        "column": 25
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 161,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* doing a modulus calculation",
+    "line": 163,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 164,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coefl",
+        "line": 164,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims",
+        "line": 164,
+        "column": 14
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1..2",
+        "line": 164,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`rr'",
+        "line": 164,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 164,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 165,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "coefs",
+        "line": 165,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims",
+        "line": 165,
+        "column": 14
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1..2",
+        "line": 165,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`rr'",
+        "line": 165,
+        "column": 28
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1...",
+        "line": 165,
+        "column": 33
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 165,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 167,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "f",
+        "line": 167,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "coefs",
+        "line": 167,
+        "column": 9
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 167,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "coefl",
+        "line": 167,
+        "column": 15
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 167,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "coefi",
+        "line": 167,
+        "column": 25
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 167,
+        "column": 30
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 167,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "coefs",
+        "line": 167,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 167,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 167,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`rr'",
+        "line": 167,
+        "column": 41
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 167,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "coefi",
+        "line": 167,
+        "column": 47
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 167,
+        "column": 52
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 167,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "coefl",
+        "line": 167,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 169,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "eigenvalues",
+        "line": 169,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 169,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "im",
+        "line": 169,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "f",
+        "line": 169,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 170,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "norm",
+        "line": 170,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hadamard",
+        "line": 170,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 170,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 170,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 170,
+        "column": 23
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 170,
+        "column": 26
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 170,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "hadamard",
+        "line": 170,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "im",
+        "line": 170,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 170,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "im",
+        "line": 170,
+        "column": 40
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 170,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "m_max",
+      "line": 171,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "norm",
+        "line": 171,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 172,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m0",
+        "line": 172,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 172,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "mmax",
+        "line": 172,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 173,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m0",
+        "line": 173,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sqrt",
+        "line": 173,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "det",
+        "line": 173,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "m0",
+        "line": 173,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 175,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mod_check_1",
+        "line": 175,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`m0'",
+        "line": 175,
+        "column": 27
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 175,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 175,
+        "column": 22
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 175,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** reporting the mean and 5 and 95 percentile of the beta simulations",
+    "line": 180,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 181,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oo",
+        "line": 181,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 181,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 181,
+        "column": 12
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 181,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 181,
+        "column": 19
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 181,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 181,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 181,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`sims'",
+        "line": 181,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 182,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_1",
+        "line": 182,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_1",
+        "line": 182,
+        "column": 21
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 182,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 182,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "oo",
+        "line": 182,
+        "column": 35
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 182,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* percentiles",
+    "line": 184,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 185,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 186,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betasims_1",
+        "line": 186,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 188,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pctile05_1",
+        "line": 188,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 188,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 188,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 188,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`=`vars'",
+        "line": 188,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 188,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`nregressor'",
+        "line": 188,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 188,
+        "column": 43
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 188,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 188,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 189,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pctile95_1",
+        "line": 189,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 189,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 189,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 189,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`=`vars'",
+        "line": 189,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 189,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`nregressor'",
+        "line": 189,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 189,
+        "column": 43
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 189,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 189,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 191,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 191,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 191,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ds",
+      "line": 192,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 193,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 193,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`r(varlist)'",
+        "line": 193,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 194,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 194,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`varlist'",
+        "line": 194,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 194,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "_pctile",
+      "line": 195,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 195,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 195,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 195,
+        "column": 19
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 195,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "95",
+        "line": 195,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 196,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pctile05_1",
+        "line": 196,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 196,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "r1",
+        "line": 196,
+        "column": 28
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 196,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 196,
+        "column": 19
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 196,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 197,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pctile95_1",
+        "line": 197,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 197,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 197,
+        "column": 28
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 197,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 197,
+        "column": 19
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 197,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 198,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 198,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 198,
+        "column": 12
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 198,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 198,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************************",
+    "line": 201,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Output: actual beta, average simulated biased beta, 5th percentile of simulated beta, 95th percentile",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************************",
+    "line": 203,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 205,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 206,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "obs",
+        "line": 206,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 206,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "good",
+        "line": 207,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"agg\"",
+        "line": 207,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**gen pair = .",
+    "line": 208,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0s_Q1",
+        "line": 210,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 210,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 211,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0s_Q1",
+        "line": 211,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 211,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 212,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0s_Q1",
+        "line": 212,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 212,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0s_Q1",
+        "line": 213,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 213,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0s_d1s",
+        "line": 214,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 214,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0s_d1s",
+        "line": 215,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 215,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0s_d1s",
+        "line": 216,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 216,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 217,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0s_d1s",
+        "line": 217,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 217,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0s_d1P",
+        "line": 218,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 218,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0s_d1P",
+        "line": 219,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 219,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 220,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0s_d1P",
+        "line": 220,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 220,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 221,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0s_d1P",
+        "line": 221,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 221,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 222,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "spacer1",
+        "line": 222,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 222,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 223,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0P_Q1",
+        "line": 223,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 223,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 224,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0P_Q1",
+        "line": 224,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 224,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 225,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0P_Q1",
+        "line": 225,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 225,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 226,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0P_Q1",
+        "line": 226,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 226,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0P_d1s",
+        "line": 227,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 227,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0P_d1s",
+        "line": 228,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 228,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0P_d1s",
+        "line": 229,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 229,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 230,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0P_d1s",
+        "line": 230,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 230,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 231,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0P_d1P",
+        "line": 231,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 231,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 232,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0P_d1P",
+        "line": 232,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 232,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 233,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0P_d1P",
+        "line": 233,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 233,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 234,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0P_d1P",
+        "line": 234,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 234,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 236,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 236,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 236,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 236,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 236,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 238,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0s_Q1",
+        "line": 238,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_",
+        "line": 238,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 238,
+        "column": 42
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 238,
+        "column": 54
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 238,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 238,
+        "column": 48
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 238,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 239,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0s_Q1",
+        "line": 239,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_",
+        "line": 239,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 239,
+        "column": 40
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 239,
+        "column": 52
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 239,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 239,
+        "column": 46
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 239,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 240,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0s_Q1",
+        "line": 240,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile05_",
+        "line": 240,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 240,
+        "column": 42
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 240,
+        "column": 54
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 240,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 240,
+        "column": 48
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 240,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 241,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0s_Q1",
+        "line": 241,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile95_",
+        "line": 241,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 241,
+        "column": 42
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 241,
+        "column": 54
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 241,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 241,
+        "column": 48
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 241,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 242,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0s_d1s",
+        "line": 242,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_",
+        "line": 242,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 242,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 242,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 242,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 242,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 242,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 243,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0s_d1s",
+        "line": 243,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_",
+        "line": 243,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 243,
+        "column": 41
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 243,
+        "column": 53
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 243,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 243,
+        "column": 47
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 243,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 244,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0s_d1s",
+        "line": 244,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile05_",
+        "line": 244,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 244,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 244,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 244,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 244,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 244,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 245,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0s_d1s",
+        "line": 245,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile95_",
+        "line": 245,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 245,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 245,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 245,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 245,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 245,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 246,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0s_d1P",
+        "line": 246,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_",
+        "line": 246,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 246,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 246,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 246,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 246,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 246,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 247,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0s_d1P",
+        "line": 247,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_",
+        "line": 247,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 247,
+        "column": 41
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 247,
+        "column": 53
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 247,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 247,
+        "column": 47
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 247,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 248,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0s_d1P",
+        "line": 248,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile05_",
+        "line": 248,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 248,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 248,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 248,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 248,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 248,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 249,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0s_d1P",
+        "line": 249,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile95_",
+        "line": 249,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 249,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 249,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 249,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 249,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 249,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 251,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0P_Q1",
+        "line": 251,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_",
+        "line": 251,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 251,
+        "column": 42
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 251,
+        "column": 54
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 251,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 251,
+        "column": 48
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 251,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 252,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0P_Q1",
+        "line": 252,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_",
+        "line": 252,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 252,
+        "column": 40
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 252,
+        "column": 52
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 252,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 252,
+        "column": 46
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 252,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 253,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0P_Q1",
+        "line": 253,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile05_",
+        "line": 253,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 253,
+        "column": 42
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 253,
+        "column": 54
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 253,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 253,
+        "column": 48
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 253,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 254,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0P_Q1",
+        "line": 254,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile95_",
+        "line": 254,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 254,
+        "column": 42
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 254,
+        "column": 54
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 254,
+        "column": 46
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 254,
+        "column": 48
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 254,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 255,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0P_d1s",
+        "line": 255,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_",
+        "line": 255,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 255,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 255,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 255,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 255,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 255,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 256,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0P_d1s",
+        "line": 256,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_",
+        "line": 256,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 256,
+        "column": 41
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 256,
+        "column": 53
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 256,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 256,
+        "column": 47
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 256,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 257,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0P_d1s",
+        "line": 257,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile05_",
+        "line": 257,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 257,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 257,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 257,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 257,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 257,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 258,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0P_d1s",
+        "line": 258,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile95_",
+        "line": 258,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 258,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 258,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 258,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 258,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 258,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 259,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "adj_b_coef_d0P_d1P",
+        "line": 259,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "actual_beta_",
+        "line": 259,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 259,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 259,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 259,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 259,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 259,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 260,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_b_coef_d0P_d1P",
+        "line": 260,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betasims_m_",
+        "line": 260,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 260,
+        "column": 41
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 260,
+        "column": 53
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 260,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 260,
+        "column": 47
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 260,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 261,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_05pct_coef_d0P_d1P",
+        "line": 261,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile05_",
+        "line": 261,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 261,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 261,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 261,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 261,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 261,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 262,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MC_95pct_coef_d0P_d1P",
+        "line": 262,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile95_",
+        "line": 262,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 262,
+        "column": 43
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 262,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 262,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 262,
+        "column": 49
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 262,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** outsheet",
+    "line": 266,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 267,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "filename",
+        "line": 267,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"MC_2var_agg_method1.csv\"",
+        "line": 267,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outsheet",
+      "line": 268,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 268,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"`outpath1'/`filename'\"",
+        "line": 268,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "comma",
+        "line": 268,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 268,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\n * for 2 vars \n mat data2=exchange,x\n ccep_main data2, vars(2) n1(1000) n2(2000)\n mat list e(output)\n \n * for 1 var\n mat data1=q\n ccep_main_1v data1, n1(1000) n2(2000)\n  mat list e(output)\n */",
+    "line": 271,
+    "column": 1
+  }
+]

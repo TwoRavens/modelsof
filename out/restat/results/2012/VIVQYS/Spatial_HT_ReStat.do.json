@@ -1,0 +1,3504 @@
+[
+  {
+    "id": "comment",
+    "value": "/* This file loads data to perform the Spatial HT model for \n * subdivision open space described in:\n *\n * Abbott, J.K. and Klaiber, H. A. \"An Embarrassment of Riches: \n *      Confronting Omitted Variable Bias and Multi-Scale Capitalization \n *\t\tin Hedonic Price Models.\" The Review of Economics and Statistics (2010).\n *\n * Inputs:  HT_data_final.dta -- This file contains both subdivision mean variables\n *\t\t\t\tas well as house specific variables for use in the HT estimator.  A\n *\t\t\t\tkey variable in this file is the spatial identifier subd_id which forms\n *\t\t\t\tthe basis for the panel estimation technique.\n *\n * Author:  H. Allen Klaiber & Joshua K. Abbott\n * Version:  5-1-2010\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Set up the working directory which contains the HT Data and the data itself*/",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "root_path",
+        "line": 4,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"D:\\ReStat\"",
+        "line": 4,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "HT_Data",
+        "line": 5,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"HT_data_final.dta\"",
+        "line": 5,
+        "column": 18
+      },
+      {
+        "id": ";",
+        "value": ";",
+        "line": 5,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***********************************************************************/",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/***********************************************************************/",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/***********************************************************************/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* BEGIN PROGRAM HERE - DO NOT MODIFY BELOW THIS POINT \t\t     */",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/***********************************************************************/",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/***********************************************************************/",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/***********************************************************************/",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Allow use of semicolon to terminate commands */",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "#delimit",
+      "value": "#delimit",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ";",
+        "value": ";",
+        "line": 16,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Clean up anything left in the workspace prior to starting */",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 19,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Set up parameters for use in the current stata file */",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "memory",
+        "line": 22,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1200m",
+        "line": 22,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 23,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 23,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Define the log file to store results in */",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 26,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 26,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 26,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 27,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "Spatial_HT_ReStat.log",
+        "line": 27,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 27,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*********************************************************/",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*********************************************************\n/*Test for exogeneity of instruments in HT specification*/",
+      "line": 29,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Load the data */",
+    "line": 34,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/* Estimate an auxiliary regression with quasi-differenced levels of every variable \n * AND within transformed tvariables as well.  This allows the possibility of endogeneity in \n * any of the time varying variables although the goal is to test for such in only a subset.  \n * To avoid making strong random effects efficiency assumptions use cluster robust standard errors.  \n */",
+      "line": 32,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$HT_Data\"",
+        "line": 35,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 35,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "subd_id",
+        "line": 36,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Random effects model to get parameters for quasi-demeaning*/",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 39,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 37
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_price",
+        "line": 39,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 39,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 39,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 39,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 39,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 39,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 39,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 39,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 40,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 40,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 40,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "adj_subdOpen",
+        "line": 41,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 41,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 41,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 41,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 41,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 41,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 43,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 43,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 43,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 43,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 45,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 45,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 45,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 45,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 47,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "dum_school",
+        "line": 47,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "cPark_cut",
+        "line": 47,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "rPark_cut",
+        "line": 47,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Mlot_acres",
+        "line": 47,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx",
+        "line": 48,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx2",
+        "line": 48,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_hispanic",
+        "line": 49,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_white",
+        "line": 49,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_black",
+        "line": 49,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_children",
+        "line": 49,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_18to35",
+        "line": 49,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_35to55",
+        "line": 49,
+        "column": 64
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "in_sample",
+        "line": 50,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 50,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "region",
+        "line": 50,
+        "column": 20
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 50,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"nocity\"",
+        "line": 50,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "re",
+        "line": 50,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "theta",
+        "line": 50,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 50,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "subd_id",
+        "line": 50,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 52,
+      "column": 14
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 52,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "subd_id",
+            "line": 52,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "T",
+        "line": 52,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 52,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "theta",
+        "line": 53,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 53,
+        "column": 13
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 53,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sqrt",
+        "line": 53,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 53,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "sigma_e",
+        "line": 53,
+        "column": 22
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 53,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 53,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 53,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 53,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "sigma_e",
+        "line": 53,
+        "column": 36
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 53,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 53,
+        "column": 45
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 53,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "T",
+        "line": 53,
+        "column": 49
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 53,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 53,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "sigma_u",
+        "line": 53,
+        "column": 53
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 53,
+        "column": 61
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 53,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "subd_id",
+        "line": 55,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 57,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 57,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 57,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 57,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 57,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 57,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 57,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 57,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 57,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 57,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 58,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 58,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 58,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "adj_subdOpen",
+        "line": 58,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 58,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 58,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 58,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 58,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 58,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 59,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 59,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 59,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 59,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 59,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 59,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 60,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 60,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 60,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 62,
+      "column": 14
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 62,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "subd_id",
+            "line": 62,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mu_i",
+        "line": 62,
+        "column": 19
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 62,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 62,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 63,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "D_",
+        "line": 63,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 63,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 63,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "mu_i",
+        "line": 63,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 64,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mu_i",
+        "line": 64,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 65,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ones",
+        "line": 67,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 67,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 69,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 69,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 69,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ln_price",
+        "line": 69,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "ones",
+        "line": 69,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 69,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 69,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 69,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 69,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 69,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 69,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 69,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 70,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 70,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 70,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "adj_subdOpen",
+        "line": 70,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 70,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 70,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 70,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 70,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 70,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 71,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 71,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 71,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 71,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 71,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 71,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 72,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 72,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 74,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "dum_school",
+        "line": 74,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "cPark_cut",
+        "line": 74,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "rPark_cut",
+        "line": 74,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Mlot_acres",
+        "line": 74,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx",
+        "line": 75,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx2",
+        "line": 75,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_hispanic",
+        "line": 76,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_white",
+        "line": 76,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_black",
+        "line": 76,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_children",
+        "line": 76,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_18to35",
+        "line": 76,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_35to55",
+        "line": 76,
+        "column": 64
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 76,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 78,
+      "column": 14
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 78,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "subd_id",
+            "line": 78,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mu_i",
+        "line": 78,
+        "column": 19
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 78,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 78,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 79,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "QD_",
+        "line": 79,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 79,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 79,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 79,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "theta",
+        "line": 79,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 79,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "mu_i",
+        "line": 79,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 80,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mu_i",
+        "line": 80,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 81,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/*Test regression*/",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "regress",
+      "line": 84,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 62
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "QD_ln_price",
+        "line": 84,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "QD_ones",
+        "line": 84,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "QD_sqft",
+        "line": 84,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "QD_lot_acres",
+        "line": 84,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "QD_stories",
+        "line": 84,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "QD_bathrooms",
+        "line": 84,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "QD_year_built",
+        "line": 84,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "QD_has_garage",
+        "line": 84,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "QD_has_pool",
+        "line": 84,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "QD_year_built2",
+        "line": 85,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_acre2",
+        "line": 85,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "QD_sqft2",
+        "line": 85,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "QD_adj_subdOpen",
+        "line": 86,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_adj_lPark",
+        "line": 86,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "QD_adj_cPark",
+        "line": 86,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "QD_adj_school",
+        "line": 86,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "QD_adj_rail",
+        "line": 86,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "QD_adj_canal",
+        "line": 86,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "QD_area_lPark",
+        "line": 87,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_area_subdOpen1",
+        "line": 87,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "QD_area_subdOpen2",
+        "line": 87,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "QD_area_subdOpen3",
+        "line": 87,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "QD_dum_year_2",
+        "line": 88,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_dum_year_3",
+        "line": 88,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "QD_dum_year_4",
+        "line": 88,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "QD_dum_year_5",
+        "line": 88,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "D_sqft",
+        "line": 90,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "D_lot_acres",
+        "line": 90,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "D_stories",
+        "line": 90,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "D_bathrooms",
+        "line": 90,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "D_year_built",
+        "line": 90,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "D_has_garage",
+        "line": 90,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "D_has_pool",
+        "line": 90,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "D_year_built2",
+        "line": 91,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "D_acre2",
+        "line": 91,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "D_sqft2",
+        "line": 91,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "D_adj_subdOpen",
+        "line": 92,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "D_adj_lPark",
+        "line": 92,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "D_adj_cPark",
+        "line": 92,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "D_adj_school",
+        "line": 92,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "D_adj_rail",
+        "line": 92,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "D_adj_canal",
+        "line": 92,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "D_area_lPark",
+        "line": 93,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "D_area_subdOpen1",
+        "line": 93,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "D_area_subdOpen2",
+        "line": 93,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "D_area_subdOpen3",
+        "line": 93,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "D_dum_year_2",
+        "line": 94,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "D_dum_year_3",
+        "line": 94,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "D_dum_year_4",
+        "line": 94,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "D_dum_year_5",
+        "line": 94,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Marea_subdOpen",
+        "line": 96,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_dum_school",
+        "line": 96,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "QD_cPark_cut",
+        "line": 96,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "QD_rPark_cut",
+        "line": 96,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mlot_acres",
+        "line": 96,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mcbd_phx",
+        "line": 97,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mcbd_phx2",
+        "line": 97,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mpct_hispanic",
+        "line": 98,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mpct_white",
+        "line": 98,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mpct_black",
+        "line": 98,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mpct_children",
+        "line": 98,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mpct_18to35",
+        "line": 98,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "QD_Mpct_35to55",
+        "line": 98,
+        "column": 79
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "in_sample",
+        "line": 100,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 100,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 100,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "region",
+        "line": 100,
+        "column": 20
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 100,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"nocity\"",
+        "line": 100,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "noconstant",
+        "line": 100,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 100,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 100,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "subd_id",
+        "line": 100,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "test",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "D_adj_subdOpen",
+        "line": 102,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 102,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************************/",
+    "line": 106,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*****************************************************\n/* Estimate using Hausman-Taylor estimator           */",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "comment",
+        "value": "/* Estimate assuming all time varying variables are endogenous except as specified.  \n * One non-time varying variable Marea_subdOpen is presumed endogenous as well\n * while other time-constant variables are considered exogenous or as a suite\n * of imperfect proxy variables that may themselves be endogenous  \n * All time varying variables are instrumented by their subdivision de-meaned transformation.\n * Subdivision area of open space is instrumented \n * by the subdivision means of exogenous time varying characteristics.\n */",
+        "line": 105,
+        "column": 1
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Load the data */",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$root_path\\data\\Cleaning Steps\"",
+        "line": 109,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$HT_Data\"",
+        "line": 110,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 110,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "subd_id",
+        "line": 111,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Look at correlation of instruments with endogenous variable(s)*/",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "corr",
+      "line": 114,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 114,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "adj_subdOpen",
+        "line": 114,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Set the panel dimension to subdivisions */",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "subd_id",
+        "line": 117,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* HT Model with neighborhood controls*/",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xthtaylor",
+      "line": 120,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 37
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_price",
+        "line": 120,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 120,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 120,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 120,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 120,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 120,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 120,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 120,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 120,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 121,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 121,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 122,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 122,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 122,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 122,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "adj_subdOpen",
+        "line": 123,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 123,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 123,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 123,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 123,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 123,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 124,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 124,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 124,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 124,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 125,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "dum_school",
+        "line": 125,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "cPark_cut",
+        "line": 125,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "rPark_cut",
+        "line": 125,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Mlot_acres",
+        "line": 125,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx",
+        "line": 126,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx2",
+        "line": 126,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_hispanic",
+        "line": 127,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_white",
+        "line": 127,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_black",
+        "line": 127,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_children",
+        "line": 127,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_18to35",
+        "line": 127,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_35to55",
+        "line": 127,
+        "column": 64
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "in_sample",
+        "line": 129,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 129,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 129,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 129,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "region",
+        "line": 129,
+        "column": 20
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 129,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"nocity\"",
+        "line": 129,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "endog",
+        "line": 131,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 131,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 131,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 131,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 131,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 131,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 131,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 131,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 131,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 132,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 132,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 133,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 133,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 133,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 133,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 134,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 134,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 134,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 134,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 134,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 135,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 135,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 135,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 135,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 136,
+        "column": 3
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Bootstrap to obtain standard errors and save estimates */",
+    "line": 140,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "seed",
+        "line": 141,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1234",
+        "line": 141,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xthtaylor",
+      "line": 143,
+      "column": 2
+    },
+    "meta": {
+      "predictors": 37
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bootstrap",
+          "line": 142,
+          "column": 1
+        },
+        "options": [
+          {
+            "id": "identifier",
+            "value": "reps",
+            "line": 142,
+            "column": 12
+          },
+          {
+            "id": "number",
+            "value": "200",
+            "line": 142,
+            "column": 17
+          },
+          {
+            "id": "identifier",
+            "value": "cluster",
+            "line": 142,
+            "column": 22
+          },
+          {
+            "id": "identifier",
+            "value": "subd_id",
+            "line": 142,
+            "column": 30
+          },
+          {
+            "id": "identifier",
+            "value": "saving",
+            "line": 142,
+            "column": 39
+          },
+          {
+            "id": "string",
+            "value": "\"HT_Bootstrap.dta\"",
+            "line": 142,
+            "column": 46
+          },
+          {
+            "id": ",",
+            "value": ",",
+            "line": 142,
+            "column": 64
+          },
+          {
+            "id": "identifier",
+            "value": "replace",
+            "line": 142,
+            "column": 66
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_price",
+        "line": 143,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 143,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 143,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 143,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 143,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 143,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 143,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 143,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 143,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 144,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 144,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 145,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 145,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 145,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 145,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "adj_subdOpen",
+        "line": 146,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 146,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 146,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 146,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 146,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 146,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 147,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 147,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 147,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 147,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 148,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "dum_school",
+        "line": 148,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cPark_cut",
+        "line": 148,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rPark_cut",
+        "line": 148,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "Mlot_acres",
+        "line": 148,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx",
+        "line": 149,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "Mcbd_phx2",
+        "line": 149,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_hispanic",
+        "line": 150,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_white",
+        "line": 150,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_black",
+        "line": 150,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_children",
+        "line": 150,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_18to35",
+        "line": 150,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Mpct_35to55",
+        "line": 150,
+        "column": 63
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "in_sample",
+        "line": 152,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 152,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 15
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 152,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "region",
+        "line": 152,
+        "column": 19
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 152,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"nocity\"",
+        "line": 152,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "endog",
+        "line": 154,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "sqft",
+        "line": 154,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "sqft2",
+        "line": 154,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "lot_acres",
+        "line": 154,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "acre2",
+        "line": 154,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "stories",
+        "line": 154,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "bathrooms",
+        "line": 154,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "year_built",
+        "line": 154,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "year_built2",
+        "line": 154,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "has_garage",
+        "line": 155,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "has_pool",
+        "line": 155,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_2",
+        "line": 156,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_3",
+        "line": 156,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_4",
+        "line": 156,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "dum_year_5",
+        "line": 156,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "adj_lPark",
+        "line": 157,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "adj_cPark",
+        "line": 157,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "adj_school",
+        "line": 157,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "adj_rail",
+        "line": 157,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "adj_canal",
+        "line": 157,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "area_lPark",
+        "line": 158,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen1",
+        "line": 158,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen2",
+        "line": 158,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "area_subdOpen3",
+        "line": 158,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "Marea_subdOpen",
+        "line": 159,
+        "column": 1
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************************/",
+    "line": 162,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Welfare for HT Model using Bootstrap for Standard Errors*/",
+    "line": 163,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************************************/",
+    "line": 165,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*\n * Point estimates are based on HT run above, not the \n * average over bootstrap iterations.\n */",
+      "line": 164,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/* Load the estimation results from the HT Model */",
+    "line": 167,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 168,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"HT_Bootstrap.dta\"",
+        "line": 168,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 168,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Create average price measures */",
+    "line": 170,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 171,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "price_mean",
+        "line": 171,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "207679.9",
+        "line": 171,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Calculate welfare standard errors using bootstrap to split small and large scale */",
+    "line": 173,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wHT_small_adj",
+        "line": 174,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "price_mean",
+        "line": 174,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 174,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "_b_adj_subdOpen",
+        "line": 174,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 174,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "_b_area_subdOpen1",
+        "line": 174,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wHT_small_1000",
+        "line": 175,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "price_mean",
+        "line": 175,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 175,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "_b_area_subdOpen1",
+        "line": 175,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wHT_small_2000",
+        "line": 176,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "price_mean",
+        "line": 176,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 176,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "_b_area_subdOpen2",
+        "line": 176,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 177,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wHT_small_3000",
+        "line": 177,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "price_mean",
+        "line": 177,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 177,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "_b_area_subdOpen3",
+        "line": 177,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 178,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wHT_large",
+        "line": 178,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "price_mean",
+        "line": 178,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 178,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_b_Marea_subdOpen",
+        "line": 178,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 180,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wHT_small_adj",
+        "line": 180,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "wHT_small_1000",
+        "line": 180,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "wHT_small_2000",
+        "line": 180,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "wHT_small_3000",
+        "line": 180,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "wHT_large",
+        "line": 180,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/**************/",
+    "line": 182,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Close logs */",
+    "line": 183,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/**************/",
+    "line": 184,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 185,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 185,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 185,
+        "column": 13
+      }
+    ]
+  }
+]

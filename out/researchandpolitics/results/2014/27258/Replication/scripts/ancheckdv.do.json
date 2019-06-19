@@ -1,0 +1,1651 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n**************************************************************************\nFile-Name:    ancheckdv.do                         \nDate:         Jan 29th, 2009                                    \nAuthor:       Fernando Martel                                 \nPurpose:      Replicate the dependendt variable in Ross(2006) quinquenial \n              data set using the annual frequency data. My aim is to \n              check the various coding decisions that where made by \n              replicating the process: \n              annual data -> procedures -> quinquenial data\n              \n              ANNUAL DATA\n              * Infant Mortatlity Rate mnemonics:\n              IMRwdi, logIMRwdi\n              infmort_unicef, logIMRunicef\n\n              * Child Mortality Rates:\n              U5MRwdi, logCMRwdi - actual variable in Ross's main analysis\n              kidmort_unicef, logCMRunicef - Ross claims to be using this measure\n              kidmort_who, logCMRwho\n\n              QUINQUENIAL DATA\n              * Infant Mortality Rate mnemonics:\n              logIMRwdi_1    (quinquenial lag)\n              logIMRunicef_1 (quinquenial lag)\n              **(currrent data not in quinquennial dataset, only lag)**\n\n  \n              * Child Mortality Rates:\n              logCMRwdi, logCMRwdi_1 - the actual dependent variable \n              **(data for unicef and who not in quinquennial dataset)**\n\n              The datasets:\n              quinquennial: replication data - 5 year panels.dta\n              annual:       main_replication_data.dta  \n\nData Input:   - main_replication_data.dta\n              Received from author via e-mail Feb 25th 2007.  \n              Contains ANNUAL data used in the paper, except for HIV data \n              and democratic years.\n              Data spans 1965 to 2000\n              - replication data - 5 year panels.dta\n              Received from author via e-mail Aug 18th 2008.  \n              Data spans 1970 to 2000\nOutput File:  None\nData Output:  None                                   \nPrevious file:pure_rep_master.do\nStatus:       Complete                                     \nMachine:      IBM, X41 tablet running Windows XP spck 3                                \n**************************************************************************\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 5,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 6,
+        "column": 1
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 6,
+        "column": 2
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "Users",
+        "line": 6,
+        "column": 4
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Fernando",
+        "line": 6,
+        "column": 10
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Documents",
+        "line": 6,
+        "column": 19
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "docs",
+        "line": 6,
+        "column": 29
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "research_projects",
+        "line": 6,
+        "column": 34
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Replication",
+        "line": 6,
+        "column": 52
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "analysis",
+        "line": 6,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$path\"",
+        "line": 7,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nCopy anual frequency data set main_replication_data.dta as check1.dta\n*************************************************************************/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\main_replication_data.dta\"",
+        "line": 11,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\".\\Ross1y.dta\"",
+        "line": 12,
+        "column": 2
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 12,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross1y",
+        "line": 13,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nReplicate the DV using the annual data\n*************************************************************************/",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Select the relevant variables",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 19,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 19,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 19,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "IMRwdi",
+        "line": 19,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "infmort_unicef",
+        "line": 19,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 19,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "kidmort_unicef",
+        "line": 19,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "kidmort_who",
+        "line": 19,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Index quinquennia 1965,70,..,2000",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quinquennia",
+        "line": 22,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 22,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 22,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 22,
+        "column": 28
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 22,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 22,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 22,
+        "column": 37
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 22,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 22,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Select only quinquennia",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 25,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quinquennia",
+        "line": 25,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 25,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 25,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quinquennia",
+        "line": 26,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 27,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 27,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 27,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\nReplication data - 5 year panels.dta only starts in 1970\nApparently the data was truncated in 1970 even though UNICEF\nreports data for 39/169 (23 %) in 1965\n*/",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabmiss",
+      "line": 30,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 30,
+        "column": 12
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 30,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 30,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* To check concordance with Ross5y I drop 1965",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 33,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 33,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Create natural logs",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnIMRwdi",
+        "line": 36,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 36,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "IMRwdi",
+        "line": 36,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnIMRunicef",
+        "line": 37,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 37,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "infmort_unicef",
+        "line": 37,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 38,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 38,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 38,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnCMRunicef",
+        "line": 39,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 39,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "kidmort_unicef",
+        "line": 39,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnCMRwho",
+        "line": 40,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 40,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "kidmort_who",
+        "line": 40,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*replication data - 5 year panels.dta does not have a \"year\" variable,",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*only \"period\", so replicate it here, that way I can merge the data",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 44,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "seq",
+        "line": 44,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "from",
+        "line": 44,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 44,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "to",
+        "line": 44,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`_N'",
+        "line": 44,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 44,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 44,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Save as Ross1y.dta",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 47,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 47,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 47,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross1y",
+        "line": 48,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 48,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 49,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nNow merge with the quinquennial dataset: replication data - 5 year panels.dta\nCopy it to local drive and sort it by merge variables\n*************************************************************************/",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\replication data - 5 year panels.dta\"",
+        "line": 54,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Ross5y.dta",
+        "line": 55,
+        "column": 1
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 55,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross5y",
+        "line": 56,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 57,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 57,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 57,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross5y",
+        "line": 58,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 58,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 59,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross1y",
+        "line": 60,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 61,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 61,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 61,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Ross5y",
+        "line": 61,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 61,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 61,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 61,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "logIMRunicef_1",
+        "line": 61,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "logIMRwdi_1",
+        "line": 61,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 62,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 63,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 63,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 63,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 63,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 63,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross1y",
+        "line": 64,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 64,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 1 - Check periods and years are properly aligned and merge went well\n*************************************************************************/",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Should all be 3s",
+    "line": 69,
+    "column": 12
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 69,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Should have coeffient of 5 exactly, no error",
+    "line": 70,
+    "column": 17
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 70,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 70,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 70,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 2 - Check  values kidmort_unicef U5MRwdi against logCMRwdi \nare exactly identycal\n\nIn the paper we are told the dependent variable is UNICEF's child \nmortality rate.  However, the QUINQUENNIAL data set contains averages \nof all data used in Table 3 except for UNICEF's child mortality rate.\nHowever, it does contain CMR from WDI which is what the author actually used,\nas shown below.  Unless there is a mislabelling problem, there is an \ninconsistency btw what is said in the paper and done in the estimations.\n*************************************************************************/",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 76,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 76,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 76,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRunicef",
+        "line": 76,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "kidmort_unicef",
+        "line": 76,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Different no. of obs. and different moments why?",
+    "line": 78,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* no. obs lnCMRwdi & U5MRwdi different, ERI has CMR==0 in 1970!",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabmiss",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 82,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 82,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 83,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 83,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 83,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 83,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"ERI\"",
+        "line": 83,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* no. obs logCMRwdi & lnCMRwdi different, lnU5MRwdi has data on Cyprus",
+    "line": 85,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* lnCMRwdi I created from annual data, logCMRwdi was creqated by Ross",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Somehow Ross (2006) dropped some data for CYP.",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 88,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 88,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 88,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 88,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 88,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 88,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 89,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 89,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 89,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 89,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 89,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 89,
+        "column": 41
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 89,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi",
+        "line": 89,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 3 - Check lagged values\nTurns out that logCMRwdi_1 has more observations than lnCMRwdi_1.\nWhy? For some reason the current and lagged values in Ross (2006) \nquinquennial dataset are the same. \nThis is a form of imputation, should be made explicit.\n*************************************************************************/",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 94,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 94,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delta",
+        "line": 94,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 94,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Compare Ross (2006) lagged logCMRwdi_1 in quinquennial dataset to the one",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* I created from annual data lnCMRwdi_1 ",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi_1",
+        "line": 98,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "L.lnCMRwdi",
+        "line": 98,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 99,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 99,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 99,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi_1",
+        "line": 99,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 99,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 99,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Ross(2005) laged data has values for 1970 even though data was truncated ",
+    "line": 101,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* in 1970 before creating the lag. Also note Ross (2006) lacks data for CYP",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 103,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 103,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi_1",
+        "line": 103,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 103,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "lnCMRwdi_1",
+        "line": 103,
+        "column": 40
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 103,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 103,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Turns out lag in 1970 is exact same as actual data in 1970",
+    "line": 105,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 106,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 106,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 106,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 106,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 106,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 106,
+        "column": 35
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 106,
+        "column": 50
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 106,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 106,
+        "column": 56
+      }
+    ]
+  }
+]

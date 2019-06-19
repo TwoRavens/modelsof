@@ -1,0 +1,2480 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\nShould you use any of these programs or data, please provide the complete citation to the paper:\n\nRosenthal, Stuart S. and William C. Strange, \u201cFemale Entrepreneurship, Agglomeration, and a New Spatial Mismatch,\u201d\nReview of Economics and Statistics, August 2012, 94(3): 764\u2013788.\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* This program prepares data to create summary stats at 1- or 2-digit SIC level\n   for establishments of all ages and sizes in the first quarter of 2007.\n\n   It first reads a data file, which includes establishments of all ages and sizes \n   in the first quarter of 2007 and is created in Program 7, and keeps only  \n   establishments in manufacturing, wholesale trade, FIRE, or services\n   to keep the files sizes manageable.\n \n   Then, it merges an MSA correspondence, drops New Orleans and tracts either \n   not in MSA or in small MSA having less than 25 tracts, and saves the datasets\n   in the data folder at 2-digit SIC and at 1-digit SIC after collapse.\n\n   Key to Where Summary Stats are Created:\n      1. total employment and female share (in Program 9d) \n      2. establishments counts and female share (in Program 9d)\n      3. segregation indexes (in Programs 9a, 9b and 9c)  \n      4. dummy variable regressions (in Programs 10a and 10b)\n*/",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "#delimit",
+      "value": "#delimit",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ";",
+        "value": ";",
+        "line": 7,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 8,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 9,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "3000m",
+        "line": 9,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 10,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "800",
+        "line": 10,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 11,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 11,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 12,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 12,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 12,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* DEFINE THE PATH TO ENTREPRENEUR FOLDER                                   */",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 18,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "D",
+        "line": 18,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 18,
+        "column": 13
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 18,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 18,
+        "column": 15
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 18,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "PROJECT",
+        "line": 18,
+        "column": 24
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 18,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "CURRENT",
+        "line": 18,
+        "column": 32
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 18,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "FemaleEntrepreneur",
+        "line": 18,
+        "column": 40
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 18,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "PostFolder",
+        "line": 18,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*SEND OUTPUT TO THE LOG FILE                                               */",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 24,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`path'",
+        "line": 24,
+        "column": 11
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 24,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Results",
+        "line": 24,
+        "column": 18
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 24,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "DB_Program8a.log",
+        "line": 24,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 24,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Select Size of Establishments to Consider                                */",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "z",
+        "line": 30,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 30,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "while",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`z'",
+        "line": 31,
+        "column": 7
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 31,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 31,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 31,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`z'",
+        "line": 33,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 33,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 33,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*all size establishments*/",
+    "line": 33,
+    "column": 34
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "size",
+        "line": 34,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 34,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 35,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`z'",
+        "line": 36,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 36,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 36,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 36,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*1-worker establishments*/",
+    "line": 36,
+    "column": 34
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "size",
+        "line": 37,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_1EstSize_",
+        "line": 37,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 38,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Set Ring Radius                                                          */",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 44,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 44,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "while",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`r'",
+        "line": 45,
+        "column": 7
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 45,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 45,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 45,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`r'",
+        "line": 47,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 47,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 47,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 47,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ring",
+        "line": 48,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 48,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 49,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`r'",
+        "line": 50,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 50,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 50,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ring",
+        "line": 51,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 51,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 52,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`r'",
+        "line": 53,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 53,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 53,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 53,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ring",
+        "line": 54,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 54,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 55,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/* Read in a datafile, which includes establishments of all ages and sizes \n   in the first quarter of 2007 and is created in Program 7*/",
+      "line": 58,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`path'",
+        "line": 61,
+        "column": 5
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 61,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Temp",
+        "line": 61,
+        "column": 12
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 61,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "Rings_allyear",
+        "line": 61,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`size'",
+        "line": 61,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "allusa_07Q1_r",
+        "line": 61,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 61,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "_w",
+        "line": 61,
+        "column": 55
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 61,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "Male.dta",
+        "line": 61,
+        "column": 58
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 61,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Define 1-digit SIC code                                                  */",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 67,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 67,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 67,
+        "column": 37
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 67,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 67,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 67,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "39",
+        "line": 67,
+        "column": 54
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 67,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 67,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*manufacturing*/",
+    "line": 67,
+    "column": 71
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 68,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 68,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 68,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 68,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 68,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 68,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 68,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 68,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "51",
+        "line": 68,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*wholesale trade*/",
+    "line": 68,
+    "column": 71
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 69,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 69,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 69,
+        "column": 37
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 69,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 69,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 69,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "67",
+        "line": 69,
+        "column": 54
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 69,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 69,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*FIRE*/",
+    "line": 69,
+    "column": 71
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 70,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 70,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 70,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 70,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "73",
+        "line": 70,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 70,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 70,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 70,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "80",
+        "line": 70,
+        "column": 54
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 70,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 71,
+        "column": 1
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 71,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "81",
+        "line": 71,
+        "column": 13
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 71,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 71,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 71,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "86",
+        "line": 71,
+        "column": 30
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 71,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 72,
+        "column": 1
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 72,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "87",
+        "line": 72,
+        "column": 13
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 72,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 72,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 72,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "89",
+        "line": 72,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*services*/",
+    "line": 72,
+    "column": 47
+  },
+  {
+    "id": "comment",
+    "value": "*/",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*\nreplace sic1code = 5 if sic2code >= 91 & sic2code <= 97;              /*public administration*/",
+      "line": 73,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 78,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/* Keep the establishments in either manufacturing, wholesale trade, FIRE, \n   or services industries.*/",
+      "line": 77,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 80,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 80,
+        "column": 21
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 80,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 80,
+        "column": 25
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 80,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 80,
+        "column": 37
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 80,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 80,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vars1",
+        "line": 82,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm",
+        "line": 82,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_f",
+        "line": 82,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_m",
+        "line": 82,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_b",
+        "line": 82,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_pv",
+        "line": 82,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm",
+        "line": 83,
+        "column": 1
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 83,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_f",
+        "line": 83,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 83,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_m",
+        "line": 83,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 83,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_b",
+        "line": 83,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 83,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "ownfirm_pv",
+        "line": 83,
+        "column": 63
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 83,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp",
+        "line": 84,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_f",
+        "line": 84,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_m",
+        "line": 84,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_b",
+        "line": 84,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_pv",
+        "line": 84,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp",
+        "line": 85,
+        "column": 1
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 85,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_f",
+        "line": 85,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 85,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_m",
+        "line": 85,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 85,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_b",
+        "line": 85,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 85,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "ownemp_pv",
+        "line": 85,
+        "column": 63
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 85,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vars2",
+        "line": 86,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "allemp",
+        "line": 86,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 86,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "allemp_f",
+        "line": 86,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 86,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "allemp_m",
+        "line": 86,
+        "column": 43
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 86,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "allemp_b",
+        "line": 86,
+        "column": 59
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 86,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "allemp_pv",
+        "line": 86,
+        "column": 75
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 86,
+        "column": 84
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Keep only variables of interest                                          */",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "geo2000",
+        "line": 92,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "sic2code",
+        "line": 92,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 92,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`vars1'",
+        "line": 92,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`vars2'",
+        "line": 92,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 94,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Merge Census Tract to MSA Correspondence from Neighborhood Data Series   */",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "geo2000",
+        "line": 98,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "geo2000",
+        "line": 99,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 99,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`path'",
+        "line": 99,
+        "column": 21
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 99,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 99,
+        "column": 28
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 99,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "correspondences",
+        "line": 99,
+        "column": 33
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 99,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "MSA_Correspondence.dta",
+        "line": 99,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 100,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 101,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 101,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 101,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*NOTE: We are dropping Tracts where No Businesses are Currently Found*/",
+    "line": 101,
+    "column": 59
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 102,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Drop New Orleans                                                         */",
+    "line": 105,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 106,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 108,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "msa",
+        "line": 108,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 108,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "5560",
+        "line": 108,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Drop Tracts not in an MSA or in one with less than 25 Tracts             */",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 114,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "25",
+        "line": 114,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tot_tract",
+        "line": 114,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 114,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 115,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "msa",
+        "line": 115,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 115,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "9999",
+        "line": 115,
+        "column": 16
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 115,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "msa",
+        "line": 115,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 115,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 115,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 117,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/* Save the dataset of establishments at the 2-digit SIC Level of interest.\n\n   NOTE: Currently the level of observation is either 2-digit SIC and tract \n         or 2-digit SIC and ring.*/",
+      "line": 118,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`path'",
+        "line": 121,
+        "column": 6
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 121,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 121,
+        "column": 13
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 121,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "SummaryData_2digit",
+        "line": 121,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`size'",
+        "line": 121,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 121,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 121,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "_07Q1.dta",
+        "line": 121,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 121,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Collapse into 1-digit SIC categories for each tract or ring               */",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "geo2000",
+        "line": 127,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 127,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 128,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`vars1'",
+        "line": 128,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 128,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`vars2'",
+        "line": 128,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "msa",
+        "line": 128,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "tot_tract",
+        "line": 128,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "msa_totpop",
+        "line": 128,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 128,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "geo2000",
+        "line": 128,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "sic1code",
+        "line": 128,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/* Save the dataset of establishments at the 1-digit SIC Level. \n   \n   NOTE: The level of observation is either 1-digit SIC and tract \n         or 1-digit SIC and ring.*/",
+      "line": 131,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`path'",
+        "line": 134,
+        "column": 6
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 134,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 134,
+        "column": 13
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 134,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "SummaryData_1digit",
+        "line": 134,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`size'",
+        "line": 134,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 134,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`ring'",
+        "line": 134,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "_07Q1.dta",
+        "line": 134,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 134,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 136,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Advance loops                                                            */",
+    "line": 137,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/****************************************************************************/",
+    "line": 138,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 139,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 139,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`r'",
+        "line": 139,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 139,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Next size ring*/",
+    "line": 139,
+    "column": 39
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 140,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "z",
+        "line": 142,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`z'",
+        "line": 142,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 142,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Nex size category of establishments*/",
+    "line": 142,
+    "column": 39
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 143,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 145,
+        "column": 5
+      }
+    ]
+  }
+]

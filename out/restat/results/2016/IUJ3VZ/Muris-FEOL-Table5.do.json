@@ -1,0 +1,5850 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n\n Vancouver, Oct 2015.\n\n This Stata .do file accompanies \"Estimation in the Fixed Effects Ordered Logit Model\".\n\tby Chris Muris.\n\n This file reproduces the results for large T in Table 5 in Appendix B.\n It implements the optimal minimum distance and composite likelihood estimators\n   described in the paper, focuses on J=3, K=1, general T.\n\n For any questions about this code, please email me\n at cmuris@sfu.ca.\n\n If you use this code, please cite the latest version of the paper\n (title above). See my website for more information (www.sfu.ca/~cmuris).\n\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//////////////\n// 1. Setup //",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//////////////\n",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Preliminaries",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 7,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 8,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 8,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "permanently",
+        "line": 8,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set the number of simulations \"S\" and get an appropriate matrix size.",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 11,
+        "column": 5
+      },
+      {
+        "id": "string",
+        "value": "\"Muris-FEOL-Table5\"",
+        "line": 11,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 11,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "S",
+        "line": 13,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "100",
+        "line": 13,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 14,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "5100",
+        "line": 14,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set the design parameters.",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// size cross-section dimension",
+    "line": 17,
+    "column": 15
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 17,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "350",
+        "line": 17,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// size time-series dimension",
+    "line": 18,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "T",
+        "line": 18,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 18,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 18,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 18,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 18,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//local T = 2",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Total number of observations in a given simulation",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NT",
+        "line": 21,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`N'",
+        "line": 21,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 21,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 21,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Estimands",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 24,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 24,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// code here is written with emphasis on J=3.",
+    "line": 25,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 25,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 25,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jminone",
+        "line": 26,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`J'",
+        "line": 26,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 26,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 26,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jminonet",
+        "line": 27,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`J'",
+        "line": 27,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 27,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 27,
+        "column": 23
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 27,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 27,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//local K = 1",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delta1",
+        "line": 29,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "-",
+        "value": "-",
+        "line": 29,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delta2",
+        "line": 30,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 30,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The following forval loops generates a matrix with all the possible",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    transformations.",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pimat",
+        "line": 34,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 34,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 34,
+        "column": 18
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 34,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 34,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 34,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 34,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "picounter",
+        "line": 35,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 35,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 35,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 35,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 35,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 37,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "remainder",
+        "line": 37,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 37,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 37,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 37,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 39,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tcounter",
+        "line": 39,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 39,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 39,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 39,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 39,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 41,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "invt",
+        "line": 41,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 41,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 41,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`tcounter'",
+        "line": 41,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 42,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "divver",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`jminone'",
+        "line": 42,
+        "column": 18
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 42,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`invt'",
+        "line": 42,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 43,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "plugthis",
+        "line": 43,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 43,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`remainder'",
+        "line": 43,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 43,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`divver'",
+        "line": 43,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 44,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pimat",
+        "line": 44,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`plugthis'",
+        "line": 44,
+        "column": 42
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 44,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 44,
+        "column": 55
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 44,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`tcounter'",
+        "line": 44,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 44,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 45,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "remainder",
+        "line": 45,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`remainder'",
+        "line": 45,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 45,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`plugthis'",
+        "line": 45,
+        "column": 35
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 45,
+        "column": 46
+      },
+      {
+        "id": "`'",
+        "value": "`divver'",
+        "line": 45,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The following matrices will be useful for extraction of the",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//     results from all the CMLEs.",
+    "line": 51,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// What follows is specific to J=3",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// For DvS, we need to throw away the dummies that comes with the time-",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "///    constant transformations.",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "select1",
+        "line": 56,
+        "column": 8
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 56,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 56,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 56,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 56,
+        "column": 28
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 56,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 56,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 56,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 56,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 56,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 56,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 57,
+        "column": 8
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 57,
+        "column": 19
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 57,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 57,
+        "column": 23
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 57,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// For the OMD, we need to throw away the dummies for each est.",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "e2",
+        "line": 60,
+        "column": 8
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 60,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 60,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 60,
+        "column": 24
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 60,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "# [1,0,0], J((`jminonet'-2),2,0) \\ ///\n\t\t\t\t   J(1,(`jminonet'-2)*3+2,0), 1,0 ]",
+    "line": 62,
+    "column": 46
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "select_b",
+        "line": 61,
+        "column": 8
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 61,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 61,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 61,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 61,
+        "column": 27
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 61,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 61,
+        "column": 30
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 61,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 61,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 61,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 61,
+        "column": 44
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 61,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 61,
+        "column": 46
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 61,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 61,
+        "column": 48
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 61,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 62,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 62,
+        "column": 11
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 62,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 62,
+        "column": 22
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 62,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 62,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 62,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 62,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 62,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 62,
+        "column": 32
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 62,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 62,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 63,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 63,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 63,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 63,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 63,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 63,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "# [0,0,1], J((`jminonet'-2),2,0)]",
+    "line": 65,
+    "column": 58
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "select_d",
+        "line": 65,
+        "column": 8
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 65,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 65,
+        "column": 23
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 65,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 65,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 65,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 65,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 65,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 65,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 65,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 65,
+        "column": 44
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 65,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 65,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Hd",
+        "line": 66,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 66,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 66,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 66,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 66,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 66,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 66,
+        "column": 28
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 66,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 66,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// These matrices will hold the results.",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// CMLEs + Oracle, 2xcompositeLikelihood",
+    "line": 70,
+    "column": 34
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numest",
+        "line": 70,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`jminone'",
+        "line": 70,
+        "column": 16
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 70,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 70,
+        "column": 26
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 70,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 70,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 71,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 71,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`S'",
+        "line": 71,
+        "column": 16
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 71,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`numest'",
+        "line": 71,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 71,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 71,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 72,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 72,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`S'",
+        "line": 72,
+        "column": 16
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 72,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`numest'",
+        "line": 72,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 72,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 72,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "////////////////////////\n// 2. Simulation loop //",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "////////////////////////\n",
+    "line": 75,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Set seed",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "seed",
+        "line": 77,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "2014",
+        "line": 77,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Start the simulation.",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 80,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 80,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 80,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`S'",
+        "line": 80,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 80,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 82,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 82,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// In this loop, the \"expand\" command changes",
+    "line": 83,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//   the sample size. It needs to be reset.",
+    "line": 84,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 85,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 85,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "obs",
+        "line": 85,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`NT'",
+        "line": 85,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Keep track of time.",
+    "line": 87,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 88,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Simulations `s' for `T' time periods. Stamp. `c(current_time)' `c(current_date)'\"",
+        "line": 88,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 90,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// DATA GENERATION: see DGP in paper.",
+    "line": 91,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 92,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the panel data identifiers",
+    "line": 94,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 95,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 95,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 95,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 95,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 95,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 95,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 95,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 95,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 95,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 95,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 96,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 96,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 96,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 96,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 96,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 96,
+        "column": 17
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 96,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 96,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 96,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 96,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the RHS",
+    "line": 98,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 99,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 99,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "invnorm",
+        "line": 99,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "uniform",
+        "line": 99,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 100,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 100,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 100,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 100,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 100,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 100,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 100,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 101,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 101,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 101,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 101,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 101,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 101,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 101,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 101,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the fixed effects to depend on the x's",
+    "line": 103,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 104,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 104,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 104,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 104,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 104,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 104,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 104,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 104,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 105,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "alpha_i",
+        "line": 105,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 105,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 105,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "x1",
+        "line": 105,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 105,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "x2",
+        "line": 105,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the latent variable and the outcome",
+    "line": 107,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 108,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 108,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 108,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 109,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 109,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "alpha_i",
+        "line": 109,
+        "column": 14
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 109,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`beta'",
+        "line": 109,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 109,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 109,
+        "column": 31
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 109,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 109,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 109,
+        "column": 39
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 109,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "uniform",
+        "line": 109,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 109,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 109,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 110,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 110,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 110,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 111,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 111,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 111,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 111,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 111,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 111,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 111,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 111,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`delta1'",
+        "line": 111,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 112,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 112,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 112,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 112,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 112,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 112,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 112,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 112,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`delta2'",
+        "line": 112,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 113,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 113,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 115,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//  ESTIMATION",
+    "line": 116,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 117,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// First estimator: Oracle",
+    "line": 119,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ologit",
+      "line": 120,
+      "column": 14
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 120,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 120,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 120,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 120,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "alpha_i",
+        "line": 120,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 121,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 121,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 121,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 121,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 122,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 122,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 122,
+        "column": 22
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 122,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 122,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 122,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 123,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 123,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 123,
+        "column": 22
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 123,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 123,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 123,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 123,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 123,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 123,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 123,
+        "column": 31
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 123,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 123,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 123,
+        "column": 43
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 123,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// now, code this into cut point regressions.",
+    "line": 125,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 126,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "picounter",
+        "line": 126,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 126,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 126,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 126,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 126,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//di \"Simulation number `s', Transformation `picounter' out of `jminonet'\"",
+    "line": 128,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// Initialize the cutpoint variable, and the transformed variable",
+    "line": 129,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 130,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 130,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 130,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 130,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 131,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 131,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 131,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 131,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 134,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tcounter",
+        "line": 134,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 134,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 134,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 134,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 134,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//qui replace cut = pimat[`picounter',`tcounter']  if tid==`picounter' & t==`tcounter'",
+    "line": 135,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 136,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 136,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 136,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 136,
+        "column": 19
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pimat",
+        "line": 136,
+        "column": 33
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 136,
+        "column": 67
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 136,
+        "column": 68
+      },
+      {
+        "id": "`'",
+        "value": "`tcounter'",
+        "line": 136,
+        "column": 70
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 136,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`tcounter'",
+        "line": 136,
+        "column": 51
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 136,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 139,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 139,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 139,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 139,
+        "column": 19
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 139,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 139,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 139,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 139,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//capture qui clogit ybin x i.cut if tid==`picounter', group(newid)",
+    "line": 141,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "//capture qui clogit ybin x i.cut, group(id)",
+    "line": 142,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 143,
+      "column": 7
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 143,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 143,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 143,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 143,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "i.cut",
+        "line": 143,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 143,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 143,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 143,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sto",
+      "line": 144,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 144,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "est",
+        "line": 144,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 144,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 147,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 147,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 147,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 147,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 148,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 148,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 148,
+        "column": 35
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 148,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 148,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 148,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 148,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 148,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 148,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 148,
+        "column": 43
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 148,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 149,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 149,
+        "column": 6
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 149,
+        "column": 20
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 149,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 149,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 149,
+        "column": 39
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 149,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 150,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 150,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 150,
+        "column": 36
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 150,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 150,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 150,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 150,
+        "column": 31
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 150,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 152,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 152,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 153,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 153,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 153,
+        "column": 36
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 153,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 153,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 153,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 31
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 153,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 153,
+        "column": 44
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 153,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 159,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// Minimum distance",
+    "line": 160,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 161,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// 1. DvS",
+    "line": 162,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// First, grab the estimators, extract the coefficient estimates",
+    "line": 163,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "suest",
+      "line": 164,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 164,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "est1",
+        "line": 164,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "est",
+        "line": 164,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 164,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 164,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 164,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 164,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//qui suest est1 est8, vce(cluster i)",
+    "line": 165,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 166,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1",
+        "line": 166,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "select1",
+        "line": 166,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 166,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 166,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 166,
+        "column": 27
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 166,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 167,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "V1",
+        "line": 167,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "select1",
+        "line": 167,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 167,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 167,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 167,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 167,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "select1",
+        "line": 167,
+        "column": 32
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 167,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 168,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b_OMD1",
+        "line": 168,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 168,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 168,
+        "column": 19
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 168,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 168,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 168,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "V1",
+        "line": 168,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 168,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 168,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 168,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 168,
+        "column": 35
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 168,
+        "column": 37
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 168,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 168,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "V1",
+        "line": 168,
+        "column": 43
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 168,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "b1",
+        "line": 168,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 169,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 169,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "b_OMD1",
+        "line": 169,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 169,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 169,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 169,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 169,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 169,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 169,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 169,
+        "column": 42
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 169,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 2. Optimal MD",
+    "line": 171,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "suest",
+      "line": 172,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 172,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "est",
+        "line": 172,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 172,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 172,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 172,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 172,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 173,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b2",
+        "line": 173,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "select_b",
+        "line": 173,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 173,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 173,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 173,
+        "column": 28
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 173,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 174,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "V2",
+        "line": 174,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "select_b",
+        "line": 174,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 174,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 174,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 174,
+        "column": 28
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 174,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "select_b",
+        "line": 174,
+        "column": 33
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 174,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 175,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b_OMD2",
+        "line": 175,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 175,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 175,
+        "column": 19
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 175,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 175,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 175,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "V2",
+        "line": 175,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 175,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 175,
+        "column": 30
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 175,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 175,
+        "column": 33
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 175,
+        "column": 34
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 175,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 175,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "V2",
+        "line": 175,
+        "column": 40
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 175,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "b2",
+        "line": 175,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 176,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 176,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "b_OMD2",
+        "line": 176,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 176,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 176,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 176,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 176,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 176,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 176,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 176,
+        "column": 42
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 176,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 178,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d2",
+        "line": 178,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "select_d",
+        "line": 178,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 178,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 178,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 178,
+        "column": 27
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 178,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 179,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Vd2",
+        "line": 179,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "select_d",
+        "line": 179,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 179,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 179,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 179,
+        "column": 28
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 179,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "select_d",
+        "line": 179,
+        "column": 33
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 179,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 180,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d_OMD2",
+        "line": 180,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 180,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "Hd",
+        "line": 180,
+        "column": 19
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 180,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 180,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "Vd2",
+        "line": 180,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "Hd",
+        "line": 180,
+        "column": 32
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "Hd",
+        "line": 180,
+        "column": 36
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 180,
+        "column": 38
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 180,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "Vd2",
+        "line": 180,
+        "column": 44
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "d2",
+        "line": 180,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 181,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 181,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "d_OMD2",
+        "line": 181,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 181,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 181,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 181,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 181,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 181,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 181,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 181,
+        "column": 42
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 181,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//////////////////////////\n\t// COMPOSITE LIKELIHOOD //",
+    "line": 183,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//////////////////////////\n",
+    "line": 184,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// For the composite likelihood estimator, we can",
+    "line": 185,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//    expand the data set by making one copy per transformation:",
+    "line": 186,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//   - size of the expansion: (J-1)^T",
+    "line": 187,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "expand",
+      "line": 188,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 188,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 188,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Re-sort",
+    "line": 189,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 190,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 190,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 190,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 190,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the transformation identifier. Select on tid to obtain",
+    "line": 191,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//   different estimators.",
+    "line": 192,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 193,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 193,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 193,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 193,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 193,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 193,
+        "column": 19
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 193,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 193,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 193,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 193,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 195,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// Initialize the cutpoint variable.",
+    "line": 196,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 197,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 197,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 197,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 198,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "picounter",
+        "line": 198,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 198,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 198,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 198,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 198,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 199,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tcounter",
+        "line": 199,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 199,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 199,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 199,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 199,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 200,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 200,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 200,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pimat",
+        "line": 200,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 200,
+        "column": 56
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 200,
+        "column": 59
+      },
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 200,
+        "column": 61
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 200,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 200,
+        "column": 75
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 200,
+        "column": 76
+      },
+      {
+        "id": "`'",
+        "value": "`tcounter'",
+        "line": 200,
+        "column": 78
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`picounter'",
+        "line": 200,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`tcounter'",
+        "line": 200,
+        "column": 40
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 200,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// For all of them, generate the cut variable",
+    "line": 204,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 205,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 205,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 205,
+        "column": 13
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 205,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 205,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// And adjust the group identifier.",
+    "line": 206,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 207,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 207,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 207,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 207,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 207,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 207,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 207,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 210,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// BUC estimator, from Baetschmann et al.",
+    "line": 211,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// \tUses only the ones with constant cutoffs, in this case tid <= 2",
+    "line": 212,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 213,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//specific to J=3",
+    "line": 214,
+    "column": 70
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 214,
+      "column": 14
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 214,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 214,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 214,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 214,
+        "column": 26
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 214,
+        "column": 31
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 214,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 214,
+        "column": 36
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 214,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 214,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 214,
+        "column": 43
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 214,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 214,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 214,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 215,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 215,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DvS",
+        "line": 215,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 216,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 216,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 216,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 216,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 217,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 217,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 217,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 217,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 217,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 217,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 217,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 217,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 217,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 217,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 217,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 218,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 218,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 218,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 218,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 218,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 218,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 218,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 218,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 220,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// Estimator proposed in the paper",
+    "line": 221,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//   Uses all the transformations.",
+    "line": 222,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 223,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 224,
+      "column": 14
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 224,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 224,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 224,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 224,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.cut",
+        "line": 224,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 224,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 224,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 225,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 225,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "allCMLE",
+        "line": 225,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 226,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 226,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 226,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 226,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 227,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 227,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 227,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 227,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 227,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 227,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 227,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 227,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 227,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 227,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 227,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 228,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 228,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 228,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 228,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 228,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 228,
+        "column": 17
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 228,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 228,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 228,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 228,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 228,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Drop the estimation results from the last run",
+    "line": 230,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 231,
+      "column": 12
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 231,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 231,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// end of forloop for S",
+    "line": 233,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "/////////////////////////\n// 3. Present results  //",
+    "line": 237,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/////////////////////////\n",
+    "line": 238,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 239,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summarize",
+      "line": 240,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 240,
+        "column": 11
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 240,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 242,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summarize",
+      "line": 243,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 243,
+        "column": 11
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 243,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 248,
+        "column": 5
+      }
+    ]
+  }
+]

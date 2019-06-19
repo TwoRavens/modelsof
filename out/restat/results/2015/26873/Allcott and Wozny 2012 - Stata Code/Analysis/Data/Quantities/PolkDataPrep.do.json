@@ -1,0 +1,968 @@
+[
+  {
+    "id": "comment",
+    "value": "/* PolkDataPrep.do */",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* This file prepares the RL Polk Data. */",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Insheet Data and Name Variables */",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Liters needs to be double for the match to work properly, so the insheet must be double.",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "insheet",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 6,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 6,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 6,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "Quantities",
+        "line": 6,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 6,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "PolkRegistrations.csv",
+        "line": 6,
+        "column": 31
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "comma",
+        "line": 6,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "names",
+        "line": 6,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 6,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "double",
+        "line": 6,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 8,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Quantities",
+        "line": 8,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "CleanPolkNames.do",
+        "line": 8,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Transmission */",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mantranspct",
+        "line": 12,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 12,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Drop any observations where auto and manual percentages don't equal one. (This is primarily to eliminate a large number of observations where both are zero.)",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "TotalPct",
+        "line": 14,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 14,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 14,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "autotranspct",
+        "line": 14,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 15,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 15,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "TotalPct",
+        "line": 15,
+        "column": 26
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 15,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 15,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "TotalPct",
+        "line": 16,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Collapse vehicles that are same: this includes a collapse of GVW, the AWD and 4x4 Drive types, as well as the BodyStyle changes. */",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* collapse (mean) PctManual reg2003 reg2004 reg2005 reg2006 reg2007 reg2008, by(Make Model Trim Cylinders Liters FuelType BodyStyle Drive ModelYear)",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* NB can't do \"collapse\" command because we can't deal with missing values ",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Group",
+        "line": 22,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 22,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "Make",
+        "line": 22,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "Model",
+        "line": 22,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "Trim",
+        "line": 22,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "Cylinders",
+        "line": 22,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Liters",
+        "line": 22,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "FuelType",
+        "line": 22,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "BodyStyle",
+        "line": 22,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "Drive",
+        "line": 22,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "ModelYear",
+        "line": 22,
+        "column": 78
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 22,
+        "column": 89
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 24,
+      "column": 15
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 24,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "Group",
+            "line": 24,
+            "column": 8
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanPctManual",
+        "line": 24,
+        "column": 20
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 24,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 24,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 25,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meanPctManual",
+        "line": 26,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 26,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 28,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2003",
+        "line": 28,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 28,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2008",
+        "line": 28,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 28,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 29,
+      "column": 15
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 29,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "Group",
+            "line": 29,
+            "column": 8
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sumreg",
+        "line": 29,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 29,
+        "column": 26
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 29,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "reg",
+        "line": 29,
+        "column": 38
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 29,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reg",
+        "line": 30,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 30,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sumreg",
+        "line": 31,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 31,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "reg",
+        "line": 31,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 31,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Group",
+        "line": 34,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 35,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "Group",
+        "line": 35,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 35,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "Group",
+        "line": 35,
+        "column": 16
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 35,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 35,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 35,
+        "column": 25
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 35,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Sort and Save */",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Make",
+        "line": 39,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "Model",
+        "line": 39,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "Cylinders",
+        "line": 39,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Liters",
+        "line": 39,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "Drive",
+        "line": 39,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "FuelType",
+        "line": 39,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "BodyStyle",
+        "line": 39,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "ModelYear",
+        "line": 39,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "Trim",
+        "line": 39,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 39,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "reg",
+        "line": 39,
+        "column": 85
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 39,
+        "column": 88
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Make",
+        "line": 40,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Model",
+        "line": 40,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Cylinders",
+        "line": 40,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Liters",
+        "line": 40,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Drive",
+        "line": 40,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "FuelType",
+        "line": 40,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "BodyStyle",
+        "line": 40,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "ModelYear",
+        "line": 40,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "Trim",
+        "line": 40,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "PctManual",
+        "line": 40,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "reg",
+        "line": 40,
+        "column": 84
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 40,
+        "column": 87
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Make",
+        "line": 41,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Model",
+        "line": 41,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Cylinders",
+        "line": 41,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Liters",
+        "line": 41,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Drive",
+        "line": 41,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "FuelType",
+        "line": 41,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "BodyStyle",
+        "line": 41,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "ModelYear",
+        "line": 41,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 42,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 42,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "Quantities",
+        "line": 42,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 42,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "PolkRegistrations.dta",
+        "line": 42,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 42,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*To generate the original template for the matchups spreadsheet:\ncollapse (sum) reg2003, by(Make Model Trim BodyStyle)\nsort Make Model Trim BodyStyle\noutsheet using Data/Matchups/Polk.csv, comma names replace\n\n*/",
+    "line": 44,
+    "column": 1
+  }
+]

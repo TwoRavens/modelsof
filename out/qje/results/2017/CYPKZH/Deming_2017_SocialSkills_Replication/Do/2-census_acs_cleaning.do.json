@@ -1,0 +1,7692 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n\tProject: The growing importance of social skills in the labor market (2017)\n\tAuthor: David Deming\n\tDate Created: April 2017\n\t\n\tDescription: Cleans and prepares the Census and ACS data for analysis, using \n\t\tcode adapted from replication package for Autor and Price (2013)\n\t\n\tNotes:\n\t- Start with IPUMS decennial Census extracts (1980, 1990, and 2000) \n\t\tand pooled 3-year ACS extracts (2005-2007, 2008-2010, 2011-2013).\n\t\tSelect the following variables (not all of them present in all \n\t\tof these extracts): \n\t\tyear multyear perwt sex age uhrswork wkswork1 wkswork2 incwage\n\t\teduc educd classwkrd empstatd gqtyped occ occ1990 ind ind1990.\n\t- For the ACS 3-year extracts, set \"year\" equal to \"multyear\" and drop \"multyear\".\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "number",
+      "value": "14",
+      "line": 4,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "version",
+          "line": 4,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 5,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 6,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 6,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**** Define macros ****",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "topdir",
+        "line": 11,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"YOURFILEPATH/Deming_2017_SocialSkills_Replication\"",
+        "line": 11,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dodir",
+        "line": 12,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Do\"",
+        "line": 12,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rawdir",
+        "line": 14,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/census-acs/raw\"",
+        "line": 14,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cleandir",
+        "line": 15,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/census-acs/clean\"",
+        "line": 15,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "collapdir",
+        "line": 16,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/census-acs/collapsed\"",
+        "line": 16,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occdir",
+        "line": 17,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/census-acs/xwalk_occ\"",
+        "line": 17,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "inddir",
+        "line": 18,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/census-acs/xwalk_ind\"",
+        "line": 18,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "onetdir",
+        "line": 20,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/onet\"",
+        "line": 20,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "txtdir",
+        "line": 21,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/onet/text_files\"",
+        "line": 21,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dotdir",
+        "line": 22,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/dot\"",
+        "line": 22,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nlsydir",
+        "line": 24,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/nlsy\"",
+        "line": 24,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "import79dir",
+        "line": 25,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/nlsy/import/nlsy79\"",
+        "line": 25,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "import97dir",
+        "line": 26,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/nlsy/import/nlsy97\"",
+        "line": 26,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Name of NLSY79 extract */",
+    "line": 27,
+    "column": 41
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "name79",
+        "line": 27,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"socskills_nlsy79_final\"",
+        "line": 27,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Name of NLSY97 extract */",
+    "line": 28,
+    "column": 41
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "name97",
+        "line": 28,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"socskills_nlsy97_final\"",
+        "line": 28,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "afqtadj",
+        "line": 29,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Data/nlsy/altonjietal2012\"",
+        "line": 29,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "figdir",
+        "line": 31,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Results/figures\"",
+        "line": 31,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tabdir",
+        "line": 32,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"${topdir}/Results/tables\"",
+        "line": 32,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*****************************",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "****Clean Census-ACS Data****",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************",
+    "line": 37,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Use Treiman file to aggregate DOT 1977 by Census Occupation 1990dd codes",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Load Treiman file, which is a sample of 1980 Census respondents double-coded",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\twith 1970 and 1980 occupation codes",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`dotdir'/treiman.dta\"",
+        "line": 43,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 43,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create labor supply weights",
+    "line": 45,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 46,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hours",
+        "line": 46,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 46,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "weeks",
+        "line": 46,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Restrict to employed persons with observed occupation codes",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 49,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 49,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 49,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 49,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 50,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "occ70",
+        "line": 50,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 50,
+        "column": 18
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 50,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "occ80",
+        "line": 50,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 50,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Merge in DOT 1977 measures with 1970 occupation codes",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 53,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 53,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 53,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "occ70",
+        "line": 53,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 53,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`dotdir'/dot77-70.dta\"",
+        "line": 53,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 53,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 53,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 53,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Collapse the DOT measures at the 1980 occupation level",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ehf",
+        "line": 56,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "finger",
+        "line": 56,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dcp",
+        "line": 56,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "sts",
+        "line": 56,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "math",
+        "line": 56,
+        "column": 29
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 56,
+        "column": 43
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 56,
+        "column": 47
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 56,
+        "column": 35
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 56,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "occ80",
+        "line": 56,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Merge in 1980 to 1990dd crosswalk",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ80",
+        "line": 59,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 59,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 60,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 60,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 60,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 60,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 60,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"`occdir'/occ1980_occ1990dd_update.dta\"",
+        "line": 60,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 60,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Collapse by occ1990dd",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ehf",
+        "line": 63,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "finger",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dcp",
+        "line": 63,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "sts",
+        "line": 63,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "math",
+        "line": 63,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 63,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "occ1990dd",
+        "line": 63,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Take note of unmatched occ1990dd codes, then drop",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ1990dd",
+        "line": 66,
+        "column": 5
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "math",
+        "line": 66,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 66,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 67,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "math",
+        "line": 67,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 67,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 67,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Save data",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`dotdir'/dot77-occ1990dd-Tr.dta\"",
+        "line": 70,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 70,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Loop to clean data for all Census-ACS years",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 74,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "string",
+        "value": "\"1980\"",
+        "line": 74,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"1990\"",
+        "line": 74,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"2000\"",
+        "line": 74,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"2006\"",
+        "line": 74,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"2009\"",
+        "line": 74,
+        "column": 42
+      },
+      {
+        "id": "string",
+        "value": "\"2012\"",
+        "line": 74,
+        "column": 49
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 74,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Prepare to impute weeks worked for 2008-2010 & 2011-2013 ACS",
+    "line": 76,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 77,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 77,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 77,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"2009\"",
+        "line": 77,
+        "column": 14
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 77,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 77,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 77,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"2012\"",
+        "line": 77,
+        "column": 32
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 77,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Impute using the sample closest in time",
+    "line": 79,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 80,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`rawdir'/2006.dta\"",
+        "line": 80,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 80,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Defining the sample to be used for imputation",
+    "line": 82,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 83,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "perwt",
+        "line": 83,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 83,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 84,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 84,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 84,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 84,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 84,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 85,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 85,
+        "column": 11
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 85,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "18",
+        "line": 85,
+        "column": 17
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 85,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 85,
+        "column": 22
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 85,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "64",
+        "line": 85,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 86,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 86,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 86,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 86,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 87,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 87,
+        "column": 11
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 87,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 87,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 88,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "100",
+        "line": 88,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 88,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "gqtyped",
+        "line": 88,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 88,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "499",
+        "line": 88,
+        "column": 39
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "gqtyped",
+        "line": 88,
+        "column": 11
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 88,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 89,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "classwkrd",
+        "line": 89,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 89,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "29",
+        "line": 89,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 90,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 90,
+        "column": 23
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 90,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "empstatd",
+        "line": 90,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 90,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 90,
+        "column": 40
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "empstatd",
+        "line": 90,
+        "column": 11
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 90,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Computing mean weeks worked within each interval in the reference extract",
+    "line": 92,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 93,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 93,
+        "column": 11
+      }
+    ],
+    "in": [
+      {
+        "id": "string",
+        "value": "\"01_13\"",
+        "line": 93,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"14_26\"",
+        "line": 93,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"27_39\"",
+        "line": 93,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"40_47\"",
+        "line": 93,
+        "column": 42
+      },
+      {
+        "id": "string",
+        "value": "\"48_49\"",
+        "line": 93,
+        "column": 50
+      },
+      {
+        "id": "string",
+        "value": "\"50_52\"",
+        "line": 93,
+        "column": 58
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 93,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 94,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lb",
+        "line": 94,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 94,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"`inv'\"",
+        "line": 94,
+        "column": 22
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 94,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 94,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 94,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 94,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 95,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ub",
+        "line": 95,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 95,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"`inv'\"",
+        "line": 95,
+        "column": 22
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 95,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 95,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 95,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 95,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 96,
+      "column": 12
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 96,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 96,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`lb'",
+        "line": 96,
+        "column": 40
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 96,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 96,
+        "column": 47
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 96,
+        "column": 56
+      },
+      {
+        "id": "`'",
+        "value": "`ub'",
+        "line": 96,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "perwt",
+        "line": 96,
+        "column": 75
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 96,
+        "column": 80
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 96,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 96,
+        "column": 37
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 96,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 97,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wks_",
+        "line": 97,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`inv'",
+        "line": 97,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 97,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 97,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Load raw data downloaded from IPUMS",
+    "line": 101,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 102,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`rawdir'/`y'.dta\"",
+        "line": 102,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 102,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Impute weeks and hours worked",
+    "line": 104,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 105,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 105,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 105,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"2009\"",
+        "line": 105,
+        "column": 14
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 105,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 105,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 105,
+        "column": 30
+      },
+      {
+        "id": "string",
+        "value": "\"2012\"",
+        "line": 105,
+        "column": 33
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 105,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 106,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 106,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 106,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 107,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 107,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`wks_01_13'",
+        "line": 107,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork2",
+        "line": 107,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 107,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 107,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 108,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 108,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`wks_14_26'",
+        "line": 108,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork2",
+        "line": 108,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 108,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 108,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 109,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 109,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`wks_27_39'",
+        "line": 109,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork2",
+        "line": 109,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 109,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 109,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 110,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 110,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`wks_40_47'",
+        "line": 110,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork2",
+        "line": 110,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 110,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 110,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 111,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 111,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`wks_48_49'",
+        "line": 111,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork2",
+        "line": 111,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 111,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 111,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 112,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 112,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`wks_50_52'",
+        "line": 112,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork2",
+        "line": 112,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 112,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 112,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Impose sample restrictions",
+    "line": 115,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Drop anyone who is assigned a sampling weight of zero (some do for unknown reason)",
+    "line": 117,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 118,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "perwt",
+        "line": 118,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 118,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 118,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Keep if age 18-64 last year",
+    "line": 120,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 121,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 121,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 121,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 121,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 121,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 122,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 122,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 122,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "18",
+        "line": 122,
+        "column": 16
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 122,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 122,
+        "column": 21
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 122,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "64",
+        "line": 122,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Keep anyone who worked 1+ weeks last year. Equivalent to using the \"workedyr\" variable.",
+    "line": 124,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 125,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 125,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 125,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 125,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 126,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 126,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 126,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 126,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Keep anyone with income > 0 last year.",
+    "line": 128,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 129,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "incwage",
+        "line": 129,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 129,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 129,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 130,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "incwage",
+        "line": 130,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 130,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 130,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Drop institutional group quarters (note that for 1980 Census this does not exclude military,",
+    "line": 132,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\tdorm rooms, and other categories).",
+    "line": 133,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 134,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "100",
+        "line": 134,
+        "column": 21
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 134,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "gqtyped",
+        "line": 134,
+        "column": 27
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 134,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "499",
+        "line": 134,
+        "column": 38
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "gqtyped",
+        "line": 134,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 134,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Drop unpaid family workers",
+    "line": 136,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 137,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "classwkrd",
+        "line": 137,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 137,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "29",
+        "line": 137,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Keep all employed",
+    "line": 139,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 140,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 140,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 140,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "empstatd",
+        "line": 140,
+        "column": 27
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 140,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 140,
+        "column": 39
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "empstatd",
+        "line": 140,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 140,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Exclude workers with inapplicable or military occupations",
+    "line": 142,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 144,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 144,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 144,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"1980\"",
+        "line": 144,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 144,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Exclude if occupation is not applicable, former member of the armed forces, ",
+    "line": 145,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*\tunemployed or not reported",
+    "line": 146,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 147,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 147,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 147,
+        "column": 18
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 147,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 147,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "905",
+        "line": 147,
+        "column": 29
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 147,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 147,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "909",
+        "line": 147,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 149,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 149,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"1990\"",
+        "line": 149,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 149,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Exclude if occupation is not applicable, military, or unemployed",
+    "line": 150,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 151,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 151,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 151,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 151,
+        "column": 18
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 151,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 151,
+        "column": 23
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 151,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 151,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "903",
+        "line": 151,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 151,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 151,
+        "column": 36
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 151,
+        "column": 40
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 151,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "905",
+        "line": 151,
+        "column": 43
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 151,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 151,
+        "column": 50
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 151,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "909",
+        "line": 151,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 153,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 153,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Exclude if occupation is unknown, military, or unemployed",
+    "line": 154,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 155,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "occ1990",
+        "line": 155,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "905",
+        "line": 155,
+        "column": 22
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 155,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "occ1990",
+        "line": 155,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "991",
+        "line": 155,
+        "column": 39
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 155,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "occ1990",
+        "line": 155,
+        "column": 45
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 155,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "999",
+        "line": 155,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**\tCreate education dummies",
+    "line": 158,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Making sure we have educational data for everyone still in the sample",
+    "line": 160,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 161,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 161,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 161,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 161,
+        "column": 18
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 161,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 161,
+        "column": 22
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 161,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "116",
+        "line": 161,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Defining education using the educd variable\t\t",
+    "line": 163,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 164,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_lths",
+        "line": 164,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 164,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 164,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 164,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "002",
+        "line": 164,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 164,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 164,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 164,
+        "column": 39
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 164,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "050",
+        "line": 164,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 165,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_hsch",
+        "line": 165,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 165,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 165,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 165,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "060",
+        "line": 165,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 165,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 165,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 165,
+        "column": 39
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 165,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "064",
+        "line": 165,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 166,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_scol",
+        "line": 166,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 166,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 166,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "065",
+        "line": 166,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 166,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 166,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 166,
+        "column": 39
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "090",
+        "line": 166,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 167,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_coll",
+        "line": 167,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 167,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 167,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 167,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 167,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 167,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 167,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 167,
+        "column": 39
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 167,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "116",
+        "line": 167,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 168,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bach",
+        "line": 168,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 168,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 168,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 168,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 168,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 168,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 168,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 168,
+        "column": 39
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 168,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "101",
+        "line": 168,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 169,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_mast",
+        "line": 169,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 169,
+        "column": 18
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 169,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 169,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "110",
+        "line": 169,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 169,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 169,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 169,
+        "column": 39
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 169,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "116",
+        "line": 169,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 171,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_lths",
+        "line": 171,
+        "column": 9
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 171,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "edu_hsch",
+        "line": 171,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 171,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "edu_scol",
+        "line": 171,
+        "column": 31
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 171,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "edu_coll",
+        "line": 171,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 171,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 171,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 172,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bach",
+        "line": 172,
+        "column": 9
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 172,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "edu_mast",
+        "line": 172,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 172,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "edu_coll",
+        "line": 172,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 173,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 173,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "educd",
+        "line": 173,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Compute each worker's labor supply weight",
+    "line": 175,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 176,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 176,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "perwt",
+        "line": 176,
+        "column": 13
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 176,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "uhrswork",
+        "line": 176,
+        "column": 22
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 176,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 176,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 176,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 176,
+        "column": 38
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 176,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 176,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 177,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 177,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 177,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 177,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 177,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 177,
+        "column": 20
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 177,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 177,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Compute log hourly wage",
+    "line": 179,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 180,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 180,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "incwage",
+        "line": 180,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 180,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "uhrswork",
+        "line": 180,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "wkswork1",
+        "line": 180,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Inflate wages to 2012 dollars ",
+    "line": 182,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* \tNote: For annual average, go to https://data.bls.gov/cgi-bin/cpicalc.pl,",
+    "line": 183,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\tselect \"About this calculator\" then \"This data\"",
+    "line": 184,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 185,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`y'",
+        "line": 185,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 185,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1980",
+        "line": 185,
+        "column": 10
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 185,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 186,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 186,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 186,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 186,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "round",
+        "line": 186,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "229.594",
+        "line": 186,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 186,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "82.4",
+        "line": 186,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 186,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 186,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 188,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`y'",
+        "line": 188,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 188,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1990",
+        "line": 188,
+        "column": 10
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 188,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 189,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 189,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 189,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 189,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "round",
+        "line": 189,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "229.594",
+        "line": 189,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 189,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "130.7",
+        "line": 189,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 189,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 189,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 191,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`y'",
+        "line": 191,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 191,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 191,
+        "column": 10
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 191,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 192,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 192,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 192,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 192,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "round",
+        "line": 192,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "229.594",
+        "line": 192,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 192,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "172.2",
+        "line": 192,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 192,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 192,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 194,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`y'",
+        "line": 194,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 194,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "2006",
+        "line": 194,
+        "column": 10
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 194,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 195,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 195,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 195,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 195,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "round",
+        "line": 195,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "229.594",
+        "line": 195,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 195,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "201.6",
+        "line": 195,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 195,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 195,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 197,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`y'",
+        "line": 197,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 197,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 197,
+        "column": 10
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 197,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 198,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 198,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 198,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 198,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "round",
+        "line": 198,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "229.594",
+        "line": 198,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 198,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "214.537",
+        "line": 198,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 198,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".01",
+        "line": 198,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Log hourly wage",
+    "line": 201,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 202,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_hrwage",
+        "line": 202,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 202,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 202,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Data reduction",
+    "line": 204,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Note: Proceeding further with microdata is computationally challenging.",
+    "line": 206,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tSo I now collapse the data into cells defined on the basis of ",
+    "line": 207,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tsex, education, industry, and occupation.",
+    "line": 208,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Restating education as a single variable",
+    "line": 210,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 211,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 211,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 211,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "edu_lths",
+        "line": 211,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 211,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 211,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 212,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 212,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 212,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "edu_hsch",
+        "line": 212,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 212,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 212,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 213,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 213,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 213,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "edu_scol",
+        "line": 213,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 213,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 213,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 214,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 214,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 214,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "edu_bach",
+        "line": 214,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 214,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 214,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 215,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 215,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 215,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "edu_mast",
+        "line": 215,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 215,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 215,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 216,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 216,
+        "column": 9
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 216,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 216,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 218,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 218,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "edulab",
+        "line": 218,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 218,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"Less than high school\"",
+        "line": 218,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 218,
+        "column": 48
+      },
+      {
+        "id": "string",
+        "value": "\"High school graduate\"",
+        "line": 218,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 218,
+        "column": 73
+      },
+      {
+        "id": "string",
+        "value": "\"Some college\"",
+        "line": 218,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 219,
+        "column": 3
+      },
+      {
+        "id": "string",
+        "value": "\"College graduate\"",
+        "line": 219,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 219,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"Some postgrad\"",
+        "line": 219,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 220,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "values",
+        "line": 220,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 220,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "edulab",
+        "line": 220,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Collapse into narrowly defined cells",
+    "line": 222,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 223,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rawsum",
+        "line": 223,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 223,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 223,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "hrwage",
+        "line": 223,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "ln_hrwage",
+        "line": 223,
+        "column": 39
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "lswt",
+        "line": 223,
+        "column": 53
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 223,
+        "column": 57
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aw",
+        "line": 223,
+        "column": 50
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 223,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 223,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "sex",
+        "line": 223,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "edu_bin",
+        "line": 223,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 223,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "occ1990",
+        "line": 223,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 223,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 223,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Implement the Autor-Dorn occ1990dd occupation crosswalk.",
+    "line": 225,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Bring in occ1990dd codes",
+    "line": 227,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 228,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 228,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"1980\"",
+        "line": 228,
+        "column": 14
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 228,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 228,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"1990\"",
+        "line": 228,
+        "column": 32
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 228,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 228,
+        "column": 41
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 47
+      },
+      {
+        "id": "string",
+        "value": "\"2000\"",
+        "line": 228,
+        "column": 50
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 228,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 229,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 229,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 229,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 229,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 229,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 229,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`occdir'/occ`y'_occ1990dd_update.dta\"",
+        "line": 229,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 229,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 229,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 229,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 229,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 231,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 231,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"2006\"",
+        "line": 231,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 231,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Remove extra zero for 2005-2009 occupation codes",
+    "line": 233,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 234,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 234,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 234,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 235,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 235,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 235,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 235,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 235,
+        "column": 27
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 235,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 235,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 235,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 235,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 235,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 235,
+        "column": 52
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 235,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 235,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 236,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 236,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 236,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 238,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 238,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 238,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 238,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 238,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 238,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`occdir'/occ2005_occ1990dd_update.dta\"",
+        "line": 238,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 238,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 238,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 238,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 238,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 239,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 239,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 240,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 240,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 240,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 242,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 242,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 242,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"2009\"",
+        "line": 242,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 242,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 243,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 243,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ_all",
+        "line": 243,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Occ 2005-2009 codes for 2008 & 2009",
+    "line": 245,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 246,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 246,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "occ_all",
+        "line": 246,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 246,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 246,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2008",
+        "line": 246,
+        "column": 30
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 246,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 246,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 246,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2009",
+        "line": 246,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 247,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 247,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 247,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 247,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 247,
+        "column": 27
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 247,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 247,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 247,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 247,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "string",
+        "line": 247,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 247,
+        "column": 52
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 247,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 247,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 248,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 248,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 248,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 249,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 249,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 249,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 249,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 249,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 249,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`occdir'/occ2005_occ1990dd_update.dta\"",
+        "line": 249,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 249,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 249,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 249,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 249,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 250,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 250,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "occ4d",
+        "line": 250,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Occ 2010 codes for 2010",
+    "line": 252,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 253,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ2010",
+        "line": 253,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "occ_all",
+        "line": 253,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 253,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 253,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 253,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 254,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 254,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 254,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 254,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "occ2010",
+        "line": 254,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 254,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"`occdir'/occ2010_occ1990dd_update.dta\"",
+        "line": 254,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 254,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 254,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 254,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 254,
+        "column": 77
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 254,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "update",
+        "line": 254,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 254,
+        "column": 89
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 255,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ2010",
+        "line": 255,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 257,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ_all",
+        "line": 257,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 257,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 259,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 259,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 259,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"2012\"",
+        "line": 259,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 259,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 260,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 260,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ2010",
+        "line": 260,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 261,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 261,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 261,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 261,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "occ2010",
+        "line": 261,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 261,
+        "column": 21
+      },
+      {
+        "id": "string",
+        "value": "\"`occdir'/occ2010_occ1990dd_update.dta\"",
+        "line": 261,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 261,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 261,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 261,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 261,
+        "column": 87
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 262,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ2010",
+        "line": 262,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ",
+        "line": 262,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Make sure that occ1990dd is populated for all workers",
+    "line": 265,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 266,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "occ1990dd",
+        "line": 266,
+        "column": 9
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 266,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 266,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Drop anyone in the military (again)",
+    "line": 268,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 269,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "occ1990dd",
+        "line": 269,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 269,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "905",
+        "line": 269,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Merge ONET 1998 measures and DOT 1977 task measures at the occ1990dd level",
+    "line": 271,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Merge in ONET 1998",
+    "line": 273,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 274,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 274,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 274,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 274,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ1990dd",
+        "line": 274,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 274,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"`onetdir'/onet98_occ1990dd.dta\"",
+        "line": 274,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 274,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 274,
+        "column": 67
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 274,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 274,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "onetmerge",
+        "line": 274,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Merge in DOT 1977",
+    "line": 276,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 277,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 277,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 277,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 277,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "occ1990dd",
+        "line": 277,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 277,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"`dotdir'/dot77-occ1990dd-Tr.dta\"",
+        "line": 277,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 277,
+        "column": 63
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 277,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 277,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 277,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "dotmerge",
+        "line": 277,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create overall task merge variable",
+    "line": 279,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 280,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "taskmerge",
+        "line": 280,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "onetmerge",
+        "line": 280,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 280,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 280,
+        "column": 28
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 280,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "dotmerge",
+        "line": 280,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 280,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 280,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Rename DOT tasks",
+    "line": 282,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 283,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "task",
+        "line": 283,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "string",
+        "value": "\"ehf\"",
+        "line": 283,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"finger\"",
+        "line": 283,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"dcp\"",
+        "line": 283,
+        "column": 33
+      },
+      {
+        "id": "string",
+        "value": "\"sts\"",
+        "line": 283,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\"math\"",
+        "line": 283,
+        "column": 45
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 283,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 284,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`task'",
+        "line": 284,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`task'",
+        "line": 284,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "_dot77",
+        "line": 284,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create DOT 1977 composite routine variable",
+    "line": 287,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 288,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "routine_dot77",
+        "line": 288,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "finger_dot77",
+        "line": 288,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 288,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "sts_dot77",
+        "line": 288,
+        "column": 38
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 288,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 288,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Implement an industry crosswalk from AKK. ",
+    "line": 290,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Note: This crosswalk is intended to cover industry codes from 1960 through 1990.",
+    "line": 292,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tFor post-1990 extracts, I use the IPUMS ind1990 crosswalk variable to first map industry codes ",
+    "line": 293,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tinto 1990 industry codes, then I apply the AKK crosswalk using these 1990 industry codes.",
+    "line": 294,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* First, dropping military industries as well as those whose industry is listed as unemployed.",
+    "line": 296,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* With these industries dropped, every remaining industry should merge successfully with the AKK crosswalk.",
+    "line": 297,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 298,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 298,
+        "column": 11
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 298,
+        "column": 19
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 298,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "940",
+        "line": 298,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 298,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 298,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 298,
+        "column": 36
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 298,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "960",
+        "line": 298,
+        "column": 39
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 298,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 298,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 298,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "991",
+        "line": 298,
+        "column": 57
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 298,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 298,
+        "column": 63
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 298,
+        "column": 71
+      },
+      {
+        "id": "number",
+        "value": "992",
+        "line": 298,
+        "column": 74
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 298,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 298,
+        "column": 80
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 298,
+        "column": 88
+      },
+      {
+        "id": "number",
+        "value": "999",
+        "line": 298,
+        "column": 91
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 300,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 300,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 300,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"1980\"",
+        "line": 300,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 300,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Recode two industries that aren't appropriately handled by the AKK crosswalk.",
+    "line": 301,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "* ALM excluded these industries, but I prefer to include them, especially since industries are ",
+    "line": 302,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*\tnot our main focus.",
+    "line": 303,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 304,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 304,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "391",
+        "line": 304,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 304,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 304,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "382",
+        "line": 304,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 305,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 305,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "532",
+        "line": 305,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 305,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 305,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "522",
+        "line": 305,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 307,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 307,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "ind80",
+        "line": 307,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 308,
+      "column": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 308,
+        "column": 12
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 308,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 308,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ind80",
+        "line": 308,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 308,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"`inddir'/ind80.dta\"",
+        "line": 308,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "assert",
+        "line": 308,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 308,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 308,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 308,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 308,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "nogenerate",
+        "line": 308,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 308,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 308,
+        "column": 91
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 309,
+      "column": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind80",
+        "line": 309,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "ind",
+        "line": 309,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 311,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 311,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 311,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"1990\"",
+        "line": 311,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 311,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 311,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 311,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"2000\"",
+        "line": 311,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 311,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 311,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 311,
+        "column": 52
+      },
+      {
+        "id": "string",
+        "value": "\"2006\"",
+        "line": 311,
+        "column": 55
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 311,
+        "column": 62
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 311,
+        "column": 64
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 311,
+        "column": 70
+      },
+      {
+        "id": "string",
+        "value": "\"2009\"",
+        "line": 311,
+        "column": 73
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 311,
+        "column": 80
+      },
+      {
+        "id": "string",
+        "value": "\"`y'\"",
+        "line": 311,
+        "column": 82
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 311,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"2012\"",
+        "line": 311,
+        "column": 91
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 311,
+        "column": 98
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 312,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 312,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "ind90",
+        "line": 312,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 313,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 313,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 313,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 313,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ind90",
+        "line": 313,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 313,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`inddir'/ind90.dta\"",
+        "line": 313,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "assert",
+        "line": 313,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 313,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 313,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 313,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 313,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "nogenerate",
+        "line": 313,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 313,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 313,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 314,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind90",
+        "line": 314,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ind1990",
+        "line": 314,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Combine certain industries to ensure complete industry representation throughout the sample period",
+    "line": 317,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 318,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 318,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "142",
+        "line": 318,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 318,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 318,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "150",
+        "line": 318,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 319,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 319,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "222",
+        "line": 319,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 319,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 319,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "220",
+        "line": 319,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 320,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 320,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "231",
+        "line": 320,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 320,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 320,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "241",
+        "line": 320,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 321,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 321,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "206",
+        "line": 321,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 321,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 321,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "380",
+        "line": 321,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 321,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 321,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 321,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "381",
+        "line": 321,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 322,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 322,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "432",
+        "line": 322,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 322,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 322,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "422",
+        "line": 322,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 323,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 323,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "691",
+        "line": 323,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 323,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 323,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "592",
+        "line": 323,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 323,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 323,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 323,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "602",
+        "line": 323,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 324,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 324,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "766",
+        "line": 324,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 324,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 324,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "782",
+        "line": 324,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 325,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 325,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "630",
+        "line": 325,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 325,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 325,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "790",
+        "line": 325,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 326,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 326,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "121",
+        "line": 326,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 326,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 326,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "122",
+        "line": 326,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 327,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 327,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "166",
+        "line": 327,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind6090",
+        "line": 327,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 327,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "301",
+        "line": 327,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Save cleaned-up extract",
+    "line": 329,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 330,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`cleandir'/`y'.dta\"",
+        "line": 330,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 330,
+        "column": 29
+      }
+    ]
+  }
+]

@@ -1,0 +1,3343 @@
+[
+  {
+    "id": "comment",
+    "value": "*Code to estimate nationwide regressions to show asymmetries across countries and over time",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Want to do this with country level data as well as with province-level data with province FEs",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Written by AC, October 21, 2010",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Modified October 25th to separate the data according to RERs in the bottom and top quartile, rather than 10% under- or over-valuaiton",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Modified by AC, September 8, 2011. I will update to 2010 and combine the various reduced form codes into one file. ",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*This code does the following: (i) update data to 2010 (ii) reduced form baseline regs",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*(iii) Reduced form with quartiles (iv) Nationwide regs (with economic indicators) to show robustness",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Updated again on October 17, 2011 to change the quartile cutoffs to reflect the 2010 data.",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 12,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 13,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "50m",
+        "line": 13,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 14,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 14,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regdata",
+        "line": 16,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Set directory to \"data\"",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crossings_ports_1972_2010",
+        "line": 20,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 20,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 21,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "placetype",
+        "line": 21,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 21,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"province\"",
+        "line": 21,
+        "column": 21
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 21,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "placetype",
+        "line": 21,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 21,
+        "column": 43
+      },
+      {
+        "id": "string",
+        "value": "\"Canada\"",
+        "line": 21,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 22,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "prov_ab",
+        "line": 22,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"YT\"",
+        "line": 22,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 23,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "prov_ab",
+        "line": 23,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 23,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"NS\"",
+        "line": 23,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "port_id",
+        "line": 24,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "port_code",
+        "line": 24,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "port_ab",
+        "line": 24,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "port",
+        "line": 24,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 26,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nights",
+        "line": 26,
+        "column": 14
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 26,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 26,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nights",
+        "line": 27,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*The next line adds 1 night and 2+ nights into one obs, for each province-month",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 29,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "crossings",
+        "line": 29,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 29,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 29,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 29,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "province",
+        "line": 29,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "prov_ab",
+        "line": 29,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "res_ca",
+        "line": 29,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 29,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "placetype",
+        "line": 29,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Need to merge Exchange rate data",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 32,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 33,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 33,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 33,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 33,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 33,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 33,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//2011 data on exchange rates",
+    "line": 34,
+    "column": 19
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 34,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 34,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 34,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 35,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_rer",
+        "line": 37,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 37,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 37,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_crossings",
+        "line": 39,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 39,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "crossings",
+        "line": 39,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 40,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 40,
+        "column": 14
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 40,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "2001",
+        "line": 40,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 40,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 40,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2001",
+        "line": 40,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 40,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 40,
+        "column": 40
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 40,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 40,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "over10",
+        "line": 42,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 42,
+        "column": 13
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 42,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1.1",
+        "line": 42,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "under10",
+        "line": 43,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 43,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 43,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "0.9",
+        "line": 43,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_rerXover10",
+        "line": 44,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rer",
+        "line": 44,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 44,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "over10",
+        "line": 44,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_rerXunder10",
+        "line": 45,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rer",
+        "line": 45,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 45,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "under10",
+        "line": 45,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 46,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "res_ca",
+        "line": 46,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 46,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 46,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen low_quartile=rer<0.888",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "low_quartile",
+        "line": 49,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 49,
+        "column": 18
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 49,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "0.8952157",
+        "line": 49,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen high_quartile=rer>1.07",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "high_quartile",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 51,
+        "column": 19
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 51,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1.0857",
+        "line": 51,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_rerXlow",
+        "line": 52,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rer",
+        "line": 52,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 52,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "low_quartile",
+        "line": 52,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_rerXhigh",
+        "line": 53,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rer",
+        "line": 53,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 53,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "high_quartile",
+        "line": 53,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 55,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 55,
+        "column": 11
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 55,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1972",
+        "line": 55,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 55,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 55,
+        "column": 22
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 55,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 55,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "trend_sq",
+        "line": 56,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 56,
+        "column": 14
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 56,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 56,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Creating province FEs (separately for the US and Canadian sides)",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 59,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "string",
+        "value": "\"bc\"",
+        "line": 59,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"ab\"",
+        "line": 59,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"sk\"",
+        "line": 59,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"mb\"",
+        "line": 59,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"on\"",
+        "line": 59,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"qc\"",
+        "line": 59,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\"nb\"",
+        "line": 59,
+        "column": 44
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 59,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 60,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "_ca_cars",
+        "line": 60,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "prov_ab",
+        "line": 60,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 60,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 60,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"`x'\"",
+        "line": 60,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 60,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "res_ca",
+        "line": 60,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 60,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 60,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 61,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "_us_cars",
+        "line": 61,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "prov_ab",
+        "line": 61,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 61,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 61,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"`x'\"",
+        "line": 61,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 61,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "res_ca",
+        "line": 61,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 61,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 61,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Defining varlists",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fe_us_0",
+        "line": 65,
+        "column": 7
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "_ca_cars",
+        "line": 65,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fe_us_1",
+        "line": 66,
+        "column": 7
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 66,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "_us_cars",
+        "line": 66,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp_regdata",
+        "line": 68,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Now province level data, with prov FEs, use 10% under/over",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "eststo",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 72,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp_regdata",
+        "line": 74,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 74,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 75,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "placetype",
+        "line": 75,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"province\"",
+        "line": 75,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "idvar",
+        "line": 77,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 77,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "province",
+        "line": 77,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "res_ca",
+        "line": 77,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 77,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 78,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 78,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mydate",
+        "line": 79,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ym",
+        "line": 79,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 79,
+        "column": 17
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 79,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 79,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "idvar",
+        "line": 80,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "mydate",
+        "line": 80,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "monthly",
+        "line": 80,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "le",
+        "line": 82,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rer",
+        "line": 82,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "leXhigh",
+        "line": 83,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rerXhigh",
+        "line": 83,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "leXlow",
+        "line": 84,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln_rerXlow",
+        "line": 84,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 87,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 87,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 87,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 87,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 88,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 88,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 88,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Baseline regression with no RER information",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 90,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 90,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_crossings",
+        "line": 90,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 90,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 90,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 90,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "trend_sq",
+        "line": 90,
+        "column": 44
+      },
+      {
+        "id": "`'",
+        "value": "`fe_us_`us'",
+        "line": 90,
+        "column": 53
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 90,
+        "column": 64
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 90,
+        "column": 69
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 90,
+        "column": 76
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 90,
+        "column": 78
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 90,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 90,
+        "column": 90
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 90,
+        "column": 92
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 90,
+        "column": 94
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "scalar",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r2_b_",
+        "line": 91,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 91,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 91,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 91,
+        "column": 23
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 91,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 91,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Now adding ln(RER)",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 93,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 93,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_crossings",
+        "line": 93,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "le",
+        "line": 93,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 93,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 93,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 93,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "trend_sq",
+        "line": 93,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`fe_us_`us'",
+        "line": 93,
+        "column": 56
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 93,
+        "column": 67
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 93,
+        "column": 72
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 79
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 93,
+        "column": 81
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 93,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 93,
+        "column": 93
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 95
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 93,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "scalar",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r2_",
+        "line": 94,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 94,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 94,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 94,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 94,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 94,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "scalar",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s_",
+        "line": 95,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 95,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 95,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 95,
+        "column": 20
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 95,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "rmse",
+        "line": 95,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "newey",
+      "line": 96,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 7
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_crossings",
+        "line": 96,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "le",
+        "line": 96,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 96,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 96,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 96,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "trend_sq",
+        "line": 96,
+        "column": 45
+      },
+      {
+        "id": "`'",
+        "value": "`fe_us_`us'",
+        "line": 96,
+        "column": 54
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 96,
+        "column": 65
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 96,
+        "column": 70
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 96,
+        "column": 77
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 96,
+        "column": 79
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 96,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 96,
+        "column": 91
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 96,
+        "column": 93
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 96,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "lag",
+        "line": 96,
+        "column": 101
+      },
+      {
+        "id": "number",
+        "value": "120",
+        "line": 96,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 96,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "eststo",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "contemp_base_",
+        "line": 98,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 98,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 98,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 98,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estadd",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 99,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "r2_b",
+        "line": 99,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r2_b_",
+        "line": 99,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 99,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 99,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 99,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estadd",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 100,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 100,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r2_",
+        "line": 100,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 100,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 100,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 100,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estadd",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 101,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rmse",
+        "line": 101,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "s_",
+        "line": 101,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 101,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 101,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 101,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 105,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 105,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 105,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 105,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 106,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 106,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 106,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 106,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 107,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 107,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_crossings",
+        "line": 107,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "le",
+        "line": 107,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "leXhigh",
+        "line": 107,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "leXlow",
+        "line": 107,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 107,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 107,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 107,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "trend_sq",
+        "line": 107,
+        "column": 62
+      },
+      {
+        "id": "`'",
+        "value": "`fe_us_`us'",
+        "line": 107,
+        "column": 71
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 107,
+        "column": 82
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 107,
+        "column": 87
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 107,
+        "column": 94
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 107,
+        "column": 96
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 107,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 107,
+        "column": 108
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 107,
+        "column": 110
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 107,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "scalar",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 108,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 108,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 108,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "scalar",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rmse",
+        "line": 109,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 109,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "rmse",
+        "line": 109,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "newey",
+      "line": 110,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln_crossings",
+        "line": 110,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "le",
+        "line": 110,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "leXhigh",
+        "line": 110,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "leXlow",
+        "line": 110,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 110,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 110,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "trend",
+        "line": 110,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "trend_sq",
+        "line": 110,
+        "column": 60
+      },
+      {
+        "id": "`'",
+        "value": "`fe_us_`us'",
+        "line": 110,
+        "column": 69
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 110,
+        "column": 80
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "daytrip",
+        "line": 110,
+        "column": 85
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 110,
+        "column": 92
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 110,
+        "column": 94
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 110,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "us",
+        "line": 110,
+        "column": 106
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 110,
+        "column": 108
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 110,
+        "column": 110
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "lag",
+        "line": 110,
+        "column": 116
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 110,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 110,
+        "column": 124
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "eststo",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "contemp_quart_",
+        "line": 111,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`daytrip'",
+        "line": 111,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 111,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`us'",
+        "line": 111,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estadd",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 112,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 112,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 112,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estadd",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 113,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rmse",
+        "line": 113,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rmse",
+        "line": 113,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "linesize",
+        "line": 119,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "250",
+        "line": 119,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 120,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 120,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 120,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "redform_provincelevel.txt",
+        "line": 120,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 120,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 120,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 122,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "contemp_base_1_1",
+        "line": 122,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_base_1_0",
+        "line": 122,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_base_0_1",
+        "line": 122,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_base_0_0",
+        "line": 122,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_quart_1_1",
+        "line": 122,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_quart_1_0",
+        "line": 122,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_quart_0_1",
+        "line": 122,
+        "column": 112
+      },
+      {
+        "id": "identifier",
+        "value": "contemp_quart_0_0",
+        "line": 122,
+        "column": 130
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 122,
+        "column": 149
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 122,
+        "column": 151
+      },
+      {
+        "id": "number",
+        "value": "4.2f",
+        "line": 122,
+        "column": 152
+      },
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 122,
+        "column": 158
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 122,
+        "column": 161
+      },
+      {
+        "id": "number",
+        "value": "4.2f",
+        "line": 122,
+        "column": 162
+      },
+      {
+        "id": "identifier",
+        "value": "scalars",
+        "line": 122,
+        "column": 168
+      },
+      {
+        "id": "identifier",
+        "value": "r2",
+        "line": 122,
+        "column": 176
+      },
+      {
+        "id": "identifier",
+        "value": "starlevels",
+        "line": 123,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 123,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 123,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 123,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 123,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "a",
+        "line": 123,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 123,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 123,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "le",
+        "line": 123,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "leXhigh",
+        "line": 123,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "leXlow",
+        "line": 123,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "mtitles",
+        "line": 123,
+        "column": 57
+      },
+      {
+        "id": "string",
+        "value": "\"usday\"",
+        "line": 123,
+        "column": 65
+      },
+      {
+        "id": "string",
+        "value": "\"usday\"",
+        "line": 123,
+        "column": 73
+      },
+      {
+        "id": "string",
+        "value": "\"caday\"",
+        "line": 123,
+        "column": 81
+      },
+      {
+        "id": "string",
+        "value": "\"caday\"",
+        "line": 123,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"usnight\"",
+        "line": 123,
+        "column": 97
+      },
+      {
+        "id": "string",
+        "value": "\"usnight\"",
+        "line": 123,
+        "column": 107
+      },
+      {
+        "id": "string",
+        "value": "\"canight\"",
+        "line": 123,
+        "column": 117
+      },
+      {
+        "id": "string",
+        "value": "\"canight\"",
+        "line": 123,
+        "column": 127
+      },
+      {
+        "id": "identifier",
+        "value": "title",
+        "line": 123,
+        "column": 138
+      },
+      {
+        "id": "string",
+        "value": "\"Province-level data\"",
+        "line": 123,
+        "column": 144
+      },
+      {
+        "id": "identifier",
+        "value": "compress",
+        "line": 123,
+        "column": 167
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 125,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 125,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 125,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 127,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 127,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 127,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp_regdata.dta",
+        "line": 128,
+        "column": 7
+      }
+    ]
+  }
+]

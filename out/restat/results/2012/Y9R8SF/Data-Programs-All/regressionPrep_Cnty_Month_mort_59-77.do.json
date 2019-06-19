@@ -1,0 +1,9968 @@
+[
+  {
+    "id": "comment",
+    "value": "*************************************************************************",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Almond, Hoynes, and Schanzenbach, \t\t\t\t\t*",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* \"Inside the War on Poverty: The Impact of the Food Stamp Program on Birth Outcomes\" *",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Review of Economics and Statistics, May 2011, Vol. 93, No. 2: 387-403. * ",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*************************************************************************",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* regressionPrep_Cnty_Month_mort_59-77.do;",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\tCreated data for mortality analysis at county level for 59-77;",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\tUses mortality counts and natality counts to form neonatal mortality rate;",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\tPlus merges in other external data;",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "#delimit",
+      "value": "#delimit",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ";",
+        "value": ";",
+        "line": 14,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 15,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "500m",
+        "line": 15,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 16,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 16,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "linesize",
+        "line": 17,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "200",
+        "line": 17,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "disp",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"DateTime: $S_DATE $S_TIME\"",
+        "line": 18,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* NATALITY DATA;",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*\n1) BUILD THE COUNTY - MONTH NATALITY DATA FOR 1959-1977:\nA) Impute natality data prior to 1968: We have county-year level births \n\tdata prior to 1968 and would like county-month level data. \n\tThis is how this section will work:\nA.1) pooling the 1968 & 1969 births data, calculate the fraction of births \n\twithin each calendar month-state-county-year. Where 1968 missing a \n\tcounty or month, use 1969.\nA.2) merge this to natality data from before 1968 by county. \nA.3) now by multiplying the (fraction of births by county-month) by \n\t(number of births in each county-year) we get an imputed number of \n\tbirths for each state-county-year-month where the distribution of \n\tbirths (over county-month) is borrowed from 1968. \nNotes: \n- Race has been dropped from the natality data. \n- We have to be careful when generating the distribution of births over \n\tmonths, we make sure that we do it in such a way, that if we were \n\tto collapse to a year level dataset, we get the same totals back. \n\tIn otherwords, make sure that the probabilities for each year sum \n\tto one.\nB) Now we have data from 1959-1977 at the state-county-year-month level that \n\twe append together and then merge together with the mortality data. \nNote:\n- The mort data had a race restriction. That should be removed for these \n\tmethods.  \nC) Merge the foodstamps data, and create the fsp treatment variable at a \n\tstate-county-year-month level, with the proper third trimester timing. \nD) Collapse data from state-county-year-month level to state-county-quarter \n\tlevel. Make sure to weigh means by births. \nE) Merge in controls (REIS, per capita income, county book, mort rates)\nF) Generate Outcomes\nNote:\n- At this point the regression prep for method 2 (regressions at a \n\tcounty-month level) are complete. \nG) Collapse data to county-year level. \nG.1) SUM: nbirths, bcod* \nG.2) MEAN: codebook vars (black60 urban60 farmlandpct60 lnpop60), \n\ttransfer vars (tranpcret tranpcmcare1 tranpcafdc), per cap income (ripc)\n*/",
+      "line": 23,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* THE FIRST THING TO DO IS IMPUTE DATA FOR THE PRE1968 DATA WHERE WE ONLY HAVE COUNTY YEAR ;",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* FIRST WE NEED TO CREATE THE DISTRIBUTION OF BIRTHS ACROSS MONTHS AND COUNTIES USING ",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "number",
+      "value": "1968",
+      "line": 30,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AND",
+        "line": 30,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "WHERE",
+        "line": 30,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "NECESSARY",
+        "line": 30,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1969.",
+        "line": 30,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 31,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 31,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 31,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 31,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 31,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "natality_main.dta",
+        "line": 31,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 32,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 32,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 32,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 32,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 32,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 32,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 32,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 41
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 32,
+        "column": 49
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 32,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 32,
+        "column": 53
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 32,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 33,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 33,
+        "column": 17
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 33,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1969",
+        "line": 33,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 34,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 34,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 34,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 34,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 35,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 35,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 35,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 35,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 35,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 35,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 35,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* USE 1969 WHERE 1968 IS NOT AVAILABLE. ;",
+    "line": 37,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 38,
+      "column": 29
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 38,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "month",
+            "line": 38,
+            "column": 4
+          },
+          {
+            "id": "identifier",
+            "value": "stfips",
+            "line": 38,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "countyfips",
+            "line": 38,
+            "column": 17
+          }
+        ]
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 38,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 38,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 38,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 1968 IS PRETTY GOOD, BUT WE GAIN A FEW NEW COUNTY MONTH RACES WITH 1969 ; ",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 40,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* ARGUS! WE DONT HAVE ALL MONTHS HERE!! ;",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 42,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 43,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 44,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 44,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 44,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 45,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 45,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 46,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* NOT ALL MONTHS ARE HERE. NEED TO GENERATE THOSE MISSING TO ZERO ;",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 49,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 50,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 50,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 51,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 51,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 51,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 51,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "expand",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "12",
+        "line": 52,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 53,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 53,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 54,
+      "column": 23
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 54,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "stfips",
+            "line": 54,
+            "column": 4
+          },
+          {
+            "id": "identifier",
+            "value": "countyfips",
+            "line": 54,
+            "column": 11
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 54,
+        "column": 27
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 54,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 55,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 55,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 55,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 56,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 56,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 56,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 56,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 56,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 57,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 58,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 58,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 58,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 58,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 58,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 59,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 60,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 61,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* NOW CREATE THE COUNTY MONTH DISTRIBUTION;",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 64,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 64,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 65,
+      "column": 23
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 65,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "stfips",
+            "line": 65,
+            "column": 4
+          },
+          {
+            "id": "identifier",
+            "value": "countyfips",
+            "line": 65,
+            "column": 11
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totBirths",
+        "line": 65,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 65,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 65,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pbirths",
+        "line": 66,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 66,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 66,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "totBirths",
+        "line": 66,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 67,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 67,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 67,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "pbirths",
+        "line": 67,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* IF THE DISTRIBUTION ACROSS MONTHS SUMMS TO ONE, THE NUMBER OF COUNTIES (DIVIDED BY 12)",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "SHOULD",
+      "line": 69,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "EQUAL",
+        "line": 69,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 69,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "SUM",
+        "line": 69,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "OF",
+        "line": 69,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "PROBABILITIES.",
+        "line": 69,
+        "column": 26
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 69,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "NOTICE",
+        "line": 69,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "THAT",
+        "line": 69,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 69,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "ARE",
+        "line": 69,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "CAREFUL",
+        "line": 69,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 69,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "DO",
+        "line": 69,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "THIS",
+        "line": 69,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "RIGHT",
+        "line": 70,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "HERE",
+        "line": 70,
+        "column": 8
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "SO",
+        "line": 70,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "THAT",
+        "line": 70,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "WHEN",
+        "line": 70,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 70,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "USE",
+        "line": 70,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 70,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "RESULTING",
+        "line": 70,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "DATASET",
+        "line": 70,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "OF",
+        "line": 70,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "THIS",
+        "line": 70,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "ENTIRE",
+        "line": 70,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "PROGRAM",
+        "line": 70,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "BUT",
+        "line": 71,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "AT",
+        "line": 71,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 71,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "COUNTY",
+        "line": 71,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 71,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "LEVEL",
+        "line": 71,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "ITS",
+        "line": 71,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "JUST",
+        "line": 71,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "SUMMING",
+        "line": 71,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "WHAT",
+        "line": 71,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 71,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "HAVE",
+        "line": 71,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "SPLIT",
+        "line": 71,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "UP",
+        "line": 71,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "INTO",
+        "line": 71,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "MONTHS",
+        "line": 71,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "AND",
+        "line": 72,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 72,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "END",
+        "line": 72,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "UP",
+        "line": 72,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "WITH",
+        "line": 72,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 72,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "ORIGINAL",
+        "line": 72,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "DATA.",
+        "line": 72,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 73,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 73,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "freq",
+        "line": 73,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 73,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "pbirths",
+        "line": 73,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 74,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 75,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 75,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 76,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 76,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 77,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* USE THE 1959-1968 NATALITY DATA THAT IS ONLY BY COUNTY YEAR ;",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cry59births",
+        "line": 80,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 81,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 81,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 81,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* EVERY MONTH CONTAINS THE SAME DATA */",
+    "line": 81,
+    "column": 19
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 82,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "race",
+        "line": 82,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 82,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 82,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* I CHECKED THIS OUT, THIS IS ALL RACES */",
+    "line": 82,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 83,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 83,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 83,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "nbirthsc",
+        "line": 83,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 84,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 84,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 85,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* NOW MERGE THE TWO: DISTRIBUTION OF BIRTHS WITH PRE 1968 BIRTHS - THIS JOINBY SHOULD MAKE ",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "THE",
+      "line": 88,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "COUNTY",
+        "line": 88,
+        "column": 6
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 88,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 88,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "LEVEL",
+        "line": 88,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "BIRTHS",
+        "line": 88,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "DATASET",
+        "line": 88,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "INTO",
+        "line": 88,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "A",
+        "line": 88,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "STATE",
+        "line": 88,
+        "column": 46
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 88,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "RACE",
+        "line": 88,
+        "column": 52
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 88,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "COUNTY",
+        "line": 88,
+        "column": 57
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 88,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 88,
+        "column": 64
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 88,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "MONTH",
+        "line": 88,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "LEVEL",
+        "line": 88,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "DATASET",
+        "line": 88,
+        "column": 81
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "joinby",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 89,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 89,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 89,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 89,
+        "column": 32
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "unmatched",
+        "line": 89,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "both",
+        "line": 89,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "shell",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rm",
+        "line": 90,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "temp.dta",
+        "line": 90,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 91,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WE ARE MISSING SOME DISTRIBUTION COUNTY MONTHS - WE LOOK OKAY HERE ;",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 93,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 93,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 93,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 93,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 93,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 93,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 94,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 94,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 94,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 94,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 95,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* IMPUTE THE NUMBER OF BIRTHS;",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 98,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pbirths",
+        "line": 98,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 98,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "nbirthsc",
+        "line": 98,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 99,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 100,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 101,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 101,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 101,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 101,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 102,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 102,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 102,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 102,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 103,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 103,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 103,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 103,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 103,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* CHECK LEVEL OF DATA;",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "report",
+        "line": 105,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 105,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 105,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 105,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 105,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imputedbirths",
+        "line": 106,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 106,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 107,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* APPEND NATALITY DATA, SO THAT WE USE ALL YEARS 1959-1977.  ;",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* MERGE ON NATILITY FILE ;",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 113,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 113,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 113,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 113,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 113,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "natality_main.dta",
+        "line": 113,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 114,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 114,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 114,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 114,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 114,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 114,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 114,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 114,
+        "column": 37
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 114,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 114,
+        "column": 41
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 114,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 114,
+        "column": 49
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 114,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 114,
+        "column": 53
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 114,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 114,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 115,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 115,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 115,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 115,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 116,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 116,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 116,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 116,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 116,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 116,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 116,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 117,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 118,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "imputedbirths",
+        "line": 118,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 119,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* GET RID OF ALASKA MAN! ;",
+    "line": 120,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 121,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 121,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 121,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 121,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* HOW DOES THE APPEND LOOK? ;",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 123,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 123,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 123,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 123,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* I AM A LITTLE WORRIED ABOUT THIS APPEND. THERE LOOKS TO BE SOME SEAMING HERE BETWEEN 1967 AND ",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "number",
+      "value": "1968.",
+      "line": 125,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 125,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "THINK",
+        "line": 125,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "THERE",
+        "line": 125,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "IS",
+        "line": 125,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "SOME",
+        "line": 125,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "TRUE",
+        "line": 125,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "FLUCTUATION",
+        "line": 125,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "IN",
+        "line": 125,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 125,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "DATA",
+        "line": 125,
+        "column": 54
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "BUT",
+        "line": 125,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 125,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "AM",
+        "line": 125,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "UNSURE",
+        "line": 125,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "HOW",
+        "line": 125,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 125,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "TELL",
+        "line": 125,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "WHAT",
+        "line": 126,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "PART",
+        "line": 126,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "OF",
+        "line": 126,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "IT",
+        "line": 126,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "IS",
+        "line": 126,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "MY",
+        "line": 126,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "MEASUREMENT",
+        "line": 126,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "ERROR.",
+        "line": 126,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "SOMEONE",
+        "line": 126,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "CALL",
+        "line": 126,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "GARY",
+        "line": 126,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "SOLON.",
+        "line": 126,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 127,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1966",
+        "line": 127,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 127,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 127,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1969",
+        "line": 127,
+        "column": 45
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 22
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 127,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 127,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 127,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 127,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* THE IDEA HERE IS THAT BIRTHS GIVE US THE FULL UNIVERSE OF WHAT IS POSSIBLE. ",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "SO",
+      "line": 130,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 130,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "USE",
+        "line": 130,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "IT",
+        "line": 130,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "AS",
+        "line": 130,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 130,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "MAXIMUM",
+        "line": 130,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "NUMBER",
+        "line": 130,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "OF",
+        "line": 130,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "CELLS",
+        "line": 130,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 130,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "CAN",
+        "line": 130,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "HAVE.",
+        "line": 130,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "THEREFORE",
+        "line": 130,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 130,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "NEED",
+        "line": 130,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 131,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "EXPAND",
+        "line": 131,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 131,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 131,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "LEVEL",
+        "line": 131,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "OF",
+        "line": 131,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 131,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "MORTALITY",
+        "line": 131,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "FILE.",
+        "line": 131,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "THEN",
+        "line": 131,
+        "column": 48
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "WHERE",
+        "line": 131,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 131,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "MORTALITY",
+        "line": 131,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "DATA",
+        "line": 132,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "DOES",
+        "line": 132,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "NOT",
+        "line": 132,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "EXIST",
+        "line": 132,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 132,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "SET",
+        "line": 132,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "IT",
+        "line": 132,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 132,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "ZERO.",
+        "line": 132,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "expand",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 133,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 134,
+      "column": 38
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 134,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "year",
+            "line": 134,
+            "column": 8
+          },
+          {
+            "id": "identifier",
+            "value": "month",
+            "line": 134,
+            "column": 13
+          },
+          {
+            "id": "identifier",
+            "value": "stfips",
+            "line": 134,
+            "column": 19
+          },
+          {
+            "id": "identifier",
+            "value": "countyfips",
+            "line": 134,
+            "column": 26
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "byte",
+        "line": 134,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 134,
+        "column": 47
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 134,
+        "column": 56
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 134,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 134,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 135,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 135,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 135,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 135,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 135,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 136,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 137,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 137,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rm",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imputedbirths.dta",
+        "line": 138,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 139,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* MORTALITY DATA;",
+    "line": 142,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 143,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mortalityCounts",
+        "line": 145,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 146,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 146,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 146,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 146,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 147,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 147,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 147,
+        "column": 18
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 147,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 147,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 147,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 148,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 148,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 148,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1959",
+        "line": 148,
+        "column": 16
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 148,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 148,
+        "column": 23
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 148,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1977",
+        "line": 148,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 149,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 149,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 149,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 149,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 149,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 150,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "bcod",
+        "line": 150,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 150,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 150,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 150,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 150,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 150,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 150,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 150,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 151,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* THE MORTALITY DATA IS ALSO AT A NEONATAL LEVEL. SO WE WONT GET UNIQUE MERGING HERE. ;",
+    "line": 152,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 153,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 153,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 153,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 153,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 153,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 153,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 153,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* THERE ARE LOTS OF NATALITY OBS NOT MERGING, BUT NEARLY ALL THE MORTALITY OBS ARE MERGING. ;",
+    "line": 154,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 155,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* NOT LOSING ALL THAT MANY ANYMORE!! ;",
+    "line": 156,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 157,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 157,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 157,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 157,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 158,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 158,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 158,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 158,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* NUMBER OF BIRTHS BY MERGE STATUS;",
+    "line": 159,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 160,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 160,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 160,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 160,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 160,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 161,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 161,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 161,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 161,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 161,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 162,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 162,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 162,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 163,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 163,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 163,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 163,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 163,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 164,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 164,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 164,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 164,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 165,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 166,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 167,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 167,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 167,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 167,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "bcod",
+        "line": 167,
+        "column": 25
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 167,
+        "column": 29
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 167,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 168,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 168,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 168,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 168,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 168,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 168,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 169,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 170,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 171,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 172,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 172,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 172,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 172,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 173,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 173,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 173,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 173,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rm",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp.dta",
+        "line": 174,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 176,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* GENERATE TOTAL POPULATION SIZE BEFORE DROPPING - SHOULD WE PUT THIS EVEN BEFORE ",
+    "line": 177,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "THE",
+      "line": 178,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "OTHER",
+        "line": 178,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "MERGES?",
+        "line": 178,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "NO.",
+        "line": 178,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "BUT",
+        "line": 178,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 178,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "NEED",
+        "line": 178,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "THIS",
+        "line": 178,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "AFTER",
+        "line": 178,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 178,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "SAVE",
+        "line": 178,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "SO",
+        "line": 178,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "GENERATE",
+        "line": 178,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "A",
+        "line": 178,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "VARIABLE",
+        "line": 178,
+        "column": 69
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WE DO A BIT OF DROPING IN THE MORT DATA BEFORE DOING THIS. I THIS KOSHER? SURE, ITS JUST ALASKA ;",
+    "line": 179,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 180,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 181,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 181,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 181,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 181,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 181,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 181,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 182,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totBirths",
+        "line": 182,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 182,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 182,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 184,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* MERGE FOODSTAMPS DATA ;",
+    "line": 185,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 186,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 188,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 188,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 188,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 189,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 189,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 189,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* MERGE FOODSTAMPS FILE ;",
+    "line": 190,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 191,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 191,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 191,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "fs_month",
+        "line": 191,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "fs_year",
+        "line": 191,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "countyname",
+        "line": 191,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 191,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "foodstamps",
+        "line": 191,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 192,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 192,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 192,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 193,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 193,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 193,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 193,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 193,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WE ARE LOOSING some OBS FROM THE FOODSTAMP DATA. GOING TO IGNORE THIS. ;",
+    "line": 194,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 195,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 195,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 196,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 196,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 196,
+        "column": 10
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 196,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 196,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 196,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 197,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 197,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 197,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "countyname",
+        "line": 197,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 197,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 197,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 197,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 198,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 198,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 198,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 198,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 199,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 199,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 200,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "shell",
+      "line": 201,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rm",
+        "line": 201,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "temp.dta",
+        "line": 201,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 203,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* RESTRICTIONS ;",
+    "line": 204,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 205,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* DROP MISSING FOODSTAMP DATA ;",
+    "line": 206,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 207,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fs_year",
+        "line": 207,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 207,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 207,
+        "column": 20
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 207,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "fs_month",
+        "line": 207,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 207,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 207,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* DROP POST NEONATALS ;",
+    "line": 208,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 209,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "neonatal",
+        "line": 209,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 209,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 209,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 210,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 211,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 211,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 211,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 211,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 212,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 212,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 212,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 212,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 214,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* GENERATE FSP TREATMENT VARIABLE. ;",
+    "line": 215,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 216,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* fs start;",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time_fs",
+        "line": 218,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fs_year",
+        "line": 218,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 218,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1959",
+        "line": 218,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 218,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 218,
+        "column": 30
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 218,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "fs_month",
+        "line": 218,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* month of third trimester;",
+    "line": 219,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 220,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time_third",
+        "line": 220,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 220,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 220,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1959",
+        "line": 220,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 220,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 220,
+        "column": 30
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 220,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 220,
+        "column": 35
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 220,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 220,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 221,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "byte",
+        "line": 221,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "fsp",
+        "line": 221,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "time_fs",
+        "line": 221,
+        "column": 17
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 221,
+        "column": 24
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 221,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "time_third",
+        "line": 221,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 222,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 222,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "fsp",
+        "line": 222,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"fsp three months before birth month\"",
+        "line": 222,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 223,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 225,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* COLLAPSE DATA TO A QUARTER LEVEL ;",
+    "line": 226,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 227,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtr",
+        "line": 228,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 228,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 228,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 228,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 228,
+        "column": 31
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 228,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 228,
+        "column": 38
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 228,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 228,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtr",
+        "line": 229,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 229,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 229,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 229,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 229,
+        "column": 31
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 229,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 229,
+        "column": 38
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 229,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 229,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 230,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtr",
+        "line": 230,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 230,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 230,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 230,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 230,
+        "column": 31
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 230,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 230,
+        "column": 38
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 230,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 230,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 231,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "qtr",
+        "line": 231,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 231,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 231,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 231,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 231,
+        "column": 32
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 231,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 231,
+        "column": 39
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 231,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 231,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 232,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 232,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 232,
+        "column": 13
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 232,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1959",
+        "line": 232,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 232,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 232,
+        "column": 24
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 232,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "qtr",
+        "line": 232,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* COLLAPSE TO COUNTY LEVEL. ITS CLAIMED THAT WEIGHTS DO NOT WORK WITH SUMS IN THE COLLAPSE",
+    "line": 233,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "COMMAND.",
+      "line": 234,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 234,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "DO",
+        "line": 234,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "NOT",
+        "line": 234,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "BELIEVE",
+        "line": 234,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "THIS.",
+        "line": 234,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "BUT",
+        "line": 234,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "IF",
+        "line": 234,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 234,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "FILES",
+        "line": 234,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "MERGE",
+        "line": 234,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "PROPERLY",
+        "line": 234,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 234,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "DONT",
+        "line": 234,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "MIND.",
+        "line": 234,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 235,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 235,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 235,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 235,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tempCollapse1",
+        "line": 236,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 236,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 237,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 237,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 237,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "bcod",
+        "line": 237,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 237,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 237,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 237,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 237,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 237,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 238,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 238,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 238,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 238,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tempCollapse2",
+        "line": 239,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 239,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 240,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 241,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tempCollapse1",
+        "line": 241,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 242,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "fsp",
+        "line": 242,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 242,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 242,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 242,
+        "column": 37
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aw",
+        "line": 242,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 242,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 242,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 242,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 242,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 243,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 243,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 243,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 243,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 243,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "tempCollapse2",
+        "line": 243,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 244,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 244,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 245,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 245,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 245,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 245,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 245,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 245,
+        "column": 39
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 245,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 245,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 246,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 246,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rm",
+      "line": 247,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tempCollapse1.dta",
+        "line": 247,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rm",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tempCollapse2.dta",
+        "line": 248,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* DOES YEAR REALLY COME OUT UNSCATHED WITH A WEIGHT? ;",
+    "line": 249,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 250,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 250,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 251,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 252,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 253,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 253,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 253,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 253,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 254,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 254,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 254,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 254,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 256,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* HERE I WANT TO MERGE DATA FROM OTHER FILES, REIS, PERCAPTIA INCOME AND COUNTY CONTROLS.;",
+    "line": 257,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************************************************************;",
+    "line": 258,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*MERGE IN TRANSFER DATA;",
+    "line": 259,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 260,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 260,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 260,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 260,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 261,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 261,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 261,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 261,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 261,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "reistran.dta",
+        "line": 261,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 262,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 262,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 262,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 263,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 263,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 263,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 263,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 263,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 263,
+        "column": 35
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 263,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 263,
+        "column": 40
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 263,
+        "column": 44
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 263,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1959",
+        "line": 263,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 263,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 263,
+        "column": 53
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 263,
+        "column": 57
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 263,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "1977",
+        "line": 263,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 264,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 264,
+        "column": 9
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 264,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 264,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 265,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 265,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*MERGE IN PER CAPITA INCOME DATA;",
+    "line": 267,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 268,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 268,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 268,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 268,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 269,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 269,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 269,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 269,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 269,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "reisinc",
+        "line": 269,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 270,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 270,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 270,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 271,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 271,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 271,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 271,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 271,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 271,
+        "column": 35
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 271,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 271,
+        "column": 40
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 271,
+        "column": 44
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 271,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1959",
+        "line": 271,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 271,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 271,
+        "column": 53
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 271,
+        "column": 57
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 271,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "1977",
+        "line": 271,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 272,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 272,
+        "column": 9
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 272,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 272,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 273,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 273,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*MERGE 1960 Countybook Controls;",
+    "line": 275,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 276,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 276,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 276,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 277,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 277,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 277,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 277,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "fscbdata_short",
+        "line": 277,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 278,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 278,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 279,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 279,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 279,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 279,
+        "column": 27
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 279,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 279,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 280,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 280,
+        "column": 9
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 280,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 280,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 281,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 281,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "inc3k60",
+        "line": 281,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "rural60",
+        "line": 281,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "age560",
+        "line": 281,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "age6560",
+        "line": 281,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "employagpct60",
+        "line": 281,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 283,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 284,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 284,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 284,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 284,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 285,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 285,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 285,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 285,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 287,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* IN ADDITION TO THE CONTROLS JUST ADDED, WE NEED TO MAKE SOME OTHER VARIABLES THAT ",
+    "line": 288,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "WE",
+      "line": 289,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ARE",
+        "line": 289,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "GOING",
+        "line": 289,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 289,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "USE",
+        "line": 289,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "IN",
+        "line": 289,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 289,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "MAIN",
+        "line": 289,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "REGRESSIONS.",
+        "line": 289,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 290,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/* SOUTHERN STATES\n  Alabama                 1       South\n  Arkansas                5       South\n  Delaware                10      South\n  District of Columbia    11      South\n  Florida                 12      South\n  Georgia                 13      South\n  Kentucky                21      South\n  Louisiana               22      South\n  Maryland                24      South\n  Mississippi             28      South\n  North Carolina          37      South\n  Oklahoma                40      South\n  South Carolina          45      South\n  Tennessee               47      South\n  Texas                   48      South\n  Virginia                51      South\n  West Virginia           54      South\n  */",
+      "line": 291,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 292,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "south",
+        "line": 292,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 292,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 293,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "south",
+        "line": 293,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 293,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 293,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 293,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 293,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 293,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 293,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 293,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "13",
+        "line": 293,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "21",
+        "line": 293,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "22",
+        "line": 293,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "24",
+        "line": 293,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "28",
+        "line": 293,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "37",
+        "line": 293,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 293,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 293,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "47",
+        "line": 293,
+        "column": 63
+      },
+      {
+        "id": "number",
+        "value": "48",
+        "line": 293,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "51",
+        "line": 293,
+        "column": 69
+      },
+      {
+        "id": "number",
+        "value": "54",
+        "line": 293,
+        "column": 72
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 293,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 294,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "south",
+        "line": 294,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 294,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 294,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 294,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`south'",
+        "line": 294,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 295,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* HERE USED TO LIVE A BUNCH OF CONTROL VARIABLES. THESE CONSISTED OF DUMMIES AND",
+    "line": 296,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "INTERACTIONS",
+      "line": 297,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "THAT",
+        "line": 297,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "CAN",
+        "line": 297,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "BE",
+        "line": 297,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "CONSTRUCTED",
+        "line": 297,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "USING",
+        "line": 297,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "EXISTING",
+        "line": 297,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "DATA.",
+        "line": 297,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "SINCE",
+        "line": 297,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "IT",
+        "line": 297,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "IS",
+        "line": 297,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "A",
+        "line": 297,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "WASTE",
+        "line": 298,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "OF",
+        "line": 298,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "DISK",
+        "line": 298,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "SPACE",
+        "line": 298,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 298,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "SAVE",
+        "line": 298,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "THESE",
+        "line": 298,
+        "column": 30
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 298,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "CREATE",
+        "line": 298,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "THEM",
+        "line": 298,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "WHERE",
+        "line": 298,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 298,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "NEED",
+        "line": 298,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "THEM",
+        "line": 298,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "IN",
+        "line": 299,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 299,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "REGRESSION",
+        "line": 299,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "FILE.",
+        "line": 299,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "CHECK",
+        "line": 299,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "IT",
+        "line": 299,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "FOR",
+        "line": 299,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "DUMMIES",
+        "line": 299,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "AND",
+        "line": 299,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "INTERACTIONS.",
+        "line": 299,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "BUT",
+        "line": 299,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "REMEMBER",
+        "line": 300,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "THAT",
+        "line": 300,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "WE",
+        "line": 300,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "ONLY",
+        "line": 300,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "WANT",
+        "line": 300,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "TO",
+        "line": 300,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "MOVE",
+        "line": 300,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "TASKS",
+        "line": 300,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "INTO",
+        "line": 300,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 300,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "REG",
+        "line": 300,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "FILES",
+        "line": 300,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "THAT",
+        "line": 300,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "ARENT",
+        "line": 301,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "ACTUALLY",
+        "line": 301,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "USING",
+        "line": 301,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "NEW",
+        "line": 301,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "DATA.",
+        "line": 301,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "DO",
+        "line": 301,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "NOT",
+        "line": 301,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "MOVE",
+        "line": 301,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "MERGES",
+        "line": 301,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "OR",
+        "line": 301,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "OTHER",
+        "line": 301,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "THINGS",
+        "line": 301,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "THERE",
+        "line": 301,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "OR",
+        "line": 302,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "FACE",
+        "line": 302,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "THE",
+        "line": 302,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "WRATH",
+        "line": 302,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "THAT",
+        "line": 302,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "IS",
+        "line": 302,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "ANKUR.",
+        "line": 302,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 304,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* DONT FORGET WE NEED THE BIRTH TOTALS FOR EACH SUBSAMPLE ;",
+    "line": 305,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 306,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 307,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totBirths",
+        "line": 307,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`totBirths'",
+        "line": 307,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 309,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Generate outcome variables by Cause of Death;",
+    "line": 310,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1=all, 2=nutrition1, 3=other1, 4=nutrition2, 5=other2, 6=accidents;",
+    "line": 311,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 312,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 313,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome1",
+        "line": 313,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 313,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 313,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 313,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 313,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 314,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome2",
+        "line": 314,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 314,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 314,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 314,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod5",
+        "line": 314,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 315,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome3",
+        "line": 315,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 315,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod6",
+        "line": 315,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 315,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 315,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 316,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome4",
+        "line": 316,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 316,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 316,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 316,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod10",
+        "line": 316,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 317,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome5",
+        "line": 317,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 317,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod11",
+        "line": 317,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 317,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 317,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 318,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome6",
+        "line": 318,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "bcod15",
+        "line": 318,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 319,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ndeaths",
+        "line": 319,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 319,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 319,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 319,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 319,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 320,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 320,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 320,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 320,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 320,
+        "column": 11
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 320,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 320,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "outcomeX",
+        "line": 320,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "outcomeX",
+        "line": 320,
+        "column": 33
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 320,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 320,
+        "column": 42
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 320,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 320,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 321,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 321,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 321,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 321,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 321,
+        "column": 11
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 321,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 321,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "lnoutcomeX",
+        "line": 321,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 321,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "outcomeX",
+        "line": 321,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WHAT DOES THE OUTCOME VARIABLE LOOK LIKE? ;",
+    "line": 322,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 323,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 323,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 323,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 323,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 323,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 323,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 324,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 324,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 324,
+        "column": 22
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 324,
+        "column": 29
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 324,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 324,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 324,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "outcome",
+        "line": 324,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 324,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 325,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* NOW LETS TAKE A LOOK AT THE NUMBER OF DEATHS. ;",
+    "line": 326,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 327,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 327,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 327,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 327,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "ndeaths",
+        "line": 327,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 328,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 328,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 328,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 328,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 328,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 330,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 331,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 333,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* THIS DATASET IS FINE FOR METHOD 2. ;",
+    "line": 334,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 335,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 336,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beforeDrop",
+        "line": 336,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 336,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* DROP SMALLISH COUNTIES - AFTER COLLAPSING TO QUARTER LEVEL;",
+    "line": 337,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 338,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 338,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 338,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 338,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 338,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 338,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 338,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 338,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 339,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 340,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 340,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 340,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 340,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 341,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 341,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 341,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 341,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 342,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mortality59_77_CntyMnth",
+        "line": 342,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 342,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 343,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 345,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* WE NEED A NEW DATASET FOR METHOD 1 THAT IS AT THE COUNTY YEAR LEVEL ;",
+    "line": 346,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************************************************************************;",
+    "line": 347,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* FIRST SUMM BIRTHS. ;",
+    "line": 348,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 349,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beforeDrop",
+        "line": 349,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 350,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 350,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 350,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 350,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 351,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 351,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 351,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "bcod",
+        "line": 351,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 351,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 351,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 351,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 351,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 351,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 352,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 352,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 352,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 353,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* SUMM THE CONTROLS ;",
+    "line": 354,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 355,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beforeDrop",
+        "line": 355,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 356,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 356,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 356,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 356,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* THESE ARE CONSTANT OVER MONTHS, SO DONT WORRY ABOUT WEIGHTING IT. ;",
+    "line": 357,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 358,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 358,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "black60",
+        "line": 358,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "urban60",
+        "line": 358,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "farmlandpct60",
+        "line": 358,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "pop60",
+        "line": 358,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "tranpcret",
+        "line": 358,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "tranpcmcare1",
+        "line": 358,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "tranpcafdc",
+        "line": 358,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "ripc",
+        "line": 358,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "totBirths",
+        "line": 358,
+        "column": 92
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 359,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 359,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 359,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 359,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 360,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 360,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 360,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 361,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* DONT FORGET TO COLLAPSE FSP ;",
+    "line": 362,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 363,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beforeDrop",
+        "line": 363,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 364,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 364,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 364,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 364,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 365,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 365,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "fsp",
+        "line": 365,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 365,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 365,
+        "column": 37
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 365,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 365,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 365,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 365,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 365,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 366,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stfips",
+        "line": 366,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "countyfips",
+        "line": 366,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 366,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 366,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 366,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 366,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "shell",
+      "line": 367,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rm",
+        "line": 367,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "temp.dta",
+        "line": 367,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "temp2.dta",
+        "line": 367,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 368,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 368,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Generate outcome variables by Cause of Death;",
+    "line": 369,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1=all, 2=nutrition1, 3=other1, 4=nutrition2, 5=other2, 6=accidents;",
+    "line": 370,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 371,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome1",
+        "line": 371,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 371,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 371,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 371,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 371,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 372,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome2",
+        "line": 372,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 372,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 372,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 372,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod5",
+        "line": 372,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 373,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome3",
+        "line": 373,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 373,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod6",
+        "line": 373,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 373,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 373,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 374,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome4",
+        "line": 374,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 374,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 374,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 374,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "bcod10",
+        "line": 374,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 375,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome5",
+        "line": 375,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 375,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "bcod11",
+        "line": 375,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 375,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 375,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 376,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outcome6",
+        "line": 376,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "bcod15",
+        "line": 376,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 377,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ndeaths",
+        "line": 377,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rsum",
+        "line": 377,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "bcod1",
+        "line": 377,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 377,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "bcod16",
+        "line": 377,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 378,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 378,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 378,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 378,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 378,
+        "column": 11
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 378,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 378,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "outcomeX",
+        "line": 378,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "outcomeX",
+        "line": 378,
+        "column": 33
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 378,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 378,
+        "column": 42
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 378,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 378,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 379,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 379,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 379,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 379,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 379,
+        "column": 11
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 379,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 379,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "lnoutcomeX",
+        "line": 379,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 379,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "outcomeX",
+        "line": 379,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* WHAT DOES THE OUTCOME VARIABLE LOOK LIKE? ;",
+    "line": 380,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 381,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 381,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 381,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 381,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 381,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 381,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 382,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 382,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 382,
+        "column": 22
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 382,
+        "column": 29
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 382,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 382,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 382,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "outcome",
+        "line": 382,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 382,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "}",
+      "value": "}",
+      "line": 383,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* NOW LETS TAKE A LOOK AT THE NUMBER OF DEATHS. ;",
+    "line": 384,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 385,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 385,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 385,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 385,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "ndeaths",
+        "line": 385,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 386,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 386,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 386,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 386,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 386,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* DROP SMALLISH COUNTIES - AFTER COLLAPSING TO YEAR LEVEL;",
+    "line": 388,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 389,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 389,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 389,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 389,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 389,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nbirths",
+        "line": 389,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 389,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 389,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 391,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summ",
+      "line": 392,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* WE HAVE A NUMBER OF OBS PROBLEM - COMPARE THIS TO PREVIOUS ITERATIONS ;",
+    "line": 393,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 394,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 394,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 394,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 394,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 395,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1968",
+        "line": 395,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 395,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 395,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 397,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mortality59_77_CntyYr",
+        "line": 397,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 397,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rm",
+      "line": 399,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beforeDrop.dta",
+        "line": 399,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "disp",
+      "line": 401,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"DateTime: $S_DATE $S_TIME\"",
+        "line": 401,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 402,
+      "column": 1
+    }
+  }
+]

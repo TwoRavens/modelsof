@@ -1,0 +1,4356 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n==========================================================================\nFile-Name:    anchecksp.do                         \nDate:         May 24th, 2009                                    \nAuthor:       Fernando Martel                                 \nPurpose:      Check the sample of country and years used by the author.\n              On page 865 the article states that the sample includes 168 \n              sovereign countries (i.e members of WB or UN, correspondence \n              with author) with population over 200,000 (in 2000?), yet \n              the ANNUAL file contains 169 countries.  \n              The extra country is CYP.  It has annual data but for some \n              reason in quinquennial data all data except Polity are missing. \n              Check missingness and missingness patterns.\nData Input:   - ross1y\n              Created from main_replication_data.dta\n              Received from author via e-mail Feb 25th 2007.  \n              Contains ANNUAL data used in the paper, except for HIV data \n              and democratic years.\n              Data spans 1965 to 2000.\n              ross1y contains standardised country codes added by crmaster.do\n              - ross5y\n              cretaed from replication data - 5 year panels.dta\n              Received from author via e-mail Aug 18th 2008.  \n              Data spans 1970 to 2000\n              ross5y contains standardised country codes added by crmaster.do\n              - aclp\n              Przeworski et als regime data.\nOutput File:  None\nData Output:  None                                   \nPrevious file:crmaster.do (creates aclp ross1y and ross5y)\n              anmaster.do \nStatus:       Complete                                     \nMachine:      IBM, X41 tablet running Windows XP spck 3                                \n**************************************************************************\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 4,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 5,
+        "column": 1
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 5,
+        "column": 2
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "Users",
+        "line": 5,
+        "column": 4
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Fernando",
+        "line": 5,
+        "column": 10
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Documents",
+        "line": 5,
+        "column": 19
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "docs",
+        "line": 5,
+        "column": 29
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "research_projects",
+        "line": 5,
+        "column": 34
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Replication",
+        "line": 5,
+        "column": 52
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "analysis",
+        "line": 5,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$path\"",
+        "line": 6,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "************************************************************************",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Define local varlist",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************************************************************************",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "#delimit",
+      "value": "#delimit",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ";",
+        "value": ";",
+        "line": 11,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rossvars",
+        "line": 12,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\" logCMRwdi smallstate logCMRwdi_1 logIMRunicef_1 logIMRwdi_1 \n logGDPcap_1 logHIV_1 logDen_1 GDPgrowth_1 Polity_1  logDEMYRS_1 \n transition_1\"",
+        "line": 12,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rossregfe",
+        "line": 13,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"logCMRwdi logGDPcap_1 logHIV_1 logDen_1 \n GDPgrowth_1 Polity_1 \"",
+        "line": 13,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rossregldv",
+        "line": 14,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"logCMRwdi logCMRwdi_1 logGDPcap_1 logHIV_1 logDen_1\n GDPgrowth_1 logDEMYRS_1\"",
+        "line": 14,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$rossvars\"",
+        "line": 15,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$rossregfe\"",
+        "line": 16,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$rossregldv\"",
+        "line": 17,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "#delimit",
+      "value": "#delimit",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cr",
+        "line": 18,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "************************************************************************",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Check sampling frame for countries ",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 168 sovereign countries (i.e members of WB or UN, author email)",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Pop > 200,000 (in what year?)",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************************************************************************",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 25,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 25,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 25,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 25,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 25,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Check population threshold, should be sovereign ",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* There are country years with populaton less than 200,000",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// ",
+    "line": 29,
+    "column": 30
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 29,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "population",
+        "line": 29,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 29,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "200000",
+        "line": 29,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* If year criteria was applied was > 1993 no problem",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 32,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "population",
+        "line": 32,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 32,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "200000",
+        "line": 32,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 32,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 31
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1993",
+        "line": 32,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 33,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "population",
+        "line": 33,
+        "column": 10
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 33,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "200000",
+        "line": 33,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 33,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 31
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 33,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1994",
+        "line": 33,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Count number of countries in annual data",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "levelsof",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 36,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 36,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 36,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 36,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp1",
+        "line": 37,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 37,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "l",
+        "line": 38,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 38,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 38,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 38,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 38,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp1",
+        "line": 39,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`temp1'",
+        "line": 39,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 39,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`temp1'  `l'\"",
+        "line": 40,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Annual dataset contains a total of `temp1' countries, one more than paper\"",
+        "line": 42,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Count number of countries in quinquennial data",
+    "line": 44,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 45,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_clean\\ross5y.dta\nlevelsof ctycode, clean local(temp)\nlocal temp1 = 0\nforeach l of local temp {\n     local temp1 = `temp1' + 1 \n     di \"",
+        "line": 46,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`temp1'",
+        "line": 46,
+        "column": 150
+      },
+      {
+        "id": "`'",
+        "value": "`l'\"",
+        "line": 46,
+        "column": 159
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Quinquennial dataset contains a total of `temp1' countries, one more than paper\"",
+        "line": 48,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Above suggests there are 169 countries in both annual and quinquennial",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* datasets, yet Table 4 in Ross (2006) which uses filled in dataset reports",
+    "line": 51,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 168 countries.  What is going on?",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Cyprus (CYP) was excluded/truncated from imputation",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 55,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 56,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 56,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_raw",
+        "line": 56,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 56,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "Ross_Replication_Data",
+        "line": 56,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 56,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "mr1replication1.dta",
+        "line": 56,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "IDdum40",
+        "line": 57,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 58,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 58,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 58,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 58,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* CYP is in quinquennial dataset but its dummy is 0 everywhere, also missing",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* much data",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 62,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_clean\\ross5y.dta\nsu IDdum*\nsu IDdum40\nlist ctycode period IDdum40 $rossvars if ctycode==\"",
+        "line": 63,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "CYP",
+        "line": 63,
+        "column": 103
+      },
+      {
+        "id": "string",
+        "value": "\", clean noobs c\n\n* However much of the underlying data is in the annual dataset but\n* Polity takes different values\nsu Polity if ctycode==\"",
+        "line": 63,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "CYP",
+        "line": 63,
+        "column": 246
+      },
+      {
+        "id": "string",
+        "value": "\"\nclear\nuse \"",
+        "line": 63,
+        "column": 249
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 63,
+        "column": 262
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 63,
+        "column": 264
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 63,
+        "column": 265
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 63,
+        "column": 275
+      },
+      {
+        "id": "identifier",
+        "value": "ross1y.dta",
+        "line": 63,
+        "column": 276
+      },
+      {
+        "id": "string",
+        "value": "\" \nsu Polity if ctycode==\"",
+        "line": 63,
+        "column": 286
+      },
+      {
+        "id": "identifier",
+        "value": "CYP",
+        "line": 63,
+        "column": 312
+      },
+      {
+        "id": "string",
+        "value": "\"\nlist ctycode year Polity logCMRwdi ///\n  density GDPcap logIMRunicef logIMRwdi population ///\n  if ctycode==\"",
+        "line": 63,
+        "column": 315
+      },
+      {
+        "id": "identifier",
+        "value": "CYP",
+        "line": 63,
+        "column": 426
+      },
+      {
+        "id": "string",
+        "value": "\", clean noobs c\n\n* So CYP in annual dataset, much of the data lost in quinquennial data,\n* and somehow dummy for CYP always zero.  CYP dissapears altogether from\n* imputed data, though its dummy variable remains (and is always zero).\n\n\n**************************************************************************\n* Check years in annual and quinquennial data\n**************************************************************************\n\n* Check time periods in annual data\nxtset ctynum  year     \t\t                  //declare as panel dataset\nxtdes\nsu year \ndi \"",
+        "line": 63,
+        "column": 429
+      },
+      {
+        "id": "identifier",
+        "value": "Annual",
+        "line": 63,
+        "column": 988
+      },
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 63,
+        "column": 995
+      },
+      {
+        "id": "identifier",
+        "value": "runs",
+        "line": 63,
+        "column": 1000
+      },
+      {
+        "id": "identifier",
+        "value": "from",
+        "line": 63,
+        "column": 1005
+      },
+      {
+        "id": "`'",
+        "value": "`r(min)'",
+        "line": 63,
+        "column": 1010
+      },
+      {
+        "id": "identifier",
+        "value": "to",
+        "line": 63,
+        "column": 1019
+      },
+      {
+        "id": "`'",
+        "value": "`r(max)'\"",
+        "line": 63,
+        "column": 1022
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Data are available before 1970 for UNICEF infant and child mortality, pop,",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* real GDP per capita, GDP growth, but not for other moratlity data, density",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 67,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 67,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRunicef",
+        "line": 67,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 67,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwho",
+        "line": 67,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "logIMRunicef",
+        "line": 67,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "logIMRwdi",
+        "line": 67,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "population",
+        "line": 67,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 68,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 68,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 68,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 68,
+        "column": 29
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 68,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 68,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "separator",
+        "line": 68,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 68,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "divider",
+        "line": 68,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Check time periods in quinuennial data",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Data set has 7 periods corresponting to 1970, 1975, ... 2000",
+    "line": 71,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 72,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 73,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 73,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 73,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 73,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 73,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//declare as panel dataset",
+    "line": 74,
+    "column": 46
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctynum",
+        "line": 74,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 74,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtdes",
+      "line": 75,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 76,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 77,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "format",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rossvars",
+        "line": 78,
+        "column": 8
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 78,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "7.1f",
+        "line": 78,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabstat",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rossvars",
+        "line": 79,
+        "column": 10
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 79,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 79,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 79,
+        "column": 31
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stat",
+        "line": 80,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 80,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 80,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 80,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 80,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 80,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "columns",
+        "line": 80,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "statistics",
+        "line": 80,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 81,
+        "column": 1
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 81,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "7.1f",
+        "line": 81,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mdesc",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$rossvars",
+        "line": 82,
+        "column": 7
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 82,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 82,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 82,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Above shows that data for all lagged variables in period 1 is missing, except for ",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* logCMRwdi_1, Polity_1, transition.  This is surprising since data for some of ",
+    "line": 85,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* the missing variables is available for 1965 in annual dataset, as shown above.",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* It seems annual data set was truncated in 1970 before computing averages and lags.",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* This throws out a substantial amount of data.",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* For some reason logCMRwdi == logCMRwdi_1 if period==1",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 91,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 91,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 91,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 91,
+        "column": 31
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 91,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 91,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 91,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 92,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 92,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 92,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 92,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 92,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 92,
+        "column": 37
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 92,
+        "column": 52
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 92,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 92,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* The transition variable is missing for Cyprus.",
+    "line": 94,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 95,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 95,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "transition",
+        "line": 95,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "transition_1",
+        "line": 95,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 95,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 95,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 95,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 95,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* It is not clear to me how the lagged value of Polity was created since Polity",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* is missing in annual data prior to 1970 (even though original source has data ",
+    "line": 98,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* before 1970).  More details in ancheckiv.do",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 100,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 100,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 100,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 100,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 100,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 100,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 100,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Note that even lagged HIV is missing in 1970 despite the fact that ",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Ross (2006, p. 867) appears to assume HIV rates prior to 1980 were \"close to ",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* zero\". Unfortunately data on HIV is not included in the annual data set,",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* so I cannot replicate the quinquennial file.",
+    "line": 105,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Check definition of sovereignty",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Consider Germany.  From 1965 when Ross (2006) annual data starts, to 1989",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Germany is two entities: FDR and DDR",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* In 1990 the latter two are superseded by a single united Germany (DEU)",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code when a country is first and last observed since 1946 to 2002",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* using the variables",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* FLAGC=1 first year country is observed, zero otherwise",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* FLAGE=1 last year coutry is observed, zero otherwise",
+    "line": 117,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Here I check Ross (2000) country years against ACLP",
+    "line": 118,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Create ACLP population dummy",
+    "line": 120,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* aclppop = 1 if country year in aclp database, . otherwise.",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 122,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 123,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 123,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 123,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 123,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "aclp",
+        "line": 123,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// generate flag for ACLP country years",
+    "line": 124,
+    "column": 18
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 124,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 124,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 124,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Year where Ross's (2006) annual data starts",
+    "line": 125,
+    "column": 19
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 125,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 125,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 125,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 125,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 126,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 126,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 126,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 126,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 127,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 127,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 128,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 128,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Merge ross1y onto  aclppop data",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 131,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 131,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 131,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 131,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 131,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 131,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 131,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 131,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Ross (2006) defines soverieng as memebers of WB or UN  at some (unspecified) ",
+    "line": 133,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* point in time.  Say it is year 2000.  Then effectively we are looking at ",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* soveriegn countries in 2000 and running them back into history to create",
+    "line": 135,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* a balanced panel.",
+    "line": 136,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* This creates articifial \"sovereign\" country years when in fact the entity",
+    "line": 137,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* may have been a colony, a part of the USSR, or not even a country (e.g. ",
+    "line": 138,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* unified Germany or Viet Nam did not exist in 1970, and so on.",
+    "line": 139,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code sovereign country years in an unblanaced panel, recording when",
+    "line": 140,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* entities are born, die, merge, or split.",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 142,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Show \"sovereign\" country years in Ross (2006) not in ACLP",
+    "line": 144,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "levelsof",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 145,
+        "column": 10
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 145,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 145,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 145,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 145,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "ctycodes",
+        "line": 145,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"The following 905 country years in Ross (2006) are not in ACLP data\"",
+        "line": 146,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 147,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 147,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`ctycodes'",
+        "line": 147,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 147,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "levelsof",
+      "line": 148,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 148,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 148,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 148,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 148,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"`i'\"",
+        "line": 148,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 148,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 148,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 149,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 149,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 149,
+        "column": 12
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 149,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"`i'\"",
+        "line": 149,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 149,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 149,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 149,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`i' `r(min)' `r(max)' \"",
+        "line": 150,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`b'",
+        "line": 150,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Ross (2006) sets out to create a balanced panel of sovereign country",
+    "line": 152,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* years from 1965 to 2002 for 169 countries.  That is 6,422 cells.  Of ",
+    "line": 153,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* these \"sovereign\" country year cells 905 are not reflected in ACLP, or",
+    "line": 154,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 14.1% of the data.",
+    "line": 155,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Show sovereign country years in ACLP not in Ross (2006)",
+    "line": 157,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "levelsof",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 158,
+        "column": 10
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 158,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 158,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 158,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 158,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "ctycodes",
+        "line": 158,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"The following 905 country years in Ross (2006) are not in ACLP data\"",
+        "line": 159,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 160,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "`ctycodes'",
+        "line": 160,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 160,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "levelsof",
+      "line": 161,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 161,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 161,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 161,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 161,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"`i'\"",
+        "line": 161,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 161,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 161,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 162,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 162,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 162,
+        "column": 12
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 162,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 162,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"`i'\"",
+        "line": 162,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 162,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 162,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 162,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 162,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`i' `r(min)' `r(max)' \"",
+        "line": 163,
+        "column": 4
+      },
+      {
+        "id": "`'",
+        "value": "`b'",
+        "line": 163,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* most of these are small coutnries except Czeck, Cyprus, East Germany, Ethiopia, ",
+    "line": 165,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* West Germany, USSR, Somaliland, Taiwan, Yemen, Yugoslavia.  In turn many of",
+    "line": 166,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* these are deceased entities like USSR.",
+    "line": 167,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Note aclp code Somaliland as sovereign even though not recognised by UN",
+    "line": 168,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Here is an example of how Ross (2006) and ACLP treat Germany from 1965",
+    "line": 169,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP do not have observations for united Germany (DEU) before 1990",
+    "line": 170,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* instead have West (FDR) and East (DDR) Germany from 1965 to 1989",
+    "line": 171,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Ross has what appears to be a (synthetic) West Germany from 1965 to 2002",
+    "line": 172,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* and ignores East Germany ",
+    "line": 173,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 174,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 174,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 174,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 174,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "population",
+        "line": 174,
+        "column": 35
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 174,
+        "column": 49
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 174,
+        "column": 56
+      },
+      {
+        "id": "string",
+        "value": "\"DEU\"",
+        "line": 174,
+        "column": 58
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 175,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 175,
+        "column": 3
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 175,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"DDR\"",
+        "line": 175,
+        "column": 12
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 175,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 175,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 175,
+        "column": 27
+      },
+      {
+        "id": "string",
+        "value": "\"FDR\"",
+        "line": 175,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 175,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 175,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Here is an example of a FSU entity, Ukraine",
+    "line": 177,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Note also the data for 1970, not sure where it is coming from, though the ///\n* label for GDPcap in annual data reads: \"from WDI, constant 1995 dollars,  ///\n* w 1970 FSU imp data added\".  And the label for rgdpch, the data actually  ///\n* used reads \" GDP pr capita, chain series; plus values for 1970&2000 from  ///\n* short dataset\"",
+    "line": 178,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 179,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 179,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 179,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 179,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 180,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctynum",
+        "line": 180,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 180,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 181,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 181,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 181,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 181,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 181,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 181,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 181,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 181,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 181,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 181,
+        "column": 66
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 182,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 182,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"UKR\"",
+        "line": 182,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 182,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 182,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 182,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Here is Cyprus",
+    "line": 184,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code CYP as Greek Cyprus from 1983 (CY2)",
+    "line": 185,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 186,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 186,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 186,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 186,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 186,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 186,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 186,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 186,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 186,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 186,
+        "column": 66
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 187,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 187,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 187,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 187,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 187,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 187,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Similar problem for Ethiopia",
+    "line": 189,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code ETH as ET2 from 1993",
+    "line": 190,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 191,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 191,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 191,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 191,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 191,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 191,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 191,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 191,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 191,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 191,
+        "column": 66
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 192,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 192,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"ETH\"",
+        "line": 192,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 192,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 192,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 192,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Similar problem for Yemen",
+    "line": 194,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Yemen breaks up at various points in history, only unified in 1990, so ",
+    "line": 195,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code it as YEM only from 1990 on",
+    "line": 196,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 197,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 197,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 197,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 197,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 197,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "U5MRwdi",
+        "line": 197,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 197,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 197,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 197,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 197,
+        "column": 66
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 198,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 198,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"YEM\"",
+        "line": 198,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 198,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 198,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 198,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Ross claims to be using WB ctycode, but WB has no code for YUG",
+    "line": 200,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* YUG here refers to Serbia and Montenegro",
+    "line": 201,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* YUG war starts 1991, when Solvenia and Croatia declare independence",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code this as Yugoslavia2",
+    "line": 203,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1993-07-28 (Newsletter III-45): Numeric code of Yugoslavia changed from 890 to 891",
+    "line": 204,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* (a consequence of the splitting off of Bosnia and Herzegovina, Croatia, Macedonia, and Slovenia).",
+    "line": 205,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* What remains is Serb & Mon. (which splits in 2006, beyond our sample)",
+    "line": 206,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* The correct ctycode is SCG",
+    "line": 207,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* See http://www.infoplease.com/spot/yugotimeline1.html",
+    "line": 208,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* I corected this when creating ross1y.dta",
+    "line": 209,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 210,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 210,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 210,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "aclppop",
+        "line": 210,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRunicef",
+        "line": 210,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 210,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 210,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 210,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 210,
+        "column": 72
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 210,
+        "column": 86
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 210,
+        "column": 93
+      },
+      {
+        "id": "string",
+        "value": "\"SCG\"",
+        "line": 210,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 210,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 210,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 210,
+        "column": 114
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Here is UKR in quinquennial data",
+    "line": 212,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 213,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 214,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 214,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 214,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 214,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 214,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 215,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fill",
+        "line": 215,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 215,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1975",
+        "line": 215,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1980",
+        "line": 215,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1985",
+        "line": 215,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1990",
+        "line": 215,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1995",
+        "line": 215,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 215,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 215,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "1975",
+        "line": 215,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "1980",
+        "line": 215,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "1985",
+        "line": 215,
+        "column": 69
+      },
+      {
+        "id": "number",
+        "value": "1990",
+        "line": 215,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "1995",
+        "line": 215,
+        "column": 79
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 215,
+        "column": 84
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 216,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 216,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 216,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 216,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 216,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 216,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 216,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 216,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 217,
+        "column": 1
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 217,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 217,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"UKR\"",
+        "line": 217,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 217,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 217,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 217,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************",
+    "line": 220,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Check variables",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**************************************************************************",
+    "line": 222,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Variables in annual data",
+    "line": 224,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 225,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 226,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 226,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 226,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 226,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 226,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 226,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "des",
+      "line": 227,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Variables in annual data",
+    "line": 229,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 230,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 231,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 231,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 231,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 231,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 231,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 231,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 232,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "IDd",
+        "line": 232,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 232,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "des",
+      "line": 233,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* The dependent variables are:",
+    "line": 235,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*   IMRwdi,          logIMRwdi",
+    "line": 236,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*   infmort_unicef,  logIMRunicef",
+    "line": 237,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*   U5MRwdi,         logCMRwdi",
+    "line": 238,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*   kidmort_unicef   logCMRunicef",
+    "line": 239,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*   kidmort_who      logCMRwho",
+    "line": 240,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* These are all in annual dataset, but only some in quinquennial one.",
+    "line": 241,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Independent variable:",
+    "line": 243,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*    Polity \"PolityIV, combined dem and aut scores -10 to 10, ///\n*    nonsovereign yrs filled in\"",
+    "line": 244,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* This variable cannot be replicated in quinquennial data, as shown",
+    "line": 245,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* later.  In quinquennial data it appears Polity V is used:",
+    "line": 246,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 247,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 248,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 248,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 248,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 248,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 248,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 249,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Polity label in quinquennial dataset\"",
+        "line": 249,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "des",
+      "line": 250,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 250,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 251,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 252,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 252,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 252,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 252,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 252,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 252,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 253,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Polity label in annual dataset\"",
+        "line": 253,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "des",
+      "line": 254,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 254,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Labels are different",
+    "line": 255,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Controls",
+    "line": 257,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* smallstate logGDPcap_1 logHIV_1 logDen_1 GDPgrowth_1 logDEMYRS_1  transition_1",
+    "line": 258,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Smallstate: is not in annual data, but presumably created using population var",
+    "line": 259,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*   in text defined as 1 for countries with population < 1,000,000",
+    "line": 260,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* logGDPcap_1: is constructed from rgdpch in annual data",
+    "line": 261,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* logHIV_1: HIV data not in annual data",
+    "line": 262,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* logDen_1: based on density in annual data",
+    "line": 263,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* GDPgrowth_1: from GDPgrowth in annual",
+    "line": 264,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* logDEMYRS_1: not in annual dataset",
+    "line": 265,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* transition_1: not in dataset.",
+    "line": 266,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Others, I will ignore these",
+    "line": 269,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*    commie",
+    "line": 270,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*    democracy",
+    "line": 271,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*    smallstate",
+    "line": 272,
+    "column": 1
+  }
+]

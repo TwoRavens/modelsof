@@ -1,0 +1,1610 @@
+[
+  {
+    "id": "comment",
+    "value": "/* \n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\nDO-FILE DESCRIPTION\n\nJeroen Sabbe, last updated 19 May 10\nlast updated 10 Jan 17\n\nThis do-file takes the uccgroups file (containing approx 100 detailed commodity groups) and aggregates all the appropriate\ncommodity groups to aggregated expenditure groups\n\nInput: \nuccgroups`yearshort'.dta: contains expenditures on certain commodity groups (=sum of relevant UCC codes), but still at a very disaggregate level.\nEg variable \"alcohome\" contains UCCs beer at home+wine at home+whisky at home+other alco beverages at home \n(assumed stored at location specified in local \"outputpath\")\n\nOutputs:\nexp8comm`yearshort'.dta: contains expenditures on aggregated expenditure groups\n\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*-------------------------------USER INPUT!!!------------------------------------",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 5,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "50m",
+        "line": 5,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxvar",
+        "line": 6,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "32767",
+        "line": 6,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// USER INPUT!! Year must contain exactly 4 digits (eg \"2005\")",
+    "line": 7,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearlong",
+        "line": 7,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"2000\"",
+        "line": 7,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearshort",
+        "line": 8,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 8,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`yearlong'\"",
+        "line": 8,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 8,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 8,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 8,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 8,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "inputpath",
+        "line": 9,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 9,
+        "column": 17
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 9,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 9,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "CodesPublishedVersion",
+        "line": 9,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 9,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "CEX8",
+        "line": 9,
+        "column": 42
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 9,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "DIARY",
+        "line": 9,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 9,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outputpath",
+        "line": 10,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 10,
+        "column": 18
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 10,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 10,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "CodesPublishedVersion",
+        "line": 10,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 10,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "CEX8",
+        "line": 10,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 10,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`yearlong'",
+        "line": 10,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -------------------------------",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Generate the commodity groups",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -------------------------------",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`inputpath'",
+        "line": 15,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "uccgroups",
+        "line": 16,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 16,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 16,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`outputpath'",
+        "line": 17,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "exp8comm",
+        "line": 18,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 18,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 18,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 18,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* FOODHOME (=food and nonalcoholic beverages at home)",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "foodhome",
+        "line": 21,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cereal",
+        "line": 21,
+        "column": 14
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "bakery",
+        "line": 21,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "beef",
+        "line": 21,
+        "column": 28
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "pork",
+        "line": 21,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "othmeat",
+        "line": 21,
+        "column": 38
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "poultry",
+        "line": 21,
+        "column": 46
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "seafood",
+        "line": 21,
+        "column": 54
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "eggs",
+        "line": 21,
+        "column": 62
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "milkprod",
+        "line": 21,
+        "column": 67
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "othdairy",
+        "line": 21,
+        "column": 76
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "frshfrut",
+        "line": 21,
+        "column": 85
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "frshveg",
+        "line": 21,
+        "column": 94
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "procfrut",
+        "line": 21,
+        "column": 102
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 110
+      },
+      {
+        "id": "identifier",
+        "value": "procveg",
+        "line": 21,
+        "column": 111
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "sweets",
+        "line": 21,
+        "column": 119
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "fatoils",
+        "line": 21,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 133
+      },
+      {
+        "id": "identifier",
+        "value": "nonalbev",
+        "line": 21,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 142
+      },
+      {
+        "id": "identifier",
+        "value": "prepared",
+        "line": 21,
+        "column": 143
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 151
+      },
+      {
+        "id": "identifier",
+        "value": "snacks",
+        "line": 21,
+        "column": 152
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 21,
+        "column": 158
+      },
+      {
+        "id": "identifier",
+        "value": "condiments",
+        "line": 21,
+        "column": 159
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* FOODAWAY (=food away from home)",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* foodaway is a variable already; no need to do anything",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* VICES (= alcohol + tobacco)",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "vices",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "alcohome",
+        "line": 27,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 27,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "alcoaway",
+        "line": 27,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 27,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "tobacco",
+        "line": 27,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* CLOTHING",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clothing",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "clothmen",
+        "line": 30,
+        "column": 14
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "clothboy",
+        "line": 30,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "clothwom",
+        "line": 30,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "clothgrl",
+        "line": 30,
+        "column": 41
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "clothinf",
+        "line": 30,
+        "column": 50
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "clothmake",
+        "line": 30,
+        "column": 59
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "clothacc",
+        "line": 30,
+        "column": 69
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "footwear",
+        "line": 30,
+        "column": 78
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* HHENERGY",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhenergy",
+        "line": 33,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "utilities",
+        "line": 33,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* GASOLINE",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* gasoline is a variable already; no need to do anything",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* NONDURABLES",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nondur",
+        "line": 39,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "reading",
+        "line": 39,
+        "column": 12
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "stationery",
+        "line": 39,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "schoolsupp",
+        "line": 39,
+        "column": 31
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "cleanprod",
+        "line": 39,
+        "column": 42
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "gardensupp",
+        "line": 39,
+        "column": 52
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "hhtextil",
+        "line": 39,
+        "column": 63
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "ndhousware",
+        "line": 39,
+        "column": 72
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "medical",
+        "line": 39,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "perscare",
+        "line": 39,
+        "column": 91
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "audvis",
+        "line": 39,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "recreagoods",
+        "line": 39,
+        "column": 107
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 118
+      },
+      {
+        "id": "identifier",
+        "value": "petgoods",
+        "line": 39,
+        "column": 119
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*SERVICES",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "serv",
+        "line": 42,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mediabills",
+        "line": 42,
+        "column": 10
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "postal",
+        "line": 42,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "vehserv",
+        "line": 42,
+        "column": 28
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "pubtrans",
+        "line": 42,
+        "column": 36
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "perscarsrv",
+        "line": 42,
+        "column": 45
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "recreat",
+        "line": 42,
+        "column": 56
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "homeserv",
+        "line": 42,
+        "column": 64
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "rentalserv",
+        "line": 42,
+        "column": 73
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "membshfees",
+        "line": 42,
+        "column": 84
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "schoolfees",
+        "line": 42,
+        "column": 95
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "othfees",
+        "line": 42,
+        "column": 106
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "petserv",
+        "line": 42,
+        "column": 114
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 42,
+        "column": 121
+      },
+      {
+        "id": "identifier",
+        "value": "careserv",
+        "line": 42,
+        "column": 122
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\nNOTE: we only focus on a very restricted set of commodities! So we do NOT look at these uccgroups:\nFINANCIAL ASSETS: capitimp, investsave\nGIFTS & FORCED PAYMENTS: gifts, alimony\nHOUSING: mortgage, propbuy, improvwork, improvmat, rent, lodging\nTAXES (except indirect tax which is included in the commodity prices) & HEALTH INSURANCE: proptax, cartax, healthins\nAPPLIANCES: hhappl, mediaappl\nEQUIPMENT: homeequip, grdnequip, cleanequip, medequip, diyequip, recreaeqp, othequip\nOTHER DURABLE CONSUMER GOODS: furniture, homedeco, dinnerware\nVEHICLE PURCHASES: vehicles\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n*/",
+    "line": 45,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------------------------------",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* convert to yearly data + generate total expenditure + expenditure shares",
+    "line": 49,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------------------------------",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "commlist",
+        "line": 51,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"foodhome foodaway vices clothing hhenergy gasoline nondur serv\"",
+        "line": 51,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sharelist",
+        "line": 52,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"foodhomeshare foodawayshare vicesshare clothingshare hhenergyshare gasolineshare nondurshare servshare\"",
+        "line": 52,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "comm",
+        "line": 54,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 54,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 54,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "commlist",
+        "line": 54,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 54,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// calc YEARLY expenditures per commodity: from 2-week expenditures to 52-week expenditures",
+    "line": 55,
+    "column": 29
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 55,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 55,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 55,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "26",
+        "line": 55,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// calc total yearly expenditures for the selected commodities",
+    "line": 58,
+    "column": 34
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 58,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 58,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`commlist'",
+        "line": 58,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "comm",
+        "line": 60,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 60,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 60,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "commlist",
+        "line": 60,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 60,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// calc share of each commodity",
+    "line": 61,
+    "column": 32
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 61,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "share",
+        "line": 61,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 61,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 61,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 61,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------------------",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* KEEP NEEDED VARs AND SAVE",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------------------",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 67,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`commlist'",
+        "line": 67,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 67,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`sharelist'",
+        "line": 67,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 68,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`commlist'",
+        "line": 68,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 68,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`sharelist'",
+        "line": 68,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "exp8comm",
+        "line": 69,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 69,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 69,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*log close",
+    "line": 71,
+    "column": 1
+  }
+]

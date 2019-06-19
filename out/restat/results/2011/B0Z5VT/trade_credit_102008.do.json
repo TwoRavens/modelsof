@@ -1,0 +1,6304 @@
+[
+  {
+    "id": "comment",
+    "value": "*program define tcredit",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*args class minobs iniyear endyear digit hqual",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*This program takes data on trade credit from dependence dataset and creates a set of typical measure\n  by industry, both at the SIC and ISIC codes. Use: 3 digits SIC and ISIC\n  First version: March 17, 2003\n  This version: March 17, 2003.\n  Author: Claudio Raddatz\n  MODIFIED OCTOBER 2008 TO COMPUTE RATIO OF PAYABLES TO COST OF GOODS SOLD AND MATERIALS TO COST OF GOODS SOLD\n  MODIFIED OCTOBER 30 2008 TO COMPUTE RATIO OF NET TRADE CREDIT TO THE COST OF GOODS SOLD*/",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*FIRST PART SELECT THE FILE AND SAMPLE, INITIALIZES SOME VARIABLES AND ASSIGN ISIC CODES*/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 10,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "30m",
+        "line": 10,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*This one defines the level of aggregation that the program uses*/",
+    "line": 11,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit",
+        "line": 11,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 11,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "iniyear",
+        "line": 12,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1980",
+        "line": 12,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*The previous two define the period over which I use the data to build the measures*/",
+    "line": 13,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "endyear",
+        "line": 13,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1999",
+        "line": 13,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*This one defines the quality of the data: 1 is only high quality data (good match permnos)*/",
+    "line": 14,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hqual",
+        "line": 14,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 14,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Defines the minimum number of observations (firms) to accept a sector (this can be controlled later)*/",
+    "line": 15,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "minobs",
+        "line": 15,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 15,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Defining which variable is the identifier*/",
+    "line": 16,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 16,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "permno",
+        "line": 16,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Defining which variable determines firm age*/",
+    "line": 17,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "defage",
+        "line": 17,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ipo",
+        "line": 17,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "class",
+        "line": 18,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"isic\"",
+        "line": 18,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*select the file to use*/",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dependence.dta",
+        "line": 22,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "permno",
+        "line": 24,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 24,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*SELECTING SAMPLE*/",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 28,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "`'",
+        "value": "`iniyear'",
+        "line": 28,
+        "column": 15
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 28,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 28,
+        "column": 27
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 28,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`endyear'",
+        "line": 28,
+        "column": 33
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 28,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 28,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 29,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "`'",
+        "value": "`hqual'",
+        "line": 29,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "hqual",
+        "line": 29,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 29,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Eliminating those observations with no format for cash flow statement*/",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*the reason is that a firm might be taken off the sample because of no matching counters for this reason*/",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 35,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fcode",
+        "line": 35,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 35,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 35,
+        "column": 16
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 35,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "fcode",
+        "line": 35,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 35,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 35,
+        "column": 27
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 35,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "fcode",
+        "line": 35,
+        "column": 31
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 35,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 35,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 35,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "fcode",
+        "line": 35,
+        "column": 42
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 35,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 35,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Define sic or isic codes */",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 40,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"isic\"",
+        "line": 40,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 40,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 41,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 42,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 42,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"sicisic.dta\"",
+        "line": 42,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nok",
+        "line": 42,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`digit'",
+        "line": 43,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 43,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 43,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 43,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic3",
+        "line": 44,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 44,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 44,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 44,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 44,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 45,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic3",
+        "line": 46,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 46,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 48,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 50,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 50,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"sic3\"",
+        "line": 50,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 50,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 51,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 51,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 51,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 51,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 51,
+        "column": 32
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 51,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 51,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 52,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 52,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 52,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 52,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 52,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 54,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 54,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 54,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"codesic\"",
+        "line": 54,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 54,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 55,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 55,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 55,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 55,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 55,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 55,
+        "column": 32
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 55,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 55,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 56,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 56,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 56,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 56,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 56,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Assign codesics merging the database*/",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 60,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 61,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 61,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"sic3_normal_codesic\"",
+        "line": 61,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nok",
+        "line": 61,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 62,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic2",
+        "line": 63,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 63,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 63,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 63,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 63,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 63,
+        "column": 34
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 63,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 63,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic2",
+        "line": 64,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 64,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sic3",
+        "line": 64,
+        "column": 24
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 64,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 64,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic2",
+        "line": 65,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Replacing only the missing*/",
+    "line": 66,
+    "column": 52
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic2",
+        "line": 66,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 66,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"sic2_normal_codesic\"",
+        "line": 66,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "update",
+        "line": 66,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "nok",
+        "line": 66,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 67,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "sic2",
+        "line": 67,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 70,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 70,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 70,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"indgtap\"",
+        "line": 70,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 70,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 71,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sic",
+        "line": 72,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 72,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"sicisic.dta\"",
+        "line": 72,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nok",
+        "line": 72,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic3",
+        "line": 73,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 73,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 73,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 73,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 73,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 74,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic3",
+        "line": 75,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 75,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 76,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Assign codesics merging the database*/",
+    "line": 77,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 79,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 80,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 80,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"isic_gtap.dta\"",
+        "line": 80,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nok",
+        "line": 80,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 81,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\n-------------------------------------------------------------------------------------------------------------\n-------------------------------------------------------------------------------------------------------------\n Define  main variables\n By now I don't have the data on current liabilities (compustat #5) and total liabilities (compustat #181)\n Momentaneously I will do the following:\n - Instead of current liabilities I will use account payables (compustat #70) plus debt in current liabilities\n   (compustat #34)\n - Instead of total liabilities I will use my measure of current liabilities plus long term debt (compustat #9)\n - In each case these are the main components of liabilities, so the approximation should be fine. If something\n   interesting appears I should gather the data.\n--------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------\n*/",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*Creating intermediate variables*/",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 91,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 91,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "culiab",
+        "line": 91,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 91,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 91,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "cudebt",
+        "line": 91,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 92,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 92,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tliab",
+        "line": 92,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "culiab",
+        "line": 92,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 92,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "ltdebt",
+        "line": 92,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Relative importance of trade credit as a source of funds\n1. As a fraction of current liabilities\n2. As a fraction of total liabilities\n3. As a fraction of total assets\n4. As a fraction of total sales\n*/",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 97,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 99,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 99,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 99,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cost",
+        "line": 99,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 99,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "wages",
+        "line": 99,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 100,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 100,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 100,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 100,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 100,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "culiab",
+        "line": 100,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 101,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 101,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 101,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 101,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 101,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "tliab",
+        "line": 101,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 102,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 102,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 102,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 102,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 102,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "totass",
+        "line": 102,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 103,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 103,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 103,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 103,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 103,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "sales",
+        "line": 103,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 104,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 104,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "netpay",
+        "line": 104,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 104,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 104,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "acrec",
+        "line": 104,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 105,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 105,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "payturn",
+        "line": 105,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cost",
+        "line": 105,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 105,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 105,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 105,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 105,
+        "column": 31
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 105,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "l.acpay",
+        "line": 105,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 106,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 106,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "recturn",
+        "line": 106,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sales",
+        "line": 106,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 106,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 106,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 106,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "acrec",
+        "line": 106,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 106,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "l.acrec",
+        "line": 106,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 107,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 107,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paymatc",
+        "line": 107,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 107,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 107,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 107,
+        "column": 29
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 107,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 107,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 107,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "l.acpay",
+        "line": 107,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 108,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 108,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "netpayt",
+        "line": 108,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cost",
+        "line": 108,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 108,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "0.5",
+        "line": 108,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 108,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "netpay",
+        "line": 108,
+        "column": 31
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 108,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "l.netpay",
+        "line": 108,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 109,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 109,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stdbtpay",
+        "line": 109,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "stdbt",
+        "line": 109,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 109,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "acpay",
+        "line": 109,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 110,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 110,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mcost2cgs",
+        "line": 110,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 110,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 110,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "cost",
+        "line": 110,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*Relative importance of trade credit as a use of funds\n1. As a fraction of current assets\n2. As a fraction of total assets\n3. As a fraction of total sales\n*/",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 114,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 114,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 114,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acrec",
+        "line": 114,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 114,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "cuass",
+        "line": 114,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 115,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 115,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 115,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acrec",
+        "line": 115,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 115,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "totass",
+        "line": 115,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 116,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 116,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 116,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "acrec",
+        "line": 116,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 116,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "sales",
+        "line": 116,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*Dropping those with funny values*/",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 124,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 124,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 124,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 124,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 124,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 124,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 124,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 124,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 124,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 124,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 124,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 125,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 125,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 125,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 125,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 125,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 125,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 125,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 125,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 125,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 125,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 125,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 126,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 126,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 126,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 126,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 126,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 126,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 126,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 126,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 126,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 126,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 126,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*qui replace paysale  =. if paysale  >1 | paysale  <0",
+    "line": 127,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 129,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 129,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 129,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 129,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 129,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 129,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 129,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 129,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 129,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 129,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 129,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 130,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 130,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 130,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 130,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 130,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 130,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 130,
+        "column": 38
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 130,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 130,
+        "column": 42
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 130,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 130,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*qui replace recsale  =. if recsale  >1 | recsale  <0",
+    "line": 131,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*This pause can be used to save the new database with the relevant measures year by year.*/",
+    "line": 134,
+    "column": 7
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "pause",
+      "line": 134,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"HERE\"",
+        "line": 136,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*NOTE THAT I'M NOT GENERATING THE STOCK VALUE OF THE VARIABLES, WHICH I HAVE PREVIOUSLY NOT USED ANYWAY*/",
+    "line": 138,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* summarize at firm-isic level: robust statistic median*/",
+    "line": 142,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 143,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 146,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 146,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 146,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 146,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 146,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "payturn",
+        "line": 146,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 146,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 146,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 146,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "recturn",
+        "line": 146,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "stdbtpay",
+        "line": 146,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 146,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "paymat",
+        "line": 146,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "mcost2cgs",
+        "line": 146,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "netpayt",
+        "line": 146,
+        "column": 125
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 146,
+        "column": 134
+      },
+      {
+        "id": "`'",
+        "value": "`id'",
+        "line": 146,
+        "column": 137
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 146,
+        "column": 142
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*save firms_T, replace",
+    "line": 148,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 150,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 151,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*  Drop the ratios if you have less than `minobs' firms per industry       */",
+    "line": 153,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*generating the counters*/",
+    "line": 155,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*Names for counters are n plus the first 5 letters of the variable name*/",
+    "line": 156,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*Inventories*/",
+    "line": 158,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 160,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 162,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 162,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npayculi",
+        "line": 162,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 162,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 162,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 162,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 162,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 163,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 163,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npaytlia",
+        "line": 163,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 163,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 163,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 163,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 163,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 164,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 164,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npaytass",
+        "line": 164,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 164,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 164,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 164,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 164,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 165,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 165,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npaysale",
+        "line": 165,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 165,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 165,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 165,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 165,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 166,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 166,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nreccuas",
+        "line": 166,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 166,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 166,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 166,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 166,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 167,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 167,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrectass",
+        "line": 167,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 167,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 167,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 167,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 167,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 168,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 168,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrecsale",
+        "line": 168,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 168,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 168,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 168,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 168,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 169,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 169,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nrecturn",
+        "line": 169,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 169,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "recturn",
+        "line": 169,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 169,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 169,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 170,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 170,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npayturn",
+        "line": 170,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 170,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "payturn",
+        "line": 170,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 170,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 170,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 171,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 171,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nstdbtpay",
+        "line": 171,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 171,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "stdbtpay",
+        "line": 171,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 171,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 171,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 172,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 172,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "npaymatc",
+        "line": 172,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 172,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "paymat",
+        "line": 172,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 172,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 172,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 173,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 173,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nmatcost",
+        "line": 173,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 173,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 173,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 173,
+        "column": 38
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 173,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 174,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 174,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nmcost2cgs",
+        "line": 174,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 174,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "mcost2cgs",
+        "line": 174,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 174,
+        "column": 40
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 174,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 175,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 175,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nnetpayt",
+        "line": 175,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "count",
+        "line": 175,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "netpayt",
+        "line": 175,
+        "column": 27
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 175,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 175,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 178,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*Start with the replacing*/",
+    "line": 180,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*Inventories*/",
+    "line": 182,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 184,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 184,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 184,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 184,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "npayculi",
+        "line": 184,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 184,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 184,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 185,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 185,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 185,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 185,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "npaytlia",
+        "line": 185,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 185,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 185,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 186,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 186,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 186,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 186,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "npaytass",
+        "line": 186,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 186,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 186,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 187,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 187,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 187,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 187,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "npaysale",
+        "line": 187,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 187,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 187,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 188,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 188,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 188,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 188,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nreccuas",
+        "line": 188,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 188,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 188,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 189,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 189,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 189,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 189,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nrectass",
+        "line": 189,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 189,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 189,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 190,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 190,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 190,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 190,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nrecsale",
+        "line": 190,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 190,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 190,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 191,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 191,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "recturn",
+        "line": 191,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 191,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nrecturn",
+        "line": 191,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 191,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 191,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 192,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 192,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "payturn",
+        "line": 192,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 192,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "npayturn",
+        "line": 192,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 192,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 192,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 193,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 193,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stdbtpay",
+        "line": 193,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 193,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nstdbtpay",
+        "line": 193,
+        "column": 29
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 193,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 193,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 194,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 194,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paymatc",
+        "line": 194,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 194,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "npaymat",
+        "line": 194,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 194,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 194,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 195,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 195,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 195,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 195,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nmatcost",
+        "line": 195,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 195,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 195,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 196,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 196,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mcost2cgs",
+        "line": 196,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 196,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nmcost2cgs",
+        "line": 196,
+        "column": 30
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 196,
+        "column": 41
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 196,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 197,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 197,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "netpayt",
+        "line": 197,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 197,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nnetpayt",
+        "line": 197,
+        "column": 28
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 197,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`minobs'",
+        "line": 197,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 199,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 200,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 201,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*START COLLAPSING THE DATA*/",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 203,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 204,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------------------------------------------------------------------*/",
+    "line": 205,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RECTURN",
+        "line": 207,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 207,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "recturn",
+        "line": 207,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 208,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PAYTURN",
+        "line": 208,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 208,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "payturn",
+        "line": 208,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 209,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "STDBTPAY",
+        "line": 209,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 209,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "stdbtpay",
+        "line": 209,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MATCOST",
+        "line": 210,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 210,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "matcost",
+        "line": 210,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 211,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PAYMATC",
+        "line": 211,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 211,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "paymatc",
+        "line": 211,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 212,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MCOST2CGS",
+        "line": 212,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 212,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "mcost2cgs",
+        "line": 212,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NETPAYT",
+        "line": 213,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 213,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "netpayt",
+        "line": 213,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "median",
+        "line": 215,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 215,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 215,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 215,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 215,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 215,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 215,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 215,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "recturn",
+        "line": 215,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "payturn",
+        "line": 215,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "stdbtpay",
+        "line": 215,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "paymat",
+        "line": 215,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "mcost2cgs",
+        "line": 215,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "netpayt",
+        "line": 215,
+        "column": 117
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "RECTURN",
+        "line": 215,
+        "column": 138
+      },
+      {
+        "id": "identifier",
+        "value": "PAYTURN",
+        "line": 215,
+        "column": 146
+      },
+      {
+        "id": "identifier",
+        "value": "STDBTPAY",
+        "line": 215,
+        "column": 154
+      },
+      {
+        "id": "identifier",
+        "value": "PAYMAT",
+        "line": 215,
+        "column": 163
+      },
+      {
+        "id": "identifier",
+        "value": "MCOST2CGS",
+        "line": 215,
+        "column": 170
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 179
+      },
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 215,
+        "column": 196
+      },
+      {
+        "id": "identifier",
+        "value": "sdpaycul",
+        "line": 215,
+        "column": 200
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 215,
+        "column": 211
+      },
+      {
+        "id": "identifier",
+        "value": "sdpaytli",
+        "line": 215,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 215,
+        "column": 230
+      },
+      {
+        "id": "identifier",
+        "value": "sdpayta",
+        "line": 215,
+        "column": 238
+      },
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 215,
+        "column": 248
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 255
+      },
+      {
+        "id": "identifier",
+        "value": "sdpaysal",
+        "line": 215,
+        "column": 276
+      },
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 215,
+        "column": 287
+      },
+      {
+        "id": "identifier",
+        "value": "sdreccua",
+        "line": 215,
+        "column": 295
+      },
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 215,
+        "column": 306
+      },
+      {
+        "id": "identifier",
+        "value": "sdrecta",
+        "line": 215,
+        "column": 314
+      },
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 215,
+        "column": 324
+      },
+      {
+        "id": "identifier",
+        "value": "sdrecsa",
+        "line": 215,
+        "column": 332
+      },
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 215,
+        "column": 342
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 349
+      },
+      {
+        "id": "identifier",
+        "value": "iqr",
+        "line": 215,
+        "column": 365
+      },
+      {
+        "id": "identifier",
+        "value": "iqpaycul",
+        "line": 215,
+        "column": 370
+      },
+      {
+        "id": "identifier",
+        "value": "payculi",
+        "line": 215,
+        "column": 381
+      },
+      {
+        "id": "identifier",
+        "value": "iqpaytli",
+        "line": 215,
+        "column": 389
+      },
+      {
+        "id": "identifier",
+        "value": "paytlia",
+        "line": 215,
+        "column": 400
+      },
+      {
+        "id": "identifier",
+        "value": "iqpayta",
+        "line": 215,
+        "column": 408
+      },
+      {
+        "id": "identifier",
+        "value": "paytass",
+        "line": 215,
+        "column": 418
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 425
+      },
+      {
+        "id": "identifier",
+        "value": "iqpaysal",
+        "line": 215,
+        "column": 446
+      },
+      {
+        "id": "identifier",
+        "value": "paysale",
+        "line": 215,
+        "column": 457
+      },
+      {
+        "id": "identifier",
+        "value": "iqreccua",
+        "line": 215,
+        "column": 465
+      },
+      {
+        "id": "identifier",
+        "value": "reccuas",
+        "line": 215,
+        "column": 476
+      },
+      {
+        "id": "identifier",
+        "value": "iqrecta",
+        "line": 215,
+        "column": 484
+      },
+      {
+        "id": "identifier",
+        "value": "rectass",
+        "line": 215,
+        "column": 494
+      },
+      {
+        "id": "identifier",
+        "value": "iqrecsa",
+        "line": 215,
+        "column": 502
+      },
+      {
+        "id": "identifier",
+        "value": "recsale",
+        "line": 215,
+        "column": 512
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 519
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 215,
+        "column": 534
+      },
+      {
+        "id": "identifier",
+        "value": "npayculi",
+        "line": 215,
+        "column": 540
+      },
+      {
+        "id": "identifier",
+        "value": "npaytlia",
+        "line": 215,
+        "column": 549
+      },
+      {
+        "id": "identifier",
+        "value": "npaytass",
+        "line": 215,
+        "column": 558
+      },
+      {
+        "id": "identifier",
+        "value": "npaysale",
+        "line": 215,
+        "column": 567
+      },
+      {
+        "id": "identifier",
+        "value": "nreccuas",
+        "line": 215,
+        "column": 576
+      },
+      {
+        "id": "identifier",
+        "value": "nrectass",
+        "line": 215,
+        "column": 585
+      },
+      {
+        "id": "identifier",
+        "value": "nrecsale",
+        "line": 215,
+        "column": 594
+      },
+      {
+        "id": "identifier",
+        "value": "nrecturn",
+        "line": 215,
+        "column": 603
+      },
+      {
+        "id": "identifier",
+        "value": "npayturn",
+        "line": 215,
+        "column": 612
+      },
+      {
+        "id": "identifier",
+        "value": "nstdbtpay",
+        "line": 215,
+        "column": 621
+      },
+      {
+        "id": "identifier",
+        "value": "npaymat",
+        "line": 215,
+        "column": 631
+      },
+      {
+        "id": "identifier",
+        "value": "nmcost2cgs",
+        "line": 215,
+        "column": 639
+      },
+      {
+        "id": "identifier",
+        "value": "nnetpayt",
+        "line": 215,
+        "column": 650
+      },
+      {
+        "id": "comment",
+        "value": "/*\n*/",
+        "line": 215,
+        "column": 658
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 215,
+        "column": 681
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 215,
+        "column": 684
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 218,
+        "column": 4
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 218,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"codesic\"",
+        "line": 218,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 218,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 219,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 219,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 219,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 219,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 221,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 221,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 221,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"sic3\"",
+        "line": 221,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 221,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 222,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 222,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 222,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "200",
+        "line": 222,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 222,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 222,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 222,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "399",
+        "line": 222,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 225,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 225,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 226,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "`'",
+        "value": "`class'",
+        "line": 226,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 226,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 226,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 227,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 227,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "codesic",
+        "line": 227,
+        "column": 17
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 227,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 227,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 227,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 227,
+        "column": 27
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 227,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"2\"",
+        "line": 227,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 227,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 227,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "codesic",
+        "line": 227,
+        "column": 44
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 227,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 227,
+        "column": 52
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 227,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 227,
+        "column": 54
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 227,
+        "column": 56
+      },
+      {
+        "id": "string",
+        "value": "\"3\"",
+        "line": 227,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 231,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year1",
+        "line": 231,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 231,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`iniyear'",
+        "line": 231,
+        "column": 17
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 231,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 231,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 232,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year2",
+        "line": 232,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 232,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`endyear'",
+        "line": 232,
+        "column": 17
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 232,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 232,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 234,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 234,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 234,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"isic\"",
+        "line": 234,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 234,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`digit'",
+        "line": 236,
+        "column": 4
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 236,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 236,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 236,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 237,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_isic`digit'_`year1'`year2'`hqual'_net.dta\"",
+        "line": 237,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 237,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*When using 4 digits the 3 digit codes are extracted from the 3 digit database*/",
+    "line": 239,
+    "column": 23
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 239,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "`'",
+        "value": "`digit'",
+        "line": 239,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 239,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 239,
+        "column": 18
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 239,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 240,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_isic`digit'_`year1'`year2'`hqual'_T.dta\"",
+        "line": 240,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 240,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 241,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_isic3_`year1'`year2'`hqual'_T.dta\"",
+        "line": 242,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 243,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 243,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 243,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 243,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 243,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 243,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 244,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 244,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 245,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "paso",
+        "line": 245,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 245,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 246,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 247,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 247,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "isic",
+        "line": 248,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 248,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "paso",
+        "line": 248,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "update",
+        "line": 248,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 248,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 249,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_isic`digit'_`year1'`year2'`hqual'_T.dta\"",
+        "line": 249,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 249,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 252,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 252,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 252,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"sic\"",
+        "line": 252,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 252,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 253,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_sic`digit'_`year1'`year2'`hqual'_T.dta\"",
+        "line": 253,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 253,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 255,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 255,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 255,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"codesic\"",
+        "line": 255,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 255,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 256,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_codesic_`year1'`year2'`hqual'_T.dta\"",
+        "line": 256,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 256,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 258,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "string",
+        "value": "\"`class'\"",
+        "line": 258,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 258,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"indgtap\"",
+        "line": 258,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 258,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 259,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"tcred_indgtap_`year1'`year2'`hqual'_T.dta\"",
+        "line": 259,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 259,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "program",
+      "line": 262,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 262,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 262,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 263,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 263,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*end",
+    "line": 265,
+    "column": 1
+  }
+]

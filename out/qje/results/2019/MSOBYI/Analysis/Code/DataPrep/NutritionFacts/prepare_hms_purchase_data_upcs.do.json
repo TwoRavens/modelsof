@@ -1,0 +1,5224 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 1,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 1,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 2,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 2,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 2,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\nPrepare Nielsen HMS data for merger with nutrition fact data by UPC\ndiamondr last modified June 2018\n\n0) Globals\n1) Collapse Homescan purchase data by upc upc_ver_uc\n2) Prepare extra product info files by UPC\n3) Match purchases to products.tsv\n4) Construct macronut dummies, using extra product info\n---------------------------------------------------*/",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\n0) Set globals\n---------------------------------------------------*/",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n* MAIN DROBBOX FOLDER\n*global MAIN \"C:/Users/ccwright/Dropbox/NutritionandIncome\"\nglobal MAIN \"C:/Users/diamondr/Dropbox/NutritionandIncome\"\nglobal dataout \"$MAIN\\Analysis\\Data\\NutritionFacts\"\n\n* LOCAL MACHINE\nglobal LOCAL \"C:\\Users\\ccwright\\Desktop\\RF work\\NutritionandIncome_LOCAL\"\nglobal TEMP \"$LOCAL\\NutritionFacts\\TMP\"\nglobal hms \"$LOCAL\\NielsenHMS\\stata_datasets\"\n\n//Rebecca's paths\nglobal LOCAL \"D:\\nielsen\"\"\nglobal TEMP \"$LOCAL\\TMP\"\n*/",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hms",
+        "line": 8,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"F:\\Darchive\\nielsen\\stata_datasets\"",
+        "line": 8,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\n1) Collapse Homescan purchases by UPC\n---------------------------------------------------*/",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\Transactions/Transactions_2004.dta\"",
+        "line": 12,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 12,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Merge on trips data to get purchase date",
+    "line": 14,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*sort trip_code_uc",
+    "line": 15,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*merge m:1 trip_code_uc using \"$hms\\trips_2004.dta\"",
+    "line": 16,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*keep if _merge==1 | _merge==3",
+    "line": 17,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 18,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "expend",
+        "line": 18,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 18,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//purchase_date\t",
+    "line": 19,
+    "column": 48
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 19,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 19,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 19,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 19,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 19,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 21,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 21,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 21,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 21,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 21,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 21,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "panel_year",
+        "line": 24,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2004",
+        "line": 24,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 25,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 25,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 27,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 27,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 27,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2005",
+        "line": 27,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 27,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2016",
+        "line": 27,
+        "column": 29
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 27,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 28,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\Transactions/Transactions_`num'.dta\"",
+        "line": 28,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 28,
+        "column": 79
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 29,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 29,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 29,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 30,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 30,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Merge on trips data to get purchase date",
+    "line": 32,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*sort trip_code_uc",
+    "line": 33,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*\tmerge m:1 trip_code_uc using \"$hms\\trips_`num'.dta\"",
+    "line": 34,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\tkeep if _merge==1 | _merge==3",
+    "line": 35,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 36,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "expend",
+        "line": 36,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 36,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// purchase_date\t",
+    "line": 37,
+    "column": 49
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 37,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 37,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 37,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 37,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 37,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 39,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 39,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 39,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 39,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 39,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 39,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 39,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 41,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "panel_year",
+        "line": 41,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 41,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 43,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 43,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 43,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 44,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 44,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 44,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 47,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 47,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 48,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 48,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "total_price_paid",
+        "line": 48,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 48,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "min_year",
+        "line": 48,
+        "column": 48
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "panel_year",
+        "line": 48,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 48,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "max_year",
+        "line": 48,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "panel_year",
+        "line": 48,
+        "column": 83
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 48,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 48,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 48,
+        "column": 103
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 1,740,020 UPCs purchased (this is more than are in UPC-info?)",
+    "line": 50,
+    "column": 69
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 50,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 50,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\n2) Prepare extra product info files by UPC\n---------------------------------------------------*/",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$hms\\products_extra_2004.dta\"",
+        "line": 55,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 55,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 56,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 56,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 56,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2005",
+        "line": 56,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 56,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2016",
+        "line": 56,
+        "column": 29
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 56,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 57,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 57,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"$hms\\products_extra_`num'.dta\"",
+        "line": 57,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 58,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 58,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 58,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*sort upc upc_ver_uc panel_year",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Drop vars presumably unrelated to nutrition",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "common",
+        "line": 63,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "strength",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "scent",
+        "line": 63,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "dosage",
+        "line": 63,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "gender",
+        "line": 63,
+        "column": 39
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "target",
+        "line": 63,
+        "column": 47
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "use",
+        "line": 63,
+        "column": 55
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "container",
+        "line": 63,
+        "column": 60
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "organic",
+        "line": 63,
+        "column": 71
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "usda",
+        "line": 63,
+        "column": 80
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "size2",
+        "line": 63,
+        "column": 86
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "form_",
+        "line": 63,
+        "column": 93
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 63,
+        "column": 98
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*foreach var of varlist *code {",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\treplace `var'=\"\" if `var'==\"0\"",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t}",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 68,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "code",
+        "line": 68,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 69,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 69,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 69,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "flavor_descr",
+        "line": 69,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 69,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "variety_descr",
+        "line": 69,
+        "column": 37
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 69,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gsort",
+      "line": 70,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 70,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 70,
+        "column": 12
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 70,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 70,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "carryforward",
+      "line": 71,
+      "column": 25
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 71,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 71,
+            "column": 9
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 71,
+            "column": 13
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 71,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 71,
+        "column": 45
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 71,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 71,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 73,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 73,
+        "column": 10
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 73,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 73,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*duplicates drop // all dups are mainly just misspellings and other things that don't appear to affect nutrition",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 75,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 75,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 75,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "force",
+        "line": 75,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\NutritionFacts/upcinfo_extraattributes_only.dta\"",
+        "line": 76,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 76,
+        "column": 81
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\n3) Match purchases to products.tsv\n---------------------------------------------------*/",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 81,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 81,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 82,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 82,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*rename upc str_upc",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*sort str_upc upc_ver_uc",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*tostring upc_ver_uc, replace",
+    "line": 85,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 87,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 87,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 88,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 88,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 88,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 88,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals\\Calculations\\OtherNielsen/UPC-Info.dta\"",
+        "line": 88,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tostring",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 90,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 90,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 90,
+        "column": 23
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 90,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "17.0g",
+        "line": 90,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 91,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 91,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 91,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 91,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 91,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 92,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 92,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"0\"",
+        "line": 92,
+        "column": 13
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 92,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 92,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 92,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 92,
+        "column": 31
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 92,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 92,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tostring",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 94,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 94,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*merge 1:1 upc upc_ver_uc using \"$hms\\products.dta\" // all 1,740,020 purchased UPCs match",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*tab product_module_descr_hms if _merge==2 // UPCs never purchased",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Drop irrelevant (non-food or never purcahsed) UPCs",
+    "line": 98,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*drop if _merge==2",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*drop if _merge==3 & department_descr_hms==\"HEALTH & BEAUTY CARE\"",
+    "line": 100,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 101,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_descr",
+        "line": 101,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"GENERAL MERCHANDISE\"",
+        "line": 101,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 102,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_descr",
+        "line": 102,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 102,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"NON-FOOD GROCERY\"",
+        "line": 102,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 103,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_group_descr",
+        "line": 103,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 103,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"PET FOOD\"",
+        "line": 103,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// these are all nonfood items - checked manually",
+    "line": 104,
+    "column": 52
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 104,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regex",
+        "line": 104,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 104,
+        "column": 15
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 104,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"UNCLASSIFIED\"",
+        "line": 104,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*destring product_module_code, replace",
+    "line": 105,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 106,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_code",
+        "line": 106,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 106,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "99",
+        "line": 106,
+        "column": 26
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 106,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_code",
+        "line": 106,
+        "column": 32
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 106,
+        "column": 51
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 106,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "445",
+        "line": 106,
+        "column": 53
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 106,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_code",
+        "line": 106,
+        "column": 57
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 106,
+        "column": 76
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 106,
+        "column": 77
+      },
+      {
+        "id": "number",
+        "value": "468",
+        "line": 106,
+        "column": 78
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 107,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "product_group_code",
+        "line": 107,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 107,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 107,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 108,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_code",
+        "line": 108,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 108,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 108,
+        "column": 26
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 108,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 108,
+        "column": 30
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 108,
+        "column": 50
+      },
+      {
+        "id": "string",
+        "value": "\"COMPLETE NUTRITIONAL PRODUCTS\"",
+        "line": 108,
+        "column": 52
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 108,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 108,
+        "column": 86
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 108,
+        "column": 106
+      },
+      {
+        "id": "string",
+        "value": "\"DIETING AIDS-COMPLETE NUTRITIONAL\"",
+        "line": 108,
+        "column": 108
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 109,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 109,
+        "column": 3
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 109,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"NUTRITIONAL SUPPLEMENTS\"",
+        "line": 109,
+        "column": 25
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 109,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 109,
+        "column": 53
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 109,
+        "column": 73
+      },
+      {
+        "id": "string",
+        "value": "\"PROTEIN SUPPLEMENTS\"",
+        "line": 109,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 1,134,550 UPCs purchased, incl some in health/beauty that aren't food",
+    "line": 111,
+    "column": 13
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 111,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\n3) Construct macronut dummies\n---------------------------------------------------*/",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*rename str_upc upc",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*sort upc upc_ver_uc",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*tostring upc_ver_uc, replace",
+    "line": 117,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// 479,566 purchased UPCs don't have extra product info\t",
+    "line": 118,
+    "column": 106
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 118,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 118,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 118,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 118,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 118,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 118,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\NutritionFacts/upcinfo_extraattributes_only.dta\"",
+        "line": 118,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 119,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 119,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 119,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 119,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 120,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*drop *code",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******** CONSTRUCT MACRONUT DUMMIES",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 124,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 124,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 124,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 124,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "formula_descr2",
+        "line": 124,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "style_descr2",
+        "line": 124,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "salt_content_descr2",
+        "line": 124,
+        "column": 52
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 124,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 125,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 125,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 125,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 125,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 125,
+        "column": 30
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 125,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 125,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 125,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 125,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 125,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 126,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 126,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 126,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 126,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 126,
+        "column": 30
+      },
+      {
+        "id": "string",
+        "value": "\"-\"",
+        "line": 126,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 126,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 126,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 126,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 126,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 128,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "type_descr3",
+        "line": 128,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 128,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "type_descr",
+        "line": 128,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 128,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 128,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 128,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 128,
+        "column": 41
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 128,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 128,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 129,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "type_descr3",
+        "line": 129,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 129,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "type_descr3",
+        "line": 129,
+        "column": 30
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 129,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"-\"",
+        "line": 129,
+        "column": 42
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 129,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 129,
+        "column": 46
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 129,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 129,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*FAT",
+    "line": 131,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 132,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumnofat",
+        "line": 132,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 132,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 133,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlowfat",
+        "line": 133,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 133,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 134,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumredufat",
+        "line": 134,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 134,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 135,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlessfatother",
+        "line": 135,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 135,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 137,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 137,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 137,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 137,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "type_descr3",
+        "line": 137,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "formula_descr2",
+        "line": 137,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "style_descr2",
+        "line": 137,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "salt_content_descr2",
+        "line": 137,
+        "column": 65
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 137,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 138,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumnofat",
+        "line": 138,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 138,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 138,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 138,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 138,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\"(NOFAT|FATFREE|NONFAT|ZEROFAT)\"",
+        "line": 138,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 139,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlowfat",
+        "line": 139,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 139,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 139,
+        "column": 33
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 139,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"(LOWFAT|LWFAT)\"",
+        "line": 139,
+        "column": 40
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 139,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "dumnofat",
+        "line": 139,
+        "column": 60
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 139,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 140,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumredufat",
+        "line": 140,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 140,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 140,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 140,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\"(REDUCEDFAT|RDFAT|REDFAT)\"",
+        "line": 140,
+        "column": 41
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 140,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "dumnofat",
+        "line": 140,
+        "column": 72
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 140,
+        "column": 80
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 82
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 140,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "dumlowfat",
+        "line": 140,
+        "column": 86
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 140,
+        "column": 95
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 141,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlessfatother",
+        "line": 141,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 141,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 141,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 141,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 141,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"(LESSFAT|LITEFAT|LIGHTFAT)\"",
+        "line": 141,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 141,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "dumnofat",
+        "line": 141,
+        "column": 78
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 141,
+        "column": 86
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 141,
+        "column": 88
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 141,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "dumlowfat",
+        "line": 141,
+        "column": 92
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 141,
+        "column": 101
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 141,
+        "column": 103
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 141,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "dumredufat",
+        "line": 141,
+        "column": 107
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 141,
+        "column": 117
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 141,
+        "column": 119
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* SALT",
+    "line": 144,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 145,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumnosalt",
+        "line": 145,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 145,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 146,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlowsalt",
+        "line": 146,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 146,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 147,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumredusalt",
+        "line": 147,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 147,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 148,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlesssaltother",
+        "line": 148,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 148,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 150,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 150,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 150,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 150,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "type_descr3",
+        "line": 150,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "formula_descr2",
+        "line": 150,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "style_descr2",
+        "line": 150,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "salt_content_descr2",
+        "line": 150,
+        "column": 65
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 150,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 151,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumnosalt",
+        "line": 151,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 151,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 151,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 151,
+        "column": 33
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 151,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"(NOSALT|NOSODIUM|SODIUMFREE|SALTFREE)\"",
+        "line": 151,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 152,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlowsalt",
+        "line": 152,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 152,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 152,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 152,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\"(LOWSALT|LOWSODIUM)\"",
+        "line": 152,
+        "column": 41
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 152,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "dumnosalt",
+        "line": 152,
+        "column": 66
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 152,
+        "column": 75
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 153,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumredusalt",
+        "line": 153,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 153,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 153,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 153,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\"(REDUCEDSALT|REDUCEDSODIUM)\"",
+        "line": 153,
+        "column": 42
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 153,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "dumnosalt",
+        "line": 153,
+        "column": 75
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 153,
+        "column": 84
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 86
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 153,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "dumlowsalt",
+        "line": 153,
+        "column": 90
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 153,
+        "column": 100
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 102
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 154,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlesssaltother",
+        "line": 154,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 154,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 154,
+        "column": 40
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 154,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"(HALFSALT|HALFTHESALT|LESSSALT|LESSSODIUM|LIGHTSALT|LITESALT|LOWERSODIUM|LOWERINSODIUM)\"",
+        "line": 154,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 154,
+        "column": 138
+      },
+      {
+        "id": "identifier",
+        "value": "dumnosalt",
+        "line": 154,
+        "column": 140
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 154,
+        "column": 149
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 151
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 154,
+        "column": 153
+      },
+      {
+        "id": "identifier",
+        "value": "dumlowsalt",
+        "line": 154,
+        "column": 155
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 154,
+        "column": 165
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 167
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 154,
+        "column": 169
+      },
+      {
+        "id": "identifier",
+        "value": "dumredusalt",
+        "line": 154,
+        "column": 171
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 154,
+        "column": 182
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 184
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* SUGAR",
+    "line": 157,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 158,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumnosugar",
+        "line": 158,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 158,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 159,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlowsugar",
+        "line": 159,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 159,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 160,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumredusugar",
+        "line": 160,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 160,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 161,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlesssugarother",
+        "line": 161,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 161,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 163,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 163,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 163,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 163,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "type_descr3",
+        "line": 163,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "formula_descr2",
+        "line": 163,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "style_descr2",
+        "line": 163,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "salt_content_descr2",
+        "line": 163,
+        "column": 65
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 163,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 164,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumnosugar",
+        "line": 164,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 164,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 164,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 164,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 164,
+        "column": 39
+      },
+      {
+        "id": "string",
+        "value": "\"(SUGARFREE|NOSUGAR|ZEROSUGAR)\"",
+        "line": 164,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 165,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlowsugar",
+        "line": 165,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 165,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 165,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 165,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\"(LOWSUGAR|LOWERSUGAR)\"",
+        "line": 165,
+        "column": 42
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 165,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "dumnosugar",
+        "line": 165,
+        "column": 69
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 165,
+        "column": 79
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 81
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 166,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumredusugar",
+        "line": 166,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 166,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 166,
+        "column": 36
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"(REDUCEDSUGAR)\"",
+        "line": 166,
+        "column": 43
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 166,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "dumnosugar",
+        "line": 166,
+        "column": 63
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 166,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 75
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 166,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "dumlowsugar",
+        "line": 166,
+        "column": 79
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 166,
+        "column": 90
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 92
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 167,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dumlesssugarother",
+        "line": 167,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 167,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 167,
+        "column": 41
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 167,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"(NOSUGARADDED|LESSSUGAR)\"",
+        "line": 167,
+        "column": 48
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 167,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "dumnosugar",
+        "line": 167,
+        "column": 78
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 167,
+        "column": 88
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 90
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 167,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "dumlowsugar",
+        "line": 167,
+        "column": 94
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 167,
+        "column": 105
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 107
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 167,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "dumredusugar",
+        "line": 167,
+        "column": 111
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 167,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 125
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 170,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 170,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 170,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "dum",
+        "line": 170,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 170,
+        "column": 27
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 170,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 171,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 171,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 171,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 171,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 171,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 171,
+        "column": 28
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 171,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 171,
+        "column": 32
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 171,
+        "column": 42
+      },
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 171,
+        "column": 44
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 171,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 171,
+        "column": 50
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 171,
+        "column": 60
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 171,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Calculate check digit",
+    "line": 174,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 175,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 175,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 175,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 175,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 175,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 175,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 175,
+        "column": 27
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 175,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 176,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit_",
+        "line": 176,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 176,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 176,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 176,
+        "column": 28
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 176,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 176,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 176,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 176,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 177,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit_",
+        "line": 177,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 177,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 177,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 179,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 179,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 179,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 179,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 179,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 179,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 179,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 179,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 179,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 179,
+        "column": 35
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 179,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 180,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit_",
+        "line": 180,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 180,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "digit_",
+        "line": 180,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`num'",
+        "line": 180,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 180,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 182,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit_total",
+        "line": 182,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 182,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "digit",
+        "line": 182,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 182,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 183,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit_mod_10",
+        "line": 183,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 183,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "digit_total",
+        "line": 183,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 183,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 183,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 184,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check_digit",
+        "line": 184,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 184,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 185,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check_digit",
+        "line": 185,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 185,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "digit_mod_10",
+        "line": 185,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 185,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 185,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 186,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check_digit",
+        "line": 186,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 186,
+        "column": 25
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 186,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "digit_mod_10",
+        "line": 186,
+        "column": 30
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "digit_mod_10",
+        "line": 186,
+        "column": 47
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 186,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 186,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tostring",
+      "line": 187,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check_digit",
+        "line": 187,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 187,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 188,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ean_13",
+        "line": 188,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 188,
+        "column": 13
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 188,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "check_digit",
+        "line": 188,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 189,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "digit_",
+        "line": 189,
+        "column": 7
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 189,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "check_digit",
+        "line": 189,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 191,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ean_13",
+        "line": 191,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 191,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 192,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ean_13",
+        "line": 192,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 192,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 194,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "item",
+        "line": 194,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "string",
+        "value": "\"BABY NEEDS\"",
+        "line": 194,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"COSMETICS\"",
+        "line": 194,
+        "column": 30
+      },
+      {
+        "id": "string",
+        "value": "\"COUGH AND COLD REMEDIES\"",
+        "line": 194,
+        "column": 42
+      },
+      {
+        "id": "string",
+        "value": "\"DEODORANT\"",
+        "line": 194,
+        "column": 68
+      },
+      {
+        "id": "string",
+        "value": "\"ETHNIC HABA\"",
+        "line": 195,
+        "column": 2
+      },
+      {
+        "id": "string",
+        "value": "\"FEMININE HYGIENE\"",
+        "line": 195,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"FIRST AID\"",
+        "line": 195,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"FRAGRANCES - WOMEN\"",
+        "line": 195,
+        "column": 47
+      },
+      {
+        "id": "string",
+        "value": "\"GROOMING AIDS\"",
+        "line": 195,
+        "column": 68
+      },
+      {
+        "id": "string",
+        "value": "\"HAIR CARE\"",
+        "line": 196,
+        "column": 2
+      },
+      {
+        "id": "string",
+        "value": "\"MEDICATIONS/REMEDIES/HEALTH AIDS\"",
+        "line": 196,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"MEN'S TOILETRIES\"",
+        "line": 196,
+        "column": 49
+      },
+      {
+        "id": "string",
+        "value": "\"ORAL HYGIENE\"",
+        "line": 196,
+        "column": 68
+      },
+      {
+        "id": "string",
+        "value": "\"SANITARY PROTECTION\"",
+        "line": 197,
+        "column": 2
+      },
+      {
+        "id": "string",
+        "value": "\"SHAVING NEEDS\"",
+        "line": 197,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"SKIN CARE PREPARATIONS\"",
+        "line": 197,
+        "column": 40
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 197,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 198,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_des",
+        "line": 198,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 198,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"HEALTH & BEAUTY CARE\"",
+        "line": 198,
+        "column": 26
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 198,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "product_group_descr",
+        "line": 198,
+        "column": 51
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 198,
+        "column": 70
+      },
+      {
+        "id": "string",
+        "value": "\"`item'\"",
+        "line": 198,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// only keeping vitamins & diet aids in this cat",
+    "line": 199,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "//This is for products only in RMS",
+    "line": 202,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 203,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 203,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 203,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 203,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 203,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 203,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 204,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "total_price",
+        "line": 204,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 204,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "total_price",
+        "line": 204,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 204,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 204,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Add MilkFat Dummies",
+    "line": 207,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "include",
+      "line": 208,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Code",
+        "line": 208,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 208,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "DataPrep",
+        "line": 208,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 208,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "NutritionFacts",
+        "line": 208,
+        "column": 23
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 208,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "GetMilkFat.do",
+        "line": 208,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 209,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "LowFatMilk",
+        "line": 209,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "NonFatMilk",
+        "line": 209,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MilkFatPct",
+        "line": 210,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 210,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "MilkFatPct",
+        "line": 210,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 210,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 210,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 1395848",
+    "line": 213,
+    "column": 89
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals\\Calculations\\NutritionFacts/purchasesbyupc_macronut_dums.dta\"",
+        "line": 213,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 213,
+        "column": 81
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\Homescan\\purchasesbyupc.dta\"",
+        "line": 215,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations\\NutritionFacts/upcinfo_extraattributes_only.dta\"",
+        "line": 216,
+        "column": 7
+      }
+    ]
+  }
+]

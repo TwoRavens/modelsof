@@ -1,0 +1,5364 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n\n Vancouver, Oct 2015.\n\n This Stata .do file accompanies \"Estimation in the Fixed Effects Ordered Logit Model\".\n\tby Chris Muris.\n\n This file reproduces the results in Tables 3 and 4 in Appendix B1.\n It implements the optimal minimum distance produce in the paper, for an arbitrary\n   number of regressors, and arbitary number of categories, for T=2 time periods.\n\n For any questions about this code, please email me\n at cmuris@sfu.ca.\n\n If you use this code, please cite the latest version of the paper\n (title above). See my website for more information (www.sfu.ca/~cmuris).\n\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//////////////\n// 1. Setup //",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//////////////\n",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 5,
+        "column": 5
+      },
+      {
+        "id": "string",
+        "value": "\"Muris-FEOL-Table3-4\"",
+        "line": 5,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 5,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Preliminaries",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 8,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 9,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 9,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "permanently",
+        "line": 9,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set the number of simulations \"S\" and get an appropriate matrix size.",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "S",
+        "line": 12,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 12,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 13,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "5100",
+        "line": 13,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// These matrices will hold the results. Seven estimators are compared.",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 16,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 16,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`S'",
+        "line": 16,
+        "column": 16
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 16,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 16,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 16,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 16,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 17,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 17,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`S'",
+        "line": 17,
+        "column": 16
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 17,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 17,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 17,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 17,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set the design parameters.",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// size cross-section dimension",
+    "line": 20,
+    "column": 16
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 20,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5000",
+        "line": 20,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// size time-series dimension",
+    "line": 21,
+    "column": 15
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "T",
+        "line": 21,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 21,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Total number of observations in a given simulation",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NT",
+        "line": 23,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`N'",
+        "line": 23,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 23,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 23,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Estimands",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 26,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 26,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 26,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 26,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 26,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Jminone",
+        "line": 27,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`J'",
+        "line": 27,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 27,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 27,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delta1",
+        "line": 28,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "-",
+        "value": "-",
+        "line": 28,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 28,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delta2",
+        "line": 29,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 30,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 30,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 30,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 30,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 31,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jminone",
+        "line": 31,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 31,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 31,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 31,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 32,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "delta",
+        "line": 32,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 32,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`delta`jminone'",
+        "line": 32,
+        "column": 19
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 32,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 32,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "K",
+        "line": 34,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 34,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 34,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 34,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 34,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// keep total effect of X on ystar unchanged",
+    "line": 35,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "beta",
+        "line": 35,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 35,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 35,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 35,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//////////////////////////////////////////////////////\n// 1a. Necessary ingredients for optimal averaging ///\n//////////////////////////////////////////////////////\n",
+    "line": 37,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Need to generate some macros and matrices that will be used below",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// The following two macros will hold the list of estimation",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   procedures.",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estlistconstant",
+        "line": 42,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 42,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estlistall",
+        "line": 43,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 43,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Optimal weight matrix for OMD, time-invariant",
+    "line": 45,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "e1K",
+        "line": 46,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "I",
+        "line": 46,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 46,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "# e1K",
+    "line": 47,
+    "column": 27
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 47,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 47,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 47,
+        "column": 12
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 47,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 47,
+        "column": 22
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 47,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 47,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Optimal weight matrix for OMD, all",
+    "line": 49,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numgam",
+        "line": 50,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 50,
+        "column": 17
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 50,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 50,
+        "column": 28
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 50,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 50,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dimH",
+        "line": 51,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 51,
+        "column": 17
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 51,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 51,
+        "column": 28
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 51,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 51,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`numgam'",
+        "line": 51,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 52,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 52,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`dimH'",
+        "line": 52,
+        "column": 14
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 52,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 52,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 52,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`numgam'",
+        "line": 52,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 52,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 52,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rowcount",
+        "line": 53,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 53,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gamcount",
+        "line": 54,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 54,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j1",
+        "line": 55,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 55,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 55,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 55,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 55,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 56,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j2",
+        "line": 56,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 56,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 56,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 56,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 56,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 58,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 58,
+        "column": 8
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 58,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 58,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 58,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 59,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estlistconstant",
+        "line": 59,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"`estlistconstant' est`j1'`j2'\"",
+        "line": 59,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 60,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "k",
+        "line": 60,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 60,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 60,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 60,
+        "column": 18
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 60,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 61,
+      "column": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 61,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 61,
+        "column": 37
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`rowcount'",
+        "line": 61,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 61,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 61,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 61,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 61,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 63,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rowcount",
+        "line": 63,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`rowcount'",
+        "line": 63,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 63,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 63,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 65,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 65,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 66,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "k",
+        "line": 66,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 66,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 66,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 66,
+        "column": 18
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 66,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 67,
+      "column": 6
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 67,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 67,
+        "column": 37
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`rowcount'",
+        "line": 67,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 67,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 67,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 67,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 67,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 70,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 70,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 70,
+        "column": 49
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`rowcount'",
+        "line": 70,
+        "column": 14
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 70,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 70,
+        "column": 25
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 70,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 70,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 70,
+        "column": 31
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 70,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`gamcount'",
+        "line": 70,
+        "column": 35
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 70,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 72,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rowcount",
+        "line": 72,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`rowcount'",
+        "line": 72,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 72,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 72,
+        "column": 35
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 72,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 72,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 73,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gamcount",
+        "line": 73,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`gamcount'",
+        "line": 73,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 73,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 73,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 75,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "estlistall",
+        "line": 75,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"`estlistall' est`j1'`j2'\"",
+        "line": 75,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "////////////////////////\n// 2. Simulation loop //",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "////////////////////////\n",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Set seed",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "seed",
+        "line": 82,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "2014",
+        "line": 82,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Start the simulation.",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Start [Simulation design parameters: (`N',`J',`K',`S')]:\"",
+        "line": 85,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 86,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 86,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 86,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`S'",
+        "line": 86,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 86,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 88,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 88,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 89,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 89,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "obs",
+        "line": 89,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`NT'",
+        "line": 89,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Keep track of time.",
+    "line": 91,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 92,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 92,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 92,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 92,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 92,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 93,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"s is `s'\"",
+        "line": 93,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 95,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 95,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 95,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 95,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 95,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 96,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"s is `s'\"",
+        "line": 96,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 98,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 98,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "250",
+        "line": 98,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 98,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 99,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"s is `s'\"",
+        "line": 99,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 101,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 101,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "500",
+        "line": 101,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 101,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 102,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"s is `s'\"",
+        "line": 102,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 104,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 104,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 104,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "750",
+        "line": 104,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 104,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 105,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"s is `s'\"",
+        "line": 105,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 107,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 107,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 107,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 107,
+        "column": 12
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 107,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 108,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"s is `s'\"",
+        "line": 108,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 111,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// DATA GENERATION: see DGP in paper.",
+    "line": 112,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 113,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the panel data identifiers",
+    "line": 115,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 116,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 116,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 116,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 116,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 116,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 116,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 116,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 116,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 116,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 116,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 117,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 117,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 117,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 117,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 117,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 17
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 117,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 117,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 117,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the RHS",
+    "line": 119,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 120,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "k",
+        "line": 120,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 120,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 120,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 120,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 120,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 121,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 121,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 121,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "invnorm",
+        "line": 121,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "uniform",
+        "line": 121,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 122,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 122,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 122,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 122,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 122,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 122,
+        "column": 23
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 122,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 122,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 122,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 122,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 123,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 123,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 123,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 123,
+        "column": 16
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 123,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 123,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 123,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 123,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 123,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 123,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 123,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the fixed effects to depend on the x's",
+    "line": 126,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 127,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 127,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 127,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 127,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 127,
+        "column": 20
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 127,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 127,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 127,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 127,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 128,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "barx",
+        "line": 128,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 128,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 128,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`T'",
+        "line": 128,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 128,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "x11",
+        "line": 128,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 128,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "x12",
+        "line": 128,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//+ 1/`T' * ((x1 - xbar)^2 + (x2 - xbar)^2 )",
+    "line": 129,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 129,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "alpha_i",
+        "line": 129,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "barx",
+        "line": 129,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the latent variable and the outcome",
+    "line": 131,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 132,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 132,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 132,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 133,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 133,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "alpha_i",
+        "line": 133,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 133,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 133,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 133,
+        "column": 28
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 133,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "uniform",
+        "line": 133,
+        "column": 30
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 133,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 133,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 134,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "k",
+        "line": 134,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 134,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 134,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 134,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 134,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 135,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 135,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 135,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 135,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 135,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`beta'",
+        "line": 135,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 135,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 135,
+        "column": 40
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 135,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 137,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 137,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 137,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 139,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 139,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 139,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 139,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 139,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 140,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 140,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 140,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 140,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 140,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 140,
+        "column": 29
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 140,
+        "column": 35
+      },
+      {
+        "id": "`'",
+        "value": "`delta`j'",
+        "line": 140,
+        "column": 37
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 140,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 143,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ystar",
+        "line": 143,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 145,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//  ESTIMATION",
+    "line": 146,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 147,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// First estimator: Oracle",
+    "line": 149,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ologit",
+      "line": 150,
+      "column": 14
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 150,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 150,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 150,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 150,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 150,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "alpha_i",
+        "line": 150,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 151,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 151,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 151,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 151,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 152,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 152,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 152,
+        "column": 22
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 152,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 152,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 152,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 152,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 153,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 153,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 153,
+        "column": 22
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 153,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 153,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 153,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 153,
+        "column": 30
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 153,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 153,
+        "column": 34
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 153,
+        "column": 35
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 153,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 153,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 153,
+        "column": 47
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 153,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 153,
+        "column": 51
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 153,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ologit",
+      "line": 155,
+      "column": 14
+    },
+    "meta": {
+      "predictors": 2
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 155,
+          "column": 2
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 155,
+          "column": 10
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 155,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 155,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 155,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 156,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 156,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 156,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 156,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 157,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 157,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 157,
+        "column": 22
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 157,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 157,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 157,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 157,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 157,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 157,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 158,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 158,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 158,
+        "column": 22
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 158,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 158,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 158,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 158,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 158,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 158,
+        "column": 30
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 158,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 158,
+        "column": 34
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 158,
+        "column": 35
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 158,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 158,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 158,
+        "column": 47
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 158,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 158,
+        "column": 51
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 158,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 161,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// First four estimators use only one transformation",
+    "line": 162,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 163,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 165,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 165,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 165,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 166,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j1",
+        "line": 166,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 166,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 166,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 166,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 167,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j2",
+        "line": 167,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 167,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 167,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 167,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 169,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 169,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 169,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 169,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 169,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 170,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 170,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 170,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 170,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 170,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 171,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 171,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 171,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 171,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 171,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 171,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 171,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 171,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 171,
+        "column": 43
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 171,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 171,
+        "column": 46
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 171,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 171,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 172,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 172,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 172,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 172,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 172,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 172,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 172,
+        "column": 36
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 172,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 172,
+        "column": 43
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 172,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 172,
+        "column": 46
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "y",
+        "line": 172,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 172,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 173,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 173,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 173,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 173,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 173,
+        "column": 23
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 173,
+        "column": 30
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 173,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 173,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 173,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 175,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 175,
+        "column": 8
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 175,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 175,
+        "column": 14
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 175,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 176,
+      "column": 17
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 176,
+          "column": 5
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 176,
+          "column": 13
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 176,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 176,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 176,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 176,
+        "column": 34
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 176,
+        "column": 35
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 176,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 176,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//local estlistconstant \"`estlistconstant' est`j1'`j2'\"",
+    "line": 177,
+    "column": 5
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 179,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 179,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 180,
+      "column": 17
+    },
+    "meta": {
+      "predictors": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 180,
+          "column": 5
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 180,
+          "column": 13
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 180,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 180,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 180,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 180,
+        "column": 34
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 180,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 180,
+        "column": 40
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 180,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 180,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 180,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sto",
+      "line": 182,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 182,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "est",
+        "line": 182,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 182,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 182,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 184,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 184,
+        "column": 7
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 184,
+        "column": 11
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 184,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 184,
+        "column": 13
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 184,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 184,
+        "column": 17
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 184,
+        "column": 21
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 184,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 184,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 184,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Log the 11, 12, 21, 22 estimators for comparison.",
+    "line": 185,
+    "column": 5
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 186,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 186,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 186,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 186,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 187,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 187,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 187,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 187,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 187,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 187,
+        "column": 20
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 187,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 187,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 187,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 188,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 188,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "betas",
+        "line": 188,
+        "column": 33
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 188,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 188,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 188,
+        "column": 20
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 188,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 188,
+        "column": 41
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 188,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 188,
+        "column": 45
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 188,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 189,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 189,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 189,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 189,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 189,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Now do the OMD stuff!",
+    "line": 194,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// Time-invariant",
+    "line": 196,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "suest",
+      "line": 197,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 197,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`estlistconstant'",
+        "line": 197,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 197,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 197,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 197,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 198,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b_OMD1",
+        "line": 198,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 198,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 198,
+        "column": 19
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 198,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 198,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 198,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 198,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 198,
+        "column": 29
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 198,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 198,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 198,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "H1",
+        "line": 198,
+        "column": 37
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 198,
+        "column": 39
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 198,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 198,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 198,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 198,
+        "column": 47
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 198,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 198,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 198,
+        "column": 53
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 198,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 199,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 199,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "b_OMD1",
+        "line": 199,
+        "column": 30
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 199,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 199,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 199,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 199,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 199,
+        "column": 39
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 199,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// All",
+    "line": 201,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 203,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "counter",
+        "line": 203,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 203,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 203,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 203,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "suest",
+      "line": 204,
+      "column": 6
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 204,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`estlistall'",
+        "line": 204,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 204,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 204,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 204,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mat",
+      "line": 205,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b_OMD",
+        "line": 205,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 205,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 205,
+        "column": 18
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 205,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 205,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 205,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 205,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 205,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 205,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 205,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 205,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "H",
+        "line": 205,
+        "column": 34
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 205,
+        "column": 35
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 205,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "inv",
+        "line": 205,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 205,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "V",
+        "line": 205,
+        "column": 43
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 205,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "e",
+        "line": 205,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 205,
+        "column": 49
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 205,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 206,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 206,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "b_OMD",
+        "line": 206,
+        "column": 30
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 206,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 206,
+        "column": 36
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 206,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 206,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 206,
+        "column": 38
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 206,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "matrix",
+      "line": 207,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 207,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "b_OMD",
+        "line": 207,
+        "column": 30
+      }
+    ],
+    "weight": [
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 207,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`K'",
+        "line": 207,
+        "column": 36
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 207,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 207,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`counter'",
+        "line": 207,
+        "column": 17
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 207,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 207,
+        "column": 42
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 207,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// end of forloop for S",
+    "line": 210,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "/////////////////////////\n// 3. Present results  //",
+    "line": 212,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/////////////////////////\n",
+    "line": 213,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Results [Simulation design parameters: N-J-K-S (`N',`J',`K',`S')]:\"",
+        "line": 214,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 216,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "svmat",
+      "line": 217,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 217,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "summarize",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b1s",
+        "line": 218,
+        "column": 11
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 218,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dds",
+        "line": 218,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 218,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "separator",
+        "line": 218,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 218,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 223,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 223,
+        "column": 5
+      }
+    ]
+  }
+]

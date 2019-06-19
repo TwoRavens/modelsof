@@ -1,0 +1,7786 @@
+[
+  {
+    "id": "comment",
+    "value": "/* \n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\nDO-FILE DESCRIPTION\n\nJeroen Sabbe, last updated 15 May 10\nlast updated 10 Jan 17\n\nThis do-file restricts the CEX diary sample in the fmly-file to households that meet certain criteria.\nIt also distinguishes between singles, couples and families and stores data in 3 separate files.\n\nInputs: \nfmlyd`yearshort'.dta: CEX fmly file (contains family characteristics, sample selection and BLS-made commodity groups)\n(assumed stored at location specified in local \"inputpath\"\n\nOutputs:\nfmlydsample`yearshort'.dta \t\t(The general sample of households that are retained)\nfmlydsample`yearshort'sing.dta\t(The specific sample of singles that are retained)\nfmlydsample`yearshort'coup.dta\t(The specific sample of couples = couples without children, that are retained)\nfmlydsample`yearshort'fam.dta\t\t(The specific sample of families = couples with or without children, that are retained)\n(all stored at location specified in local \"outputpath\")\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matrix",
+        "line": 4,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*-------------------------------USER INPUT!!!------------------------------------",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 6,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "50m",
+        "line": 6,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxvar",
+        "line": 7,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "32767",
+        "line": 7,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// USER INPUT!! Year must contain exactly 4 digits (eg \"2005\")",
+    "line": 8,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearlong",
+        "line": 8,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"1995\"",
+        "line": 8,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearshort",
+        "line": 9,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 9,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`yearlong'\"",
+        "line": 9,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 9,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 9,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 9,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 9,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "inputpath",
+        "line": 10,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 10,
+        "column": 17
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 10,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 10,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "CodesPublishedVersion",
+        "line": 10,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 10,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "CEX8",
+        "line": 10,
+        "column": 42
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 10,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "DIARY",
+        "line": 10,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 10,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outputpath",
+        "line": 11,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 11,
+        "column": 18
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 11,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 11,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "CodesPublishedVersion",
+        "line": 11,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 11,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "CEX8",
+        "line": 11,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 11,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`yearlong'",
+        "line": 11,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -------------------------------------------------------------------",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Make fmlydsample`yearshort', the file that will contain the restricted sample",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -------------------------------------------------------------------",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`inputpath'",
+        "line": 16,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlyd",
+        "line": 17,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 17,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`outputpath'",
+        "line": 18,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 19,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 19,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 19,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 19,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 20,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 20,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 20,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// in the early years of CEX, the variable cuid did not exist so we need to create it.",
+    "line": 22,
+    "column": 24
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 22,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 22,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 22,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 22,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 22,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "respstat",
+        "line": 24,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 24,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bls_urbn",
+        "line": 25,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 25,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 26,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 26,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "region",
+        "line": 27,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 27,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 28,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 28,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fam_type",
+        "line": 29,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 29,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "childage",
+        "line": 30,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 30,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "empltyp1",
+        "line": 31,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 31,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "empltyp2",
+        "line": 32,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 32,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 33,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 33,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sex2",
+        "line": 34,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 34,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 35,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 35,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educa2",
+        "line": 36,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 36,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "earncomp",
+        "line": 37,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 37,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "weeki",
+        "line": 38,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 38,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 39,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 39,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "race2",
+        "line": 40,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 40,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "marital1",
+        "line": 41,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 41,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "strtmnth",
+        "line": 42,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 42,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "marital1",
+        "line": 44,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "marital",
+        "line": 44,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "owncar",
+        "line": 46,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 46,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "owncar",
+        "line": 47,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 47,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "vehq",
+        "line": 47,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 47,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 47,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "owncar",
+        "line": 48,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 48,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "vehq",
+        "line": 48,
+        "column": 21
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 48,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 48,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 50,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 50,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 50,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 50,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearincomebeftx",
+        "line": 52,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 52,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "unempx",
+        "line": 52,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "wrkrsx",
+        "line": 52,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "welfrx",
+        "line": 52,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "intx",
+        "line": 52,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "divx",
+        "line": 52,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "pensionx",
+        "line": 52,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "chdothx",
+        "line": 52,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "aliothx",
+        "line": 52,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "othinx",
+        "line": 52,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "jfs_amt",
+        "line": 52,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "fwagex",
+        "line": 52,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "fss_rrx",
+        "line": 52,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "fsuppx",
+        "line": 52,
+        "column": 117
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearincome",
+        "line": 53,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "yearincomebeftx",
+        "line": 53,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 53,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "perstax",
+        "line": 53,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 54,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 54,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "yearincome",
+        "line": 54,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 54,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 56,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------------------------------------------",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Measures to restrict sample, applicable to ALL family types",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------------------------------------------",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* We base fam characteristics on situation at start of 1st week",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 62,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "weeki",
+        "line": 62,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 62,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 62,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* only keep CU's that consist of 1 household (note: does not restrict nr of hh MEMBERS)",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 65,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "hh_cu_q",
+        "line": 65,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 65,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 65,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 66,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* only keep hhs that completed the two weeks of the diary. ",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 69,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "weekn",
+        "line": 69,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 69,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 69,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 70,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* no hhs living in student housing (see Batt 03)",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 73,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 73,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 73,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 73,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 74,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* only keep vehicle owners (see BBC 2003) in order to include fuel expenses",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 77,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "vehq",
+        "line": 77,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 77,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 77,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 78,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ownhouse",
+        "line": 80,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 80,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ownhouse",
+        "line": 81,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 81,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 81,
+        "column": 33
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 81,
+        "column": 23
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 81,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ownhouse",
+        "line": 82,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 82,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 82,
+        "column": 33
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cutenure",
+        "line": 82,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 82,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhchar",
+        "line": 84,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"yearincome strtmnth state ownhouse owncar fam_type fam_size marital perslt18 childage\"",
+        "line": 84,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "refchar",
+        "line": 85,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"age_ref ref_race sex_ref educ_ref empltyp1 hrsprwk1 wk_wrkd1\"",
+        "line": 85,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "partnerchar",
+        "line": 86,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"age2 race2 sex2 educa2 empltyp2 hrsprwk2 wk_wrkd2\"",
+        "line": 86,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 88,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`hhchar'",
+        "line": 88,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`refchar'",
+        "line": 88,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`partnerchar'",
+        "line": 88,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 89,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`hhchar'",
+        "line": 89,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`refchar'",
+        "line": 89,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`partnerchar'",
+        "line": 89,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 90,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 90,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 90,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 90,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 91,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 91,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 91,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": ".txt",
+        "line": 91,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 91,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 91,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -------",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Singles",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -------",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 98,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 98,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 99,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 99,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "sing.dta",
+        "line": 99,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 99,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 100,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 100,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sing",
+        "line": 100,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 101,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Rename some of the variables because singles",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age_ref",
+        "line": 104,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 104,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 105,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "race",
+        "line": 105,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 106,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "sex",
+        "line": 106,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 107,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 107,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "empltyp1",
+        "line": 108,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "empltyp",
+        "line": 108,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hrsprwk1",
+        "line": 109,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "hrsprwk",
+        "line": 109,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wk_wrkd1",
+        "line": 110,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "wk_wrkd",
+        "line": 110,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* keep only singles",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Singles",
+    "line": 113,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 113,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fam_type",
+        "line": 113,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 113,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 113,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 114,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* only keep hh if at least 21",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 117,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "21",
+        "line": 117,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 117,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 117,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 118,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Only keep if worked at least 17 hrs per week (= part time)",
+    "line": 120,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 121,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "17",
+        "line": 121,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "hrsprwk",
+        "line": 121,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 121,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 122,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Drop self-employed (see AB 95)",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// drop self-employed",
+    "line": 125,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 125,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "empltyp",
+        "line": 125,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 125,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 125,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// drop family business/farm/work without pay",
+    "line": 126,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 126,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "empltyp",
+        "line": 126,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 126,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 126,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 127,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Make age classes",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 130,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 130,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 131,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 131,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 131,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 131,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 131,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 132,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 132,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 132,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 132,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 132,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 132,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 132,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 132,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 132,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 132,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 132,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 133,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 133,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 133,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 133,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 133,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 133,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 133,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 133,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 133,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 133,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 134,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 134,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 134,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 134,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 134,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 134,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 134,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 134,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 134,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 134,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 135,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 135,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 135,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 135,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 135,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 135,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 135,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 135,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 135,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 135,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 136,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 136,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 136,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 136,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 136,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 136,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 136,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 136,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 136,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 136,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 137,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "7",
+        "line": 137,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 137,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 137,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 137,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 137,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 137,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 137,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 137,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 137,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 138,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "8",
+        "line": 138,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 138,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 138,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 138,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 138,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 138,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 138,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 138,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "55",
+        "line": 138,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 139,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 139,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "9",
+        "line": 139,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 139,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 139,
+        "column": 27
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 139,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "55",
+        "line": 139,
+        "column": 29
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 139,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 139,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 139,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 139,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 140,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 140,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 140,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 140,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 140,
+        "column": 28
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 140,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 140,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 140,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 140,
+        "column": 35
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 140,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 140,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclass",
+        "line": 141,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "11",
+        "line": 141,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 141,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 141,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 141,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Make education classes",
+    "line": 143,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 144,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 144,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 145,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 145,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 145,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 145,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 146,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 146,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 146,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 146,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 146,
+        "column": 30
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 146,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 146,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 146,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 146,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 147,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 147,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 147,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 147,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 147,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 147,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 148,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 148,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 148,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 148,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 148,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 149,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 149,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 149,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 149,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 149,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlass",
+        "line": 150,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 150,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 150,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 150,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 150,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* keep variables we need and save",
+    "line": 152,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "singchar",
+        "line": 153,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"race sex ageclass educlass\"",
+        "line": 153,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 154,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`hhchar'",
+        "line": 154,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`singchar'",
+        "line": 154,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 155,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`hhchar'",
+        "line": 155,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`singchar'",
+        "line": 155,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 156,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 156,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "sing.dta",
+        "line": 156,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 156,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 157,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 157,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 157,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "sing.txt",
+        "line": 157,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 157,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 157,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 158,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Save Single Males and Single Females separately too",
+    "line": 160,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 161,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 161,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sing",
+        "line": 161,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 162,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 162,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 162,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "singmale.dta",
+        "line": 162,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 162,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// male",
+    "line": 163,
+    "column": 16
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 163,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex",
+        "line": 163,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 163,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 163,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 164,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 164,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 164,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "singmale.dta",
+        "line": 164,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 164,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 165,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 165,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 165,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "singmale.txt",
+        "line": 165,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 165,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 165,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 167,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 167,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 167,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sing",
+        "line": 167,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 168,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 168,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 168,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "singfemale.dta",
+        "line": 168,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 168,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// female",
+    "line": 169,
+    "column": 16
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 169,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex",
+        "line": 169,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 169,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 169,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 170,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 170,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "singfemale.dta",
+        "line": 170,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 170,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 171,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 171,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 171,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 171,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "singfemale.txt",
+        "line": 171,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 171,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 171,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------",
+    "line": 173,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Multi-person households",
+    "line": 174,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------",
+    "line": 175,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 176,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 176,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 177,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 177,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 177,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "coupandfam.dta",
+        "line": 177,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 177,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 178,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 178,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 178,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "coupandfam.dta",
+        "line": 178,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 179,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* drop homosexual couples (just because we want to be clear on 'husband' and 'wife')",
+    "line": 181,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 182,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 182,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 182,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "sex2",
+        "line": 182,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 183,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* only keep hh if reference person at least 21",
+    "line": 185,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 186,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "21",
+        "line": 186,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_ref",
+        "line": 186,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 186,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 187,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Age of husband and wife",
+    "line": 189,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// if ref person is husband, put his age in for age_h",
+    "line": 190,
+    "column": 34
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 190,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 190,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age_ref",
+        "line": 190,
+        "column": 11
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 190,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 190,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 190,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// if ref person is wife, put spouse's age in for age_h",
+    "line": 191,
+    "column": 35
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 191,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 191,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 191,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 191,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 191,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 191,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 192,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 192,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age_ref",
+        "line": 192,
+        "column": 11
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 192,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 192,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 192,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 193,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 193,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "age2",
+        "line": 193,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 193,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 193,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 193,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 195,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 195,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 195,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 196,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 196,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 196,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 196,
+        "column": 24
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 196,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 196,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 197,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 197,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 197,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 197,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 197,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 197,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 197,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 197,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 197,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 197,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 197,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 198,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 198,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 198,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 198,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 198,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 198,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 198,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 198,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 198,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 198,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 198,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 199,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 199,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 199,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 199,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 199,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 199,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 199,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 199,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 199,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 199,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 199,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 200,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 200,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 200,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 200,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 200,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 200,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 200,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 200,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 200,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 200,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 200,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 201,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 201,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 201,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 201,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 201,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 201,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 201,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 201,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 201,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 201,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 201,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 202,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 202,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "7",
+        "line": 202,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 202,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 202,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 202,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 202,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 202,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 202,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 202,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 202,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 203,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 203,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "8",
+        "line": 203,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 203,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 203,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 203,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 203,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 203,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 203,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 203,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "55",
+        "line": 203,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 204,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 204,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "9",
+        "line": 204,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 204,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 204,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 204,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "55",
+        "line": 204,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 204,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 204,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 204,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 204,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 205,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 205,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 205,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 205,
+        "column": 26
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 205,
+        "column": 31
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 205,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 205,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 205,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 205,
+        "column": 38
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 205,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 205,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 206,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassm",
+        "line": 206,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "11",
+        "line": 206,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 206,
+        "column": 32
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_h",
+        "line": 206,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 206,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 208,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 208,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 208,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 209,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 209,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 209,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 209,
+        "column": 24
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 209,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 209,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 210,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 210,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 210,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 210,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 210,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 210,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 210,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 210,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 210,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 210,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 211,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 211,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 211,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 211,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 211,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 211,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 211,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 211,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 211,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 211,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 211,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 212,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 212,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 212,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 212,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 212,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 212,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 212,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 212,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 212,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 212,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 212,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 213,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 213,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 213,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 213,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 213,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "35",
+        "line": 213,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 213,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 213,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 213,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 213,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 214,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 214,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 214,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 214,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 214,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "40",
+        "line": 214,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 214,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 214,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 214,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 214,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 215,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "7",
+        "line": 215,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 215,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 215,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 215,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "45",
+        "line": 215,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 215,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 215,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 215,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 215,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 216,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "8",
+        "line": 216,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 216,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 216,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 216,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 216,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 216,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 216,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 216,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "55",
+        "line": 216,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 217,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 217,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "9",
+        "line": 217,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 217,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 217,
+        "column": 30
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 217,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "55",
+        "line": 217,
+        "column": 32
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 217,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 217,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 217,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 217,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 218,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 218,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 218,
+        "column": 26
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 218,
+        "column": 31
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 218,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 218,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 218,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 218,
+        "column": 38
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 218,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 218,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ageclassf",
+        "line": 219,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "11",
+        "line": 219,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 219,
+        "column": 32
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age_w",
+        "line": 219,
+        "column": 25
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 219,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Education of husband and wife",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// if ref person is husband, put his age in for age_h",
+    "line": 222,
+    "column": 36
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 222,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 222,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 222,
+        "column": 12
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 222,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 222,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 222,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// if ref person is wife, put spouse's age in for age_h",
+    "line": 223,
+    "column": 37
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 223,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 223,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educa2",
+        "line": 223,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 223,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 223,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 223,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 224,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 224,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educ_ref",
+        "line": 224,
+        "column": 12
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 224,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 224,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 224,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 225,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 225,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "educa2",
+        "line": 225,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 225,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 225,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 225,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 227,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 227,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 228,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 228,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 228,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 228,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 229,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 229,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 229,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 229,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 229,
+        "column": 33
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 229,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 229,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 229,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 229,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 230,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 230,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 230,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 230,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 230,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 230,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 231,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 231,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 231,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 231,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 231,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 232,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 232,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 232,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 232,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 232,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 232,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 233,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassm",
+        "line": 233,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 233,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_h",
+        "line": 233,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 233,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 233,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 235,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 235,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 235,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 236,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 236,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 236,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 236,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 236,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 237,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 237,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 237,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 237,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 237,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 237,
+        "column": 33
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 237,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 237,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 237,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 237,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 238,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 238,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 238,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 238,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 238,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 238,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 239,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 239,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 239,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 239,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 239,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 240,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 240,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 240,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 240,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 240,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 240,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 241,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "educlassf",
+        "line": 241,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "6",
+        "line": 241,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ_w",
+        "line": 241,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 241,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 241,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 243,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Only keep if both members worked at least 17 hrs per week (= part-time)",
+    "line": 245,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 246,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "17",
+        "line": 246,
+        "column": 19
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 246,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "hrsprwk2",
+        "line": 246,
+        "column": 24
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 246,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "17",
+        "line": 246,
+        "column": 34
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "hrsprwk1",
+        "line": 246,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 246,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 247,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Drop self-employed (see AB 95)",
+    "line": 249,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// drop if both self-employed or family business/farm/work without pay",
+    "line": 250,
+    "column": 68
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 250,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "empltyp1",
+        "line": 250,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 250,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 250,
+        "column": 20
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 250,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "empltyp1",
+        "line": 250,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 250,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 250,
+        "column": 34
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 250,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "empltyp2",
+        "line": 250,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 250,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 250,
+        "column": 50
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 250,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "empltyp2",
+        "line": 250,
+        "column": 54
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 250,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 250,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 251,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* From ref person to m/f",
+    "line": 253,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 254,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "racem",
+        "line": 254,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 254,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 255,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "racem",
+        "line": 255,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 255,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 255,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 255,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 255,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 256,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "racem",
+        "line": 256,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "race2",
+        "line": 256,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 256,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 256,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 256,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 257,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "racef",
+        "line": 257,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 257,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 258,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "racef",
+        "line": 258,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "race2",
+        "line": 258,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 258,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 258,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 258,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 259,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "racef",
+        "line": 259,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ref_race",
+        "line": 259,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sex_ref",
+        "line": 259,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 259,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 259,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* keep variables we need and save",
+    "line": 261,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 262,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mchar",
+        "line": 262,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"racem ageclassm educlassm\"",
+        "line": 262,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 263,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fchar",
+        "line": 263,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"racef ageclassf educlassf\"",
+        "line": 263,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 264,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 264,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`hhchar'",
+        "line": 264,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`mchar'",
+        "line": 264,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`fchar'",
+        "line": 264,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 265,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 265,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`hhchar'",
+        "line": 265,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`mchar'",
+        "line": 265,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`fchar'",
+        "line": 265,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 266,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 266,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 266,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "coupandfam.dta",
+        "line": 266,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 266,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -----------",
+    "line": 268,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* H/W Couples",
+    "line": 269,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* -----------",
+    "line": 270,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 271,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 271,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 271,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "coupandfam.dta",
+        "line": 271,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 272,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 272,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 272,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "coup.dta",
+        "line": 272,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 272,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Husband and wife only",
+    "line": 273,
+    "column": 22
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 273,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fam_type",
+        "line": 273,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 273,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 273,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 274,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 275,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 275,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 275,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "coup.dta",
+        "line": 275,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 275,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 276,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 276,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 276,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 276,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "coup.txt",
+        "line": 276,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 276,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 276,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------",
+    "line": 278,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* H/W Families (=H/W couples with and without kids)",
+    "line": 279,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------",
+    "line": 280,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 281,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 281,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 281,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "coupandfam.dta",
+        "line": 281,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 282,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 282,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 282,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "fam.dta",
+        "line": 282,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 282,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// keep only families (=H/W couples with and without kids)",
+    "line": 283,
+    "column": 38
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 283,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fam_type",
+        "line": 283,
+        "column": 11
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 283,
+        "column": 19
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 283,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 283,
+        "column": 21
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 283,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "fam_type",
+        "line": 283,
+        "column": 25
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 283,
+        "column": 33
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 283,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 283,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 284,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 285,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 285,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 285,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "fam.dta",
+        "line": 285,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 285,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 286,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 286,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "fmlydsample",
+        "line": 286,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 286,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "fam.txt",
+        "line": 286,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 286,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 286,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*log close",
+    "line": 288,
+    "column": 1
+  }
+]

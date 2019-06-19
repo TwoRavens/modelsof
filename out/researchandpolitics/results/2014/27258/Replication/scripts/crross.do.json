@@ -1,0 +1,2098 @@
+[
+  {
+    "id": "comment",
+    "value": "/**********************************************************************\nFile-Name:    crross.do                         \nDate:         May 25th, 2009                                    \nAuthor:       Fernando Martel                                 \nPurpose:      Convert Ross (2006) country codes to universal country codes.\n              Article claims to be using WB country codes but uses YUG \n              for Serbian and Montenegro, WB does not have YUG but SCG\n              Also need universal codes to merge ACLP data after those data \n              are also converted to universal ctycodes.\nData Input:   - main_replication_data.dta\n              Received from author via e-mail Feb 25th 2007.  \n              Contains ANNUAL data used in the paper, except for HIV data \n              and democratic years.\n              Data spans 1965 to 2000\n              - replication data - 5 year panels.dta\n              Received from author via e-mail Aug 18th 2008. \n              Contains QUINQUENNIAL data used in the estimations. \n              Data spans 1970 to 2000\nOutput File:  None\nData Output:  ross1y and ross5y                                   \nPrevious file:crmaster.do\nStatus:       Complete                                     \nMachine:      IBM, X201 tablet running Windows 7 64-bit SP 1                                \n*************************************************************************/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// Set global path to working directory for this task",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 6,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 7,
+        "column": 1
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 7,
+        "column": 2
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "Users",
+        "line": 7,
+        "column": 4
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Fernando",
+        "line": 7,
+        "column": 10
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Documents",
+        "line": 7,
+        "column": 19
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "docs",
+        "line": 7,
+        "column": 29
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "research_projects",
+        "line": 7,
+        "column": 34
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Replication",
+        "line": 7,
+        "column": 52
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 7,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "data_clean",
+        "line": 7,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$path\"",
+        "line": 8,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*==========================================================================",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*ANNUAL DATA",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Change codes in annual data",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*==========================================================================",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Load Ross annual dataset",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 19,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\main_replication_data.dta\"",
+        "line": 20,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\".\\ross1y.dta\"",
+        "line": 21,
+        "column": 1
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 21,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 22,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Add wbctycode variable for merging into cty dictionary ",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------------",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Ross claims to be using these (see id label)",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 27,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 28,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 28,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "cty_name",
+        "line": 28,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 28,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 29,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 29,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Sort universal ctycode and ctyname variables on wbctycode so we can merge ",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* using data dictionary",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -------------------------------------------------------------------------",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 34,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctydic",
+        "line": 35,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 35,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 36,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 36,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctydic",
+        "line": 37,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 37,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 38,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* Merge ctycode ctyname",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ---------------------",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 42,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 43,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 43,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 43,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 44,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 45,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 45,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ctydic",
+        "line": 45,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 45,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 45,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 45,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 46,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 47,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "cty_name",
+        "line": 47,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 47,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 47,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 48,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* The only occassion where _merge==1 is for YUG.",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Ross (2006) claims to be using WB ctycode, but WB has no code for YUG",
+    "line": 51,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* YUG here refers to Serbia and Montenegro",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* YUG war starts 1991, when Solvenia and Croatia declare independence",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code this as Yugoslavia2",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1993-07-28 (Newsletter III-45): Numeric code of Yugoslavia changed from ",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 890 to 891 (a consequence of the splitting off of Bosnia and Herzegovina,",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Croatia, Macedonia, and Slovenia).",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* What remains is Serb & Mon. (which splits in 2006, beyond our sample)",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* The correct ctycode is SCG",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* See http://www.infoplease.com/spot/yugotimeline1.html",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Replace YUG with SCG",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* --------------------",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* In theory should replace for years >=1991 but replace all the way back ",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* since that is what Ross (2006) does.",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 66,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"SCG\"",
+        "line": 66,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 66,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"YUG\"",
+        "line": 66,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 67,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Serbia and Montenegro\"",
+        "line": 67,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 67,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 67,
+        "column": 51
+      },
+      {
+        "id": "string",
+        "value": "\"SCG\"",
+        "line": 67,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 68,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "cty_name",
+        "line": 68,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 68,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 68,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cty_name",
+        "line": 69,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 69,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Note ctydict has more countries and territories tha Ross (2006)",
+    "line": 71,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* I wil drop these",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 73,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 73,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Coutry dic has more countries and territories tha Ross",
+    "line": 75,
+    "column": 19
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 75,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 75,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 75,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 76,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 77,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "cty_name",
+        "line": 77,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 77,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create new numeric cty var",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* --------------------------",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "encode",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 81,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 81,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ctynum",
+        "line": 81,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "move",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctynum",
+        "line": 82,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 82,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 83,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 83,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 83,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross1y",
+        "line": 84,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 84,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*=========================================================================",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*QUINQUENNIAL DATA",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*=========================================================================",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Load Ross 5y dataset",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 93,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\replication data - 5 year panels.dta\"",
+        "line": 94,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\".\\ross5y.dta\"",
+        "line": 95,
+        "column": 2
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 95,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 96,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Add wbctycode variable for merging into cty dictionary ",
+    "line": 98,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ------------------------------------------------------",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Ross (2006) claims to be using EDR ctry codes (var id label:\"3 letter ",
+    "line": 100,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* country code from WDR classification\")",
+    "line": 101,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 102,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 102,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 103,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 103,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 103,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 103,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 104,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 104,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Sort universal ctycode and ctyname variables on wbctycode so we can merge ",
+    "line": 106,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* using data dictionary",
+    "line": 107,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -------------------------------------------------------------------------",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 109,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctydic",
+        "line": 110,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 110,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 111,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 111,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctydic",
+        "line": 112,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 112,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 113,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Merge ctycode ctyname",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*---------------------",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 117,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 118,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 118,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 119,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 119,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ctydic",
+        "line": 119,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 119,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 119,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 119,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wbctycode",
+        "line": 120,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 121,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 121,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 121,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Ross (2006) claims to be using WB ctycode, but WB has no code for YUG",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* YUG here refers to Serbia and Montenegro",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* YUG war starts 1991, when Solvenia and Croatia declare independence",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* ACLP code this as Yugoslavia2",
+    "line": 126,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1993-07-28 (Newsletter III-45): Numeric code of Yugoslavia changed from 890 to 891",
+    "line": 127,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* (a consequence of the splitting off of Bosnia and Herzegovina, Croatia, Macedonia, and Slovenia).",
+    "line": 128,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* What remains is Serb & Mon. (which splits in 2006, beyond our sample)",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* The correct ctycode using Ross (2006) logic is SCG",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* See http://www.infoplease.com/spot/yugotimeline1.html",
+    "line": 131,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* duplicates e  ctycode id ctyname, clean",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Since Ross runs current countries back into history",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Hence change his coding of Yugoslavia as YUG to SCG ",
+    "line": 135,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Replace YUG with SCG for years >=1991",
+    "line": 136,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 137,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"SCG\"",
+        "line": 137,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 137,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 137,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"YUG\"",
+        "line": 137,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 138,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Serbia and Montenegro\"",
+        "line": 138,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 138,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 138,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"YUG\"",
+        "line": 138,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 139,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 139,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 139,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "ctyname",
+        "line": 139,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 140,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 140,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 140,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 141,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 141,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 141,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 141,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 142,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 143,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "country",
+        "line": 143,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Note Cyprus (CYP) only has data for Polity and small state dummy.",
+    "line": 145,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* All other data are mssing in quinquennial data but",
+    "line": 146,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* are avalable in annual data!",
+    "line": 147,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 148,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 148,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 148,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 148,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi",
+        "line": 148,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "logCMRwdi_1",
+        "line": 148,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "logDEMYRS_1",
+        "line": 148,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 149,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 149,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "logHIV_1",
+        "line": 149,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "logIMRunicef_1",
+        "line": 149,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "logIMRwdi_1",
+        "line": 149,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "smallstate",
+        "line": 149,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "transition_1",
+        "line": 150,
+        "column": 1
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 150,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 150,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 150,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clean",
+        "line": 150,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "noobs",
+        "line": 150,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 150,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Create new numeric cty var",
+    "line": 153,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "encode",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 154,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 154,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ctynum",
+        "line": 154,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "move",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctynum",
+        "line": 155,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 155,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctycode",
+        "line": 156,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 156,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 156,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ross5y",
+        "line": 157,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 157,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 159,
+      "column": 1
+    }
+  }
+]

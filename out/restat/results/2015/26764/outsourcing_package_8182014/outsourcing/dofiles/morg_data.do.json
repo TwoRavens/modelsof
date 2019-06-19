@@ -1,0 +1,2100 @@
+[
+  {
+    "command": {
+      "id": "#delimit",
+      "value": "#delimit",
+      "line": 1,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ";",
+        "value": ";",
+        "line": 1,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 2,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 3,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 3,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 4,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "800",
+        "line": 4,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 6,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 6,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "Sastemp",
+        "line": 6,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 7,
+        "column": 8
+      },
+      {
+        "id": "~",
+        "value": "~",
+        "line": 7,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 8,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "5000m",
+        "line": 8,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 10,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 10,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 10,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*log using $path/research/outsourcing/logfiles/morg_data.log, replace;",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************************************;",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*==============================================================\n Program: morg_data.do\n Author:  Avi Ebenstein\n Created: June 2007\n Purpose: Pool together annual CEPR CPS MORG files and\n          keep only those employed or unemployed\n          (excluding those not in labor force),\n          age 16-64. I use a consistent variable\n          for years of education provided by CEPR, and assign\n          the workers consistent occupation and\n          industry codes. The occupation is used to gather\n          info on the skill mix, and one can map SIC to\n          The resulting data set is saved as morg_data.dta,\n          and the manufacturing subset is morg_man7090.dta.\n==============================================================*/",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "comment",
+        "value": "/*\ngen a=1;\nset obs 1;\nforvalues year=1979/2002{;\ncd ~/data/cps/morg/datafiles/;\n!                     rm    ~/data/cps/morg/datafiles/cepr_org_`year'.dta -f;\n!                     unzip $path/data/cps/morg/datafiles/cepr_org_`year'_dta.zip;                      \n                    };\n*/",
+        "line": 15,
+        "column": 1
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Assign occupation, industry, and skills of workers consistently across years ;",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************************************************;",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************;",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "comment",
+      "value": "/*\nforvalues year=1979/2002{;\n                            use $path/data/cps/morg/datafiles/cepr_org_`year'.dta, clear;\n                         \n                            tab year;\n\n                            if `year'>=1979 & `year'<=1982{;\n                                                       sort occ70;\n                                                       merge occ70 using $path/research/outsourcing/autor/dot91-70;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                       \n                                                       sort ind70;\n                                                       merge ind70 using $path/research/outsourcing/autor/ind70;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                     };\n\n                            if `year'>=1983 & `year'<=1991{;\n                                                       sort occ80;\n                                                       merge occ80 using $path/research/outsourcing/autor/occ80;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n\n                                                       sort occ8090;\n                                                       merge occ8090 using $path/research/outsourcing/autor/dot91-8090;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                       \n                                                       sort ind80;\n                                                       merge ind80 using $path/research/outsourcing/autor/ind80;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                     };\n\n                            if `year'>=1992 & `year'<=2002{;\n                                                       capture rename occ80 occ90;\n                                                       sort occ90;\n                                                       merge occ90 using $path/research/outsourcing/autor/occ90;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                                     \n                                                       sort occ8090;\n                                                       merge occ8090 using $path/research/outsourcing/autor/dot91-8090;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                                     \n                                                       capture rename ind80 ind90;\n                                                       sort ind90;\n                                                       merge ind90 using $path/research/outsourcing/autor/ind90;\n                                                       tab _merge;\n                                                       keep if _merge==1|_merge==3;\n                                                       drop _merge;\n                                                     };\n!                                                     rm $path/data/cps/morg/datafiles/cepr_org_`year'.dta, replace;\n                                                      save $path/research/outsourcing/datafiles/morg`year', replace;\n                       };\n*/",
+      "line": 20,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*  Bring in individual years ;",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****************************;",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*use $path/data/cps/morg/datafiles/morg1979;",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*for num 1980/2002: append using $path/data/cps/morg/datafiles/morgX;",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 29,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 29,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 29,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 29,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "outsourcing",
+        "line": 29,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 29,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "datafiles",
+        "line": 29,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 29,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "morg1979",
+        "line": 29,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "num",
+        "line": 30,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1980",
+        "line": 30,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 30,
+        "column": 14
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 30,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 30,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 30,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 30,
+        "column": 33
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 30,
+        "column": 39
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "outsourcing",
+        "line": 30,
+        "column": 48
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "datafiles",
+        "line": 30,
+        "column": 60
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "morgX",
+        "line": 30,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*save $path/data/cps/morg/datafiles/temp, replace;",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*use $path/data/cps/morg/datafiles/temp,clear;",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*********************;",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Education in years ;",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*********************;",
+    "line": 37,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 39,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 39,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 40,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "10",
+        "line": 40,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 40,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 40,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 41,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "12",
+        "line": 41,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 41,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 41,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 41,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "13",
+        "line": 42,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 42,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 42,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 42,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 43,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "16",
+        "line": 43,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 43,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 43,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 43,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 44,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "18",
+        "line": 44,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "educ",
+        "line": 44,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 44,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 44,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*********************;",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Experience in years;",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*********************;",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "exper",
+        "line": 50,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 50,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 50,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 50,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "yrsed",
+        "line": 50,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 50,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 50,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 50,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 50,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "exper2",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "exper",
+        "line": 51,
+        "column": 12
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "exper",
+        "line": 51,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "expercat",
+        "line": 52,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 52,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "exper",
+        "line": 52,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 52,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 52,
+        "column": 30
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 52,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 52,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 52,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "21",
+        "line": 52,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 52,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "31",
+        "line": 52,
+        "column": 38
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 52,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "99",
+        "line": 52,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************;",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* NBER comments on calculating hourly wage ;",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*******************************************;",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Earnings are collected per hour for hourly workers, and per week for other workers. If you want a consistent hourly wage series during entire period, you should use earnwke/uhourse. This gives imputed hourly wage for weekly workers and actual hourly wage for hourly workers. But check earnwke for top-coding. Do not use any wage data that may be present for self-employed workers.;",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Ann - We are relying on the CEPR topcoding adjustment;",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*********************;",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Hourly wage        ;",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*********************;",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lwage",
+        "line": 66,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 66,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "rw_ot",
+        "line": 66,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********************;",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Race              ;",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "********************;",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nonwhite",
+        "line": 72,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wbho",
+        "line": 72,
+        "column": 14
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 72,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 72,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********************************************************;",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Drop self-employed workers and those neither employed ;",
+    "line": 75,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* or unemployed (i.e not in the labor force)            ;",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "********************************************************;",
+    "line": 77,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 79,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 79,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 79,
+        "column": 13
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 79,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 79,
+        "column": 15
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 79,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 79,
+        "column": 20
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 79,
+        "column": 23
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 79,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "64",
+        "line": 79,
+        "column": 25
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 79,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "selfemp",
+        "line": 79,
+        "column": 32
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 79,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 79,
+        "column": 41
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 79,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "nilf",
+        "line": 79,
+        "column": 47
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 79,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 79,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********************************;",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* The MORG weight is 3X too big ;",
+    "line": 82,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "********************************;",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "earnwt",
+        "line": 85,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "orgwgt",
+        "line": 85,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 85,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 85,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************;",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Add a 3-digit SIC code to manufacturing workers     ;",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************;",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Here, I use ind7090 to retrieve man7090. Elsewhere, ;",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* match data in sic87 (e.g. qew) to man7090           ;",
+    "line": 91,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******************************************************;",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* merge with man7090;",
+    "line": 94,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind7090",
+        "line": 95,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind7090",
+        "line": 96,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 96,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 96,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 96,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 96,
+        "column": 27
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 96,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "outsourcing",
+        "line": 96,
+        "column": 36
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 96,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "autor",
+        "line": 96,
+        "column": 48
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 96,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "ind7090",
+        "line": 96,
+        "column": 54
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 96,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "man7090",
+        "line": 96,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 97,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 98,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 98,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 98,
+        "column": 17
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 98,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 98,
+        "column": 19
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 98,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 98,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 99,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 101,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 101,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 101,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 101,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "outsourcing",
+        "line": 101,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 101,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "autor",
+        "line": 101,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 101,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "labels_ind7090.do",
+        "line": 101,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 102,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 102,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 102,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 102,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "outsourcing",
+        "line": 102,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 102,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "autor",
+        "line": 102,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 102,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "labels_man7090.do",
+        "line": 102,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 104,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"CPS MORG workers 1979-2002\"",
+        "line": 104,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 105,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 105,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 105,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 105,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cps",
+        "line": 105,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 105,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "morg",
+        "line": 105,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 105,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "datafiles",
+        "line": 105,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 105,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "morg_data",
+        "line": 105,
+        "column": 36
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 105,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 107,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "man7090",
+        "line": 107,
+        "column": 9
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 107,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 107,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 108,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "man7090",
+        "line": 108,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 109,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"CPS MORG workers in manufacturing 1979-2002\"",
+        "line": 109,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 111,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 111,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "research",
+        "line": 111,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 111,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "outsourcing",
+        "line": 111,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 111,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "datafiles",
+        "line": 111,
+        "column": 33
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 111,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "morg_man7090",
+        "line": 111,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 111,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "************************************************;",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Unemployed and smaller copies of the data     ;",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************************************************;",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 117,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 117,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 117,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 117,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "cps",
+        "line": 117,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 117,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "morg",
+        "line": 117,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 117,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "datafiles",
+        "line": 117,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 117,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "morg_data",
+        "line": 117,
+        "column": 35
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 117,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "********************;",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Save a small copy ;",
+    "line": 120,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "********************;",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 123,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 124,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 124,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "year",
+            "line": 124,
+            "column": 4
+          }
+        ]
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "10000",
+        "line": 124,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 124,
+        "column": 18
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 124,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 125,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$path",
+        "line": 125,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 125,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 125,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 125,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cps",
+        "line": 125,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 125,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "morg",
+        "line": 125,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 125,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "datafiles",
+        "line": 125,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 125,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "morg_data_small",
+        "line": 125,
+        "column": 36
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 125,
+        "column": 52
+      }
+    ]
+  }
+]

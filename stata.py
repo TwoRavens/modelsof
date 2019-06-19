@@ -115,9 +115,9 @@ class Lexer:
         pos, line, col = self.get_current()
         while not ch or self.input[self.position - 1:self.position + 1] != end:
             self.read_char()
-            if self.ch == '\0' or self.peek_char() == '\n' and end != '*/':
+            if self.ch == '\0' or self.peek_char() == '\n' and not end in ('*/', '"'):
                 break
-            if  not ch and self.ch == end and not (end == "'" and self.peek_char() == '"'):
+            if not ch and self.ch == end and not (end == "'" and self.peek_char() == '"'):
                 break
         return self.token(id, self.input[pos:self.position + 1], line, col)
 
@@ -229,25 +229,23 @@ class Parser(object):
                 while len(command) > 1 and command[0].value in prefix_commands:
                     head = command[0].value
                     if head in prefix_commands:
-                        pre.append(self.parse_command(command[:1]))
-                        if command[1].value == ':':
-                            del command[1]
-                        command = command[1:]
-                        continue
-                    if head in prefix_commands:
-                        buf = []
-                        for i, x in enumerate(command):
-                            if x.value != ':':
-                                buf.append(x)
-                            else:
+                        vals = [x.value for x in command]
+                        try:
+                            idx = vals.index(':')
+                            pre.append(self.parse_command(command[:idx]))
+                            command = command[idx + 1:]
+                        except:
+                            if head == 'eststo':
                                 break
-                        if buf == command:
-                            break
-                        pre.append(self.parse_command(buf))
-                        command = command[i + 1:]
+
+                            pre.append(self.parse_command(command[:1]))
+                            command = command[1:]
                         continue
 
-                command = self.parse_command(command)
+                if pre and not command:
+                    command, pre = pre[-1], pre[:-1]
+                else:
+                    command = self.parse_command(command)
                 varlist = command.get('varlist', [])
                 cmd = OrderedDict(command=command['command'])
                 val = command['command'].value
@@ -382,7 +380,7 @@ class Encoder(json.JSONEncoder):
 
 if __name__ == '__main__':
     journal = ''
-    pattern = f'out/*/downloads/2018/**/*'
+    pattern = f'out/*/downloads/**/*'
     cmds, regs, stats = Counter(), Counter(), []
     others = Counter()
     for file in glob.glob(f'{pattern}.do', recursive=True):

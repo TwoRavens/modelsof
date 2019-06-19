@@ -1,0 +1,4465 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 1,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 1,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 2,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 2,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 2,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*-------------------------------------------------\nPrepare imputation of nut facts for unmatched products\ndiamondr last modified june 2018\n\n1) Prepare nut facts for imputation\n2) Do nutrient imputation\n3) Reconvert back to perUPC level\n4) Impute Nuts for products with no grams measure\n5) Tidy & save\n---------------------------------------------------*/",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\nglobal MAIN \"C:/Users/ccwright/Dropbox/NutritionandIncome\"\nglobal LOCAL \"C:\\Users\\ccwright\\Desktop\\RF work\\NutritionandIncome_LOCAL\"\nglobal dataout \"$MAIN\\Analysis\\Data\\NutritionFacts\"\nglobal TEMP \"$LOCAL\\NutritionFacts\\TMP\"\nglobal homescan \"$LOCAL\\NielsenHMS\"\n\n\n//Rebecca's paths\nglobal MAIN \"C:/Users/diamondr/Dropbox/NutritionandIncome\"\nglobal dataout \"$MAIN\\Analysis\\Data\\NutritionFacts\"\nglobal LOCAL \"D:\\nielsen\"\nglobal nutfactslocal \"$LOCAL/NutritionFacts\"\nglobal TEMP \"$LOCAL/TMP\"\nglobal hms \"$LOCAL/stata_datasets\"\n*/",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 7,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 7,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*---------------------------------------------------\n1) Prepare nutrition facts data\n---------------------------------------------------*/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals\\Calculations\\NutritionFacts/gladson_nut_facts_for_imp_outliers_dropped.dta\"",
+        "line": 10,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 10,
+        "column": 94
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 12,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 12,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 12,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 12,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 14,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"SALAD DRESSING MIRACLE WHIP\"",
+        "line": 14,
+        "column": 30
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regex",
+        "line": 14,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 14,
+        "column": 69
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 14,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"MIRACLE WHIP\"",
+        "line": 14,
+        "column": 91
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 16,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_group_descr",
+        "line": 16,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 16,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"PET FOOD\"",
+        "line": 16,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 17,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_descr",
+        "line": 17,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 17,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"NON-FOOD GROCERY\"",
+        "line": 17,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 18,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "department_descr",
+        "line": 18,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 18,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\" GENERAL MERCHANDISE\"",
+        "line": 18,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 19,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_group_descr",
+        "line": 19,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 19,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"KITCHEN GADGETS\"",
+        "line": 19,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// These ar due to false matches due to not being able to match on upc_ver_uc to Gladson data",
+    "line": 20,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 21,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 21,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 21,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"BAGS - LAWN & LEAF\"",
+        "line": 21,
+        "column": 31
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 21,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 21,
+        "column": 54
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 21,
+        "column": 74
+      },
+      {
+        "id": "string",
+        "value": "\"BATHROOM ACCESSORY\"",
+        "line": 21,
+        "column": 76
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 21,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 21,
+        "column": 99
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 21,
+        "column": 119
+      },
+      {
+        "id": "string",
+        "value": "\"BURNER AND RANGE APPLIANCE\"",
+        "line": 21,
+        "column": 121
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 22,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 22,
+        "column": 3
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"COFFEE AND TEA MAKER APPLIANCE\"",
+        "line": 22,
+        "column": 25
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 22,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 22,
+        "column": 60
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 80
+      },
+      {
+        "id": "string",
+        "value": "\"LAMPS - INCANDESCENT\"",
+        "line": 22,
+        "column": 82
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 22,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 22,
+        "column": 107
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 127
+      },
+      {
+        "id": "string",
+        "value": "\"STORAGE AND SPACE MANAGEMENT\"",
+        "line": 22,
+        "column": 129
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 23,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 23,
+        "column": 3
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 23,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"UNCLASSIFIED PHOTOGRAPHIC SUPPLIES\"",
+        "line": 23,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Dropping post 2006 magnet data",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 27,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 27,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 27,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"MAGNET DATA\"",
+        "line": 27,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Encode categorical variables",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "productfixedeff1",
+        "line": 31,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 31,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "product_descr",
+        "line": 31,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 31,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "productfixedeff2",
+        "line": 32,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 32,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "type_descr",
+        "line": 32,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 32,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "productfixedeff3",
+        "line": 33,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 33,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "flavor_descr",
+        "line": 33,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 33,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Fill in zeros for blank fat/salt dummies",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 37,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 37,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 37,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "dumnofat",
+        "line": 37,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 37,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "dumlesssugarother",
+        "line": 37,
+        "column": 34
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 37,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 38,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 38,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 38,
+        "column": 20
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 38,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 38,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Products to have nut facts imputed",
+    "line": 42,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "impute_flag",
+        "line": 43,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 43,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 43,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 43,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "has_good_data",
+        "line": 45,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 45,
+        "column": 19
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 45,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 45,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Check to make sure every module has data to impute from",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "obs_for_imput",
+        "line": 48,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 48,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "has_good_data",
+        "line": 48,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 48,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 48,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 49,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals\\Calculations\\NutritionFacts/nut_facts_imputation.dta\"",
+        "line": 51,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 51,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*---------------------------------------------------\n2) NUTRIENT IMPUTATION\n---------------------------------------------------*/",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*use \"$TEMP\\nut_facts_imputation.dta\", clear",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matsize",
+        "line": 58,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 58,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "****Dropping Modules where there is no data to impute from. Will return to these.***",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 61,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "obs_for_imput",
+        "line": 61,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 61,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 61,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "milk_group",
+        "line": 63,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 63,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "MilkFat",
+        "line": 63,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 63,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*********************************** IMPUTE NUT FACTS HERE********************************",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*cap log close",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*log using \"$MAIN\\Analysis\\Output\\NutritionFacts\\nut_fact_imputation_gladson_fe.log\", replace",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 68,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 68,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "levelsof",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 69,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 69,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "levels",
+        "line": 69,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "module",
+        "line": 70,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 70,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 70,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "levels",
+        "line": 70,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 70,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 71,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 71,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 71,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 72,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 72,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 72,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 72,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 72,
+        "column": 25
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 72,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat_per100g",
+        "line": 72,
+        "column": 40
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 72,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 73,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`module'\"",
+        "line": 73,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "{",
+      "value": "{",
+      "line": 74,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 74,
+          "column": 3
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 75,
+      "column": 3
+    },
+    "meta": {
+      "predictors": 6
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 75,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "dum",
+        "line": 75,
+        "column": 13
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 75,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "i.productfixedeff1",
+        "line": 75,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "i.productfixedeff2",
+        "line": 75,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "i.productfixedeff3",
+        "line": 75,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "i.milk_group",
+        "line": 75,
+        "column": 76
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 75,
+        "column": 100
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 75,
+        "column": 108
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 75,
+        "column": 113
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 134
+      },
+      {
+        "id": "string",
+        "value": "\"`module'\"",
+        "line": 75,
+        "column": 137
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aweight",
+        "line": 75,
+        "column": 90
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 76,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 76,
+        "column": 11
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 76,
+        "column": 19
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 76,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\"`module'\"",
+        "line": 76,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 76,
+        "column": 55
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 78,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 78,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 78,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 78,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 46
+      },
+      {
+        "id": "string",
+        "value": "\"`module'\"",
+        "line": 78,
+        "column": 49
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 78,
+        "column": 60
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 78,
+        "column": 62
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 78,
+        "column": 69
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 79,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 79,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*replace `var'_r2 = e(r2) if product_module_descr_hms == \"`module'\"\t",
+    "line": 82,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*replace `var'_n = e(N) if product_module_descr_hms == \"`module'\"\t",
+    "line": 83,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 86,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 86,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 86,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Predictions for observations which have product characteristics not seen in sample",
+    "line": 89,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 90,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 90,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 90,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 90,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 90,
+        "column": 26
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 90,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat_per100g",
+        "line": 90,
+        "column": 41
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 90,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 91,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 91,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 91,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 91,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 91,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 91,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 92,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 92,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 92,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 92,
+        "column": 25
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 92,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 92,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 93,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 93,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Cleaning up the negative nutrients. Most of these are products which should have nutrients very close to zero.",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 98,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 98,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 98,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 98,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 98,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat_per100g",
+        "line": 98,
+        "column": 39
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 98,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 99,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 99,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 99,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 99,
+        "column": 21
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 99,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 99,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Merge back in data which could not be imputed by regression",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//drop _merge",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 105,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 105,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 105,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 105,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 106,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 106,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 106,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 106,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 106,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 106,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals\\Calculations\\NutritionFacts/nut_facts_imputation.dta\"",
+        "line": 106,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Impute Nut facts for modules that only had 1 obv from Gladson",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 109,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 109,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 109,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 109,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 109,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat_per100g",
+        "line": 109,
+        "column": 39
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 109,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 110,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 110,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 110,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "obs_for_imput",
+        "line": 110,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 110,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 110,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 110,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 110,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 111,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 111,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 111,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 111,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 111,
+        "column": 30
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 111,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "obs_for_imput",
+        "line": 111,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 111,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 111,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 112,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 115,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr_hms",
+        "line": 117,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 118,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr_hms",
+        "line": 118,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Merge in manually updated Nutrition Info",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 120,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 120,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 120,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr_hms",
+        "line": 120,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 120,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Data\\NutritionFacts/nut_facts_for_missing_modules.dta\"",
+        "line": 120,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "update",
+        "line": 120,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 121,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Dropping UPCs which are missing product_module code and nut facts",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 124,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "product_module_descr_hms",
+        "line": 124,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 124,
+        "column": 33
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 124,
+        "column": 35
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 124,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 124,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 124,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 124,
+        "column": 56
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 124,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "tot_cals",
+        "line": 124,
+        "column": 60
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 124,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 124,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Fixing issues with more grams per 100 than 100",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "grams_nut",
+        "line": 131,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_fat_per100",
+        "line": 131,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 131,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb_per100",
+        "line": 131,
+        "column": 30
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 131,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "g_prot_per100",
+        "line": 131,
+        "column": 45
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 131,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "g_sodium_per100",
+        "line": 131,
+        "column": 60
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 131,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "g_cholest_per100",
+        "line": 131,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 132,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "water_share",
+        "line": 132,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 132,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 132,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "grams_nut",
+        "line": 132,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 132,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 132,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 133,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "avg_water_share",
+        "line": 133,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 133,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "water_share",
+        "line": 133,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 133,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_code",
+        "line": 133,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 134,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "avg_water_share",
+        "line": 134,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 134,
+        "column": 26
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "avg_water_share",
+        "line": 134,
+        "column": 31
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 134,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 134,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 135,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_fat_sat_per100g",
+        "line": 135,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 135,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 135,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 136,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 136,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 136,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 136,
+        "column": 29
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 136,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 136,
+        "column": 43
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 136,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 136,
+        "column": 47
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 136,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 136,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 137,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 137,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 137,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 137,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 137,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 137,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 138,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_fiber_per100g",
+        "line": 138,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 138,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 138,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 139,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 139,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 139,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 139,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 139,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 139,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 140,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 140,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 140,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 140,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 39
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 140,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 140,
+        "column": 43
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 140,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 140,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 141,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 141,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_sugar_per100g",
+        "line": 141,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 141,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 141,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 142,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 142,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 142,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 142,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 142,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 142,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 143,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 143,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 143,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 143,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 143,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 143,
+        "column": 39
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 143,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 143,
+        "column": 43
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 143,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 143,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fiber_sugar_share",
+        "line": 144,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 144,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 144,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 145,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 145,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 145,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fiber_sugar_share",
+        "line": 145,
+        "column": 38
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 145,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 56
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 145,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 145,
+        "column": 60
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 145,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 145,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 148,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nut",
+        "line": 148,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "cals",
+        "line": 148,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat",
+        "line": 148,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat",
+        "line": 148,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_sat",
+        "line": 148,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb",
+        "line": 148,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "g_fiber",
+        "line": 148,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "g_prot",
+        "line": 148,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "g_sugar",
+        "line": 148,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "g_sodium",
+        "line": 148,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "g_cholest",
+        "line": 148,
+        "column": 86
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 148,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 149,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 149,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_per100g",
+        "line": 149,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "100",
+        "line": 149,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 149,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 149,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "_per100g",
+        "line": 149,
+        "column": 35
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 149,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "grams_nut",
+        "line": 149,
+        "column": 45
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 149,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 149,
+        "column": 55
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 149,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "avg_water_share",
+        "line": 149,
+        "column": 59
+      }
+    ],
+    "if": [
+      {
+        "id": "number",
+        "value": "100",
+        "line": 149,
+        "column": 79
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 149,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "grams_nut",
+        "line": 149,
+        "column": 83
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 149,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "grams_nut",
+        "line": 149,
+        "column": 95
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 149,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 149,
+        "column": 106
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 151,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "g_fat_sat_per100g",
+        "line": 151,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_fat_per100g",
+        "line": 151,
+        "column": 28
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 151,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "sat_fat_share",
+        "line": 151,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 152,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "g_fiber_per100g",
+        "line": 152,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 152,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 152,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "fiber_share",
+        "line": 152,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 153,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "g_sugar_per100g",
+        "line": 153,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "g_carb_per100g",
+        "line": 153,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 153,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "sugar_share",
+        "line": 153,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*save \"$TEMP\\imputed_nut_facts.dta\", replace",
+    "line": 155,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*---------------------------------------------------\n3) Reconvert back to perUPC level\n---------------------------------------------------*/",
+    "line": 162,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*use \"$TEMP\\imputed_nut_facts.dta\", clear",
+    "line": 163,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "size1_units_hms",
+        "line": 165,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"OZ\"",
+        "line": 165,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regex",
+        "line": 165,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "size1_units_hms",
+        "line": 165,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 165,
+        "column": 54
+      },
+      {
+        "id": "string",
+        "value": "\"OZ\"",
+        "line": 165,
+        "column": 55
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 165,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 165,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 167,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Grams",
+        "line": 167,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 168,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "multi",
+        "line": 168,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 168,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 169,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "size1_amount",
+        "line": 169,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 169,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "destring",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "product_group_code",
+        "line": 170,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 170,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "include",
+      "line": 171,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Code",
+        "line": 171,
+        "column": 9
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 171,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "DataPrep",
+        "line": 171,
+        "column": 14
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 171,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "OtherNielsen",
+        "line": 171,
+        "column": 23
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 171,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "GetGrams.do",
+        "line": 171,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nut",
+        "line": 175,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "cals",
+        "line": 175,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat",
+        "line": 175,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat",
+        "line": 175,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_sat",
+        "line": 175,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb",
+        "line": 175,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "g_fiber",
+        "line": 175,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "g_prot",
+        "line": 175,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "g_sugar",
+        "line": 175,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "g_sodium",
+        "line": 175,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "g_cholest",
+        "line": 175,
+        "column": 85
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 175,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 176,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 176,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_perUPC",
+        "line": 176,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 176,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 179,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nut",
+        "line": 179,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "cals",
+        "line": 179,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cals_fat",
+        "line": 179,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat",
+        "line": 179,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_sat",
+        "line": 179,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb",
+        "line": 179,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "g_fiber",
+        "line": 179,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "g_prot",
+        "line": 179,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "g_sugar",
+        "line": 179,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "g_sodium",
+        "line": 179,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "g_cholest",
+        "line": 179,
+        "column": 85
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 179,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 180,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 180,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "_perUPC",
+        "line": 180,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 180,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "_per100g",
+        "line": 180,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 180,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 180,
+        "column": 40
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 180,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "Grams",
+        "line": 180,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*foreach nut in cals cals_fat g_fat g_fat_sat g_carb g_fiber g_prot g_sugar g_sodium g_cholest {",
+    "line": 183,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\treplace `nut'_perUPC = tot_`nut' if impute_flag==0 & tot_`nut'~=.",
+    "line": 184,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t}\t",
+    "line": 185,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*save \"$TEMP\\imputednutfacts_v2.dta\", replace",
+    "line": 195,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*---------------------------------------------------\n4) FINAL IMPUTATION FOR ITEMS THAT DONT HAVE WELL DEFINED WEIGHTS/SERVING SIZE\nUSE AVERAGE UPC level nut facts for these within module\n------------------------------------------------------*/",
+    "line": 199,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 200,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ean_13",
+        "line": 200,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 200,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 200,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 200,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "min_year",
+        "line": 200,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "max_year",
+        "line": 200,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "upc_descr",
+        "line": 200,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr",
+        "line": 200,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "product_group_descr",
+        "line": 201,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "department_descr",
+        "line": 201,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "multi",
+        "line": 201,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "size1_code_uc",
+        "line": 201,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "size1_amount",
+        "line": 201,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "size1_units",
+        "line": 201,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "gtin",
+        "line": 202,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "postdate",
+        "line": 202,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_code",
+        "line": 202,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "product_group_code",
+        "line": 202,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "department_code",
+        "line": 202,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "Grams",
+        "line": 202,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "impute_flag",
+        "line": 202,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "cals_perUPC",
+        "line": 202,
+        "column": 88
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 202,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "g_cholest_perUPC",
+        "line": 202,
+        "column": 100
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 204,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "denom",
+        "line": 204,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 204,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 204,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 204,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr_hms",
+        "line": 204,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 206,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nut",
+        "line": 206,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 206,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 206,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cals_perUPC",
+        "line": 206,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 206,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "g_cholest_perUPC",
+        "line": 206,
+        "column": 37
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 206,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 207,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 207,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "quantity",
+        "line": 207,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 207,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 207,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 207,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "denom",
+        "line": 207,
+        "column": 32
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 207,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "product_module_descr_hms",
+        "line": 207,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 208,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 208,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 208,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`nut'",
+        "line": 208,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 208,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 208,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 209,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 209,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 212,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "denom",
+        "line": 212,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "str_upc",
+        "line": 213,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 213,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 216,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 216,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 216,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 216,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 217,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cals_check",
+        "line": 217,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 217,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 217,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "g_carb_per",
+        "line": 217,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 217,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "g_fiber_perUPC",
+        "line": 217,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 217,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "g_prot_per",
+        "line": 217,
+        "column": 47
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 217,
+        "column": 58
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 217,
+        "column": 59
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 217,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "g_fat_per",
+        "line": 217,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*replace cals_perUPC=cals_check if ((cals_perUPC>2*cals_check) | (cals_perUPC<.9*cals_check)) & department_code~=8",
+    "line": 218,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//if ((cals_perUPC>2*cals_check) | (cals_perUPC<.9*cals_check)) & department_code~=8",
+    "line": 219,
+    "column": 33
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cals_perUPC",
+        "line": 219,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cals_check",
+        "line": 219,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 221,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cals_check",
+        "line": 221,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 224,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals\\Data\\NutritionFacts/nut_facts_upc_level_MASTER.dta\"",
+        "line": 224,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 224,
+        "column": 71
+      }
+    ]
+  }
+]

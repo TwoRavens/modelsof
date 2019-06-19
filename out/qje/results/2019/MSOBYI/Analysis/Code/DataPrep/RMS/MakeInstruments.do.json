@@ -1,0 +1,3908 @@
+[
+  {
+    "id": "comment",
+    "value": "/* MakeInstruments.do */",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* This constructs the price instruments",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n6-2018: This has all be incorporated RD other Deflate prices in MovementUPCStoreYear. Not sure what this means.\n\nNote 7-2017 from Hunt\nNext time we remake these data, we should change the following:\n1. Deflate prices in MovementUPCStoreYear\n2. Use parent code instead of retailer code as in the optimal soda tax construction.\n3. NationalPriceAndSalesList is now at the UPC-by-year level.\n\n*/",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* SET UP */",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* File locations */",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*global RMSData = \"../../NutritionandIncomePersonal/Nielsen/KiltsOriginalFiles/nielsen_extracts/RMS\" // on Hunt's computer only",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*global Temp = \"../../NutritionandIncomePersonal/Analysis/Calculations/RMS/\" // This will hold large temporary files",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*global Temp = \"../../NutritionRD/\" // This will hold large temporary files",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearlist",
+        "line": 11,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016\"",
+        "line": 11,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Set up files */",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*clear",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*save \"$Externals/Calculations/RMS/Instruments_DMALevel.dta\", emptyok replace ",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 17,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/Instruments_CountyLevel.dta\"",
+        "line": 18,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "emptyok",
+        "line": 18,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 18,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*save $temp/Instruments_zip3Level.dta, emptyok replace ",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*clear ",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*save \"$Externals/Calculations/RMS/CountyPrices.dta\", emptyok replace",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*clear",
+    "line": 24,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*save \"$Externals/Calculations/RMS/GroupbyYearAveragePrices.dta\", emptyok replace",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*clear",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*save \"$Externals/Calculations/RMS/CountyGroupPriceIndex.dta\", emptyok replace",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Get stores file with DMAs in it */",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\nforeach year in $yearlist {\n\t\n\tinsheet using $RMSData/`year'/Annual_Files/stores_`year'.tsv, clear\n\tsave Calculations/RMS/stores_`year'.dta, replace\n}\n*/",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n**Collect County Price Index\nforeach year in $yearlist {\n\tforeach d in 1 2 3 4 5 6 { // 0 is health&beauty (includes diet aids and vitamins); 8 is alcohol (see ImportHomescan.do; these are excluded from all analysis. 7 is non-food grocery, and 9 is general merchandise. 9999 has prices but is \"unclassified,\" and we have no UPC info for them (e.g. no calorie info), so leave out.\n\t\tdisplay \"This is department `d' for year `year'.\"\n\t\tuse \"$Externals/Calculations/RMS/MovementUPCStoreYear_`d'_`year'.dta\", replace\n\t\t\tif _N==0 {\n\t\t\t\tcontinue\n\t\t\t}\n\t\t** Merge UPC version\n\t\tmerge m:1 upc using \"$Externals/Calculations/RMS/rms_versions_`year'.dta\", keep(match master) nogen keepusing(upc_ver_uc)\n\n\t\t** Merge in cals and group code\n\t\tmerge m:1 upc upc_ver_uc using \"$Externals/Calculations/OtherNielsen/Prepped-UPCs.dta\", keep(match) nogen ///\n\t\t\tkeepusing(group cals_per1 NonFood)\n\t\t\n\t\tdrop if NonFood==1\n\t\tdrop NonFood\n\t\t\n\t\t*Get County\n\t\tgen year=`year'\n\t\tmerge m:1 store_code_uc year using \"$Externals/Calculations/RMS/Stores-Prepped.dta\", keep(match master) keepusing(ChainCodeForIV fips_state_code fips_county_code) nogen\n\n\t\t*Get Nationwide units sold\n\t\tmerge m:1 upc upc_ver_uc year using \"$Externals/Calculations/RMS/NationalPriceandSalesList.dta\",  keep(match master) keepusing(units) nogen\n\t\trename units NationalUnits\n\t\t\n\t\tgen CaloriesSold = round(cals_per1*NationalUnits)\n\t\tgen price_per_cal=price/cals_per1\n\t\t\n\t\t\n\t\tcollapse  (rawsum) CaloriesSold (mean) price_per_cal [fw=CaloriesSold], by(fips_state_code fips_county_code year)\n\t\t\n\t\t\n\t\tgen dep=`d'\n\t\tappend using \"$Externals/Calculations/RMS/CountyPrices.dta\"\n\t\tsaveold \"$Externals/Calculations/RMS/CountyPrices.dta\", replace \n\t\t}\n}\n\tcollapse  (rawsum) CaloriesSold (mean) price_per_cal [fw=CaloriesSold], by(fips_state_code fips_county_code year)\n\tsaveold \"$Externals/Calculations/RMS/CountyPrices.dta\", replace \n\t\n\n*/",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* LOOP OVER YEARS AND CONSTRUCT INSTRUMENTS */",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$yearlist",
+        "line": 42,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 42,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 0 is health&beauty (includes diet aids and vitamins); 8 is alcohol (see ImportHomescan.do; these are excluded from all analysis. 7 is non-food grocery, and 9 is general merchandise. 9999 has prices but is \"unclassified,\" and we have no UPC info for them (e.g. no calorie info), so leave out.",
+    "line": 43,
+    "column": 31
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 43,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 43,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 43,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 43,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 43,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 43,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 43,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 43,
+        "column": 27
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 43,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 44,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"This is department `d' for year `year'.\"",
+        "line": 44,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Get UPC-by-store prices list */",
+    "line": 47,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "* Do these merges all at once because they are each used multiple times and the merges are time-consuming.",
+    "line": 48,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "// , if _n<100000 // temporary limit on observations for de-bugging",
+    "line": 49,
+    "column": 82
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 49,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/MovementUPCStoreYear_`d'_`year'.dta\"",
+        "line": 49,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 49,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Units is sometimes long, but can be int.",
+    "line": 50,
+    "column": 12
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 50,
+      "column": 3
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/*if _N==0 {\n\t\t\tcontinue\n\t\t}\n\t\t*/",
+    "line": 51,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 52,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 52,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`year'",
+        "line": 52,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Merge store code",
+    "line": 53,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 54,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 54,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 54,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 54,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "store_code_uc",
+        "line": 54,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 54,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 54,
+        "column": 32
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/Stores-Prepped.dta\"",
+        "line": 54,
+        "column": 38
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 54,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 54,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 54,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 54,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "ChainCodeForIV",
+        "line": 54,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 54,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "fips_county_code",
+        "line": 54,
+        "column": 148
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Merge UPC version and our group code ",
+    "line": 56,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 57,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 57,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 57,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 57,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 57,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 57,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/rms_versions_`year'.dta\"",
+        "line": 57,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 57,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 57,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 57,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 57,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 57,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 57,
+        "column": 113
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 58,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 58,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 58,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 58,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 58,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 58,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 58,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/OtherNielsen/Prepped-UPCs.dta\"",
+        "line": 58,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 58,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 58,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 58,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 59,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 59,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 59,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "NonFood",
+        "line": 59,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** In some cases we may not have calories or groups at all. In this case, advance to the next.",
+    "line": 62,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 63,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 63,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 64,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 64,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "N",
+        "line": 64,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 64,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 64,
+        "column": 13
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 64,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 64,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 64,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 64,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 64,
+        "column": 24
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 64,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "continue",
+      "line": 65,
+      "column": 5
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 69,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "NonFood",
+        "line": 69,
+        "column": 11
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 69,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 69,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 70,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NonFood",
+        "line": 70,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 71,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 71,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 71,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 71,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "units",
+        "line": 71,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 72,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 72,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "price",
+        "line": 72,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 72,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 72,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 73,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Revenues",
+        "line": 73,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "units",
+        "line": 73,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 73,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "price",
+        "line": 73,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** De-mean (dm stands for de-meaned)",
+    "line": 75,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*rename price local_price",
+    "line": 76,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*merge m:1 upc upc_ver_uc year using \"$Externals/Calculations/RMS/NationalPriceandSalesList.dta\", nogen keep(match master) keepusing(price)",
+    "line": 77,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*rename price NationalPrice",
+    "line": 78,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*rename local_price price",
+    "line": 79,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*gen dm_price = price-NationalPrice",
+    "line": 80,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*gen dm_PricePerCal = dm_price/energy_per1",
+    "line": 81,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 83,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "store_code_uc",
+        "line": 83,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "ChainCodeForIV",
+        "line": 83,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 83,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "fips_county_code",
+        "line": 83,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 83,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 83,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 83,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 83,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "Revenues",
+        "line": 83,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 83,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 83,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 83,
+        "column": 130
+      },
+      {
+        "id": "identifier",
+        "value": "price",
+        "line": 83,
+        "column": 142
+      },
+      {
+        "id": "identifier",
+        "value": "units",
+        "line": 83,
+        "column": 148
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*saveold $Temp/RMS_UPCbyStorePrices_`d'_`year'.dta, replace",
+    "line": 85,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "/* Get Quality Index */",
+    "line": 89,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "/*\n\t\t\t* For each zip and product group, the average price of all UPCs sold (weighted by national units of each UPC)\n\t\tuse $Temp/RMS_UPCbyStorePrices_`d'_`year'.dta, replace\n\t\t** collapse to a list of UPCs sold in each zip3\n\t\tcollapse (first) group cals_per1, by(store_zip3 upc upc_ver_uc)\n\t\tmerge m:1 upc upc_ver_uc using Calculations/RMS/NationalPriceandSalesList.dta, keepusing(NationalPrice NationalUnits) keep(match) nogen\n\t\t\n\t\t\t\n\t\tgen Rev=NationalUnits*NationalPrice\t\n\t\tgen cals=cals_per1*NationalUnits\n\t\t\n\t\t** collapse to the quality index by product group, weighting by national sales\n\t\tcollapse (rawsum) Rev cals   (mean) NationalPrice [fw=NationalUnits], by(store_zip3 group)\n\t\tgen ZipGroupPricePerCalIndex=Rev/cals\n\t\tdrop Rev cals\n\t\trename NationalPrice ZipGroupPriceIndex\n\t\t\n\t\tgen year = `year'\n\t\tappend using Calculations/RMS/ZipGroupPriceIndex.dta\n\t\tsaveold Calculations/RMS/ZipGroupPriceIndex.dta, replace\n\t\t*/",
+    "line": 90,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "/* Get Diamond instruments */",
+    "line": 93,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "* These instrument for prices by zip3. (Finer variation than DMA.)",
+    "line": 94,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*use $Temp/RMS_UPCbyStorePrices_`d'_`year'.dta, clear, if retailer_code!=. // Requires knowing retailer_code",
+    "line": 95,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 97,
+      "column": 25
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 97,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "store_code_uc",
+            "line": 97,
+            "column": 10
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "StoreUnits",
+        "line": 97,
+        "column": 30
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 97,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "units",
+        "line": 97,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 98,
+      "column": 25
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 98,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "store_code_uc",
+            "line": 98,
+            "column": 10
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "StoreGroupRevenues",
+        "line": 98,
+        "column": 30
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 98,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Revenues",
+        "line": 98,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 99,
+      "column": 26
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 99,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "ChainCodeForIV",
+            "line": 99,
+            "column": 10
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MeanStoreGroupRevenues",
+        "line": 99,
+        "column": 31
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 99,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "StoreGroupRevenues",
+        "line": 99,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Get retailer_code-level average price per calorie by UPC, leaving out establishments of that chain in the same area",
+    "line": 101,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*bysort retailer_code upc upc_ver_uc store_zip3: egen retailerzipUPC_TotalPrice = total(PricePerCalorie)",
+    "line": 102,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*bysort retailer_code upc upc_ver_uc store_zip3: gen retailerzipUPC_TotalStores = _N",
+    "line": 103,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "** collapse to the county by retailer by UPC level",
+    "line": 105,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 106,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 106,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 106,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 107,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 107,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "MeanStoreGroupRevenues",
+        "line": 107,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 107,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 107,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 107,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "StoreUnits",
+        "line": 107,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 107,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 107,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "price",
+        "line": 107,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 107,
+        "column": 98
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 107,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 107,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "ChainCodeForIV",
+        "line": 107,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 107,
+        "column": 135
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 107,
+        "column": 139
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 107,
+        "column": 150
+      },
+      {
+        "id": "identifier",
+        "value": "fips_county_code",
+        "line": 107,
+        "column": 166
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 108,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "SxPrice",
+        "line": 108,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 108,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 108,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "price",
+        "line": 108,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 109,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "SxPricePerCal",
+        "line": 109,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 109,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 109,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 109,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen Sxdm_PricePerCal = Stores * dm_PricePerCal",
+    "line": 110,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 112,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "UxPrice",
+        "line": 112,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "StoreUnits",
+        "line": 112,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "price",
+        "line": 112,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Get numerator and denominator of fraction for mean (LO mean price per cal across stores)",
+    "line": 114,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 115,
+      "column": 41
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 115,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "ChainCodeForIV",
+            "line": 115,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 115,
+            "column": 25
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 115,
+            "column": 29
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_TotalPrice",
+        "line": 115,
+        "column": 46
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 115,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "SxPrice",
+        "line": 115,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 116,
+      "column": 41
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 116,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "ChainCodeForIV",
+            "line": 116,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 116,
+            "column": 25
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 116,
+            "column": 29
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_TotalPricePerCal",
+        "line": 116,
+        "column": 46
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 116,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "SxPricePerCal",
+        "line": 116,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*bysort ChainCodeForIV upc upc_ver_uc: egen retailerUPC_Totaldm_PricePerCal = total(Sxdm_PricePerCal)",
+    "line": 117,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 118,
+      "column": 41
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 118,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "ChainCodeForIV",
+            "line": 118,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 118,
+            "column": 25
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 118,
+            "column": 29
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_Stores",
+        "line": 118,
+        "column": 46
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 118,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 118,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Get number and denominator for national prices excluding zipcode",
+    "line": 121,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 122,
+      "column": 26
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 122,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 122,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 122,
+            "column": 14
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "UPC_TotalPrice",
+        "line": 122,
+        "column": 31
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 122,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "UxPrice",
+        "line": 122,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 123,
+      "column": 26
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 123,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 123,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 123,
+            "column": 14
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "UPC_TotalUnits",
+        "line": 123,
+        "column": 31
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 123,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "StoreUnits",
+        "line": 123,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 125,
+      "column": 60
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 125,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 125,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 125,
+            "column": 14
+          },
+          {
+            "id": "identifier",
+            "value": "fips_state_code",
+            "line": 125,
+            "column": 25
+          },
+          {
+            "id": "identifier",
+            "value": "fips_county_code",
+            "line": 125,
+            "column": 41
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CountyUPC_TotalPrice",
+        "line": 125,
+        "column": 65
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 125,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "UxPrice",
+        "line": 125,
+        "column": 94
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 126,
+      "column": 60
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 126,
+          "column": 3
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "upc",
+            "line": 126,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "upc_ver_uc",
+            "line": 126,
+            "column": 14
+          },
+          {
+            "id": "identifier",
+            "value": "fips_state_code",
+            "line": 126,
+            "column": 25
+          },
+          {
+            "id": "identifier",
+            "value": "fips_county_code",
+            "line": 126,
+            "column": 41
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CountyUPC_TotalUnits",
+        "line": 126,
+        "column": 65
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 126,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "StoreUnits",
+        "line": 126,
+        "column": 94
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Get the average price per cal for each UPC at each retailer from stores outside the zip3",
+    "line": 129,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "* Some may be missing if the retailer's only store(s) are in one zip3",
+    "line": 130,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 131,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_LO_Price",
+        "line": 131,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_TotalPrice",
+        "line": 131,
+        "column": 31
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 131,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "SxPrice",
+        "line": 131,
+        "column": 54
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 131,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "retailerUPC_Stores",
+        "line": 131,
+        "column": 64
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 131,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 131,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 132,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_LO_PricePerCal",
+        "line": 132,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_TotalPricePerCal",
+        "line": 132,
+        "column": 37
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 132,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "SxPricePerCal",
+        "line": 132,
+        "column": 66
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 132,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "retailerUPC_Stores",
+        "line": 132,
+        "column": 82
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 132,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "Stores",
+        "line": 132,
+        "column": 101
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen retailerUPC_LO_dm_PricePerCal = (retailerUPC_Totaldm_PricePerCal-Sxdm_PricePerCal)/(retailerUPC_Stores-Stores)",
+    "line": 133,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 135,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NationalPrice",
+        "line": 135,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "UPC_TotalPrice",
+        "line": 135,
+        "column": 23
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 135,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "CountyUPC_TotalPrice",
+        "line": 135,
+        "column": 38
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 135,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "UPC_TotalUnits",
+        "line": 135,
+        "column": 61
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 135,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "CountyUPC_TotalUnits",
+        "line": 135,
+        "column": 76
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 135,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 135,
+        "column": 99
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 136,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "UnitWeight",
+        "line": 136,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "UPC_TotalUnits",
+        "line": 136,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 136,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "CountyUPC_TotalUnits",
+        "line": 136,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 137,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retUPC_LO_dm_noCounty_PriceCal",
+        "line": 137,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_LO_Price",
+        "line": 137,
+        "column": 39
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 137,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 137,
+        "column": 60
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 137,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "NationalPrice",
+        "line": 137,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 139,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnretUPC_LO_dm_noCounty_PriceCal",
+        "line": 139,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 139,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "retailerUPC_LO_Price",
+        "line": 139,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 139,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 139,
+        "column": 64
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 139,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 139,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "NationalPrice",
+        "line": 139,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Now we have a dataset by retailer by area and UPC of average price charged at other establishments within the same retailer outside the area.",
+    "line": 140,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "** Collapse across UPCs to the retailer-by-group-by-area level, weighting by the national sales of each UPC",
+    "line": 142,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 143,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 143,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 143,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 143,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "upc",
+        "line": 143,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "upc_ver_uc",
+        "line": 143,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 143,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 143,
+        "column": 33
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/NationalPriceandSalesList.dta\"",
+        "line": 143,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 143,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "units",
+        "line": 143,
+        "column": 110
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 143,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 143,
+        "column": 122
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 143,
+        "column": 129
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 144,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "units",
+        "line": 144,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "NationalUnits",
+        "line": 144,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 147,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NationalCals",
+        "line": 147,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "round",
+        "line": 147,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "NationalUnits",
+        "line": 147,
+        "column": 26
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 147,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "energy_per1",
+        "line": 147,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 148,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NRevs",
+        "line": 148,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "retailerUPC_LO_Price",
+        "line": 148,
+        "column": 13
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 148,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "NationalUnits",
+        "line": 148,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 151,
+      "column": 3
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "retUPC_LO_dm_noCounty_PriceCal",
+        "line": 151,
+        "column": 11
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 151,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 151,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// So we now have average price per calorie of UPCs within a group, as determined by the prices charged by other establishments within the retailer outside the county.",
+    "line": 156,
+    "column": 87
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 154,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 154,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "MeanStoreGroupRevenues",
+        "line": 154,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "rawsum",
+        "line": 154,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "UnitWeight",
+        "line": 154,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "NationalCals",
+        "line": 154,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "retailer_LO_Price",
+        "line": 154,
+        "column": 77
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "NRevs",
+        "line": 154,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 154,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "NationalPrice",
+        "line": 154,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "reLO_dm_noCounty_PriceCal",
+        "line": 154,
+        "column": 122
+      },
+      {
+        "id": "identifier",
+        "value": "retUPC_LO_dm_noCounty_PriceCal",
+        "line": 154,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "lnretLO_dm_noCounty_PriceCal",
+        "line": 155,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "lnretUPC_LO_dm_noCounty_PriceCal",
+        "line": 155,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "retailer_LO_PricePerCal",
+        "line": 155,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "retailerUPC_LO_PricePerCal",
+        "line": 155,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "NationalCals",
+        "line": 156,
+        "column": 8
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 156,
+        "column": 20
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "fw",
+        "line": 156,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 156,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 156,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "fips_county_code",
+        "line": 156,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 156,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "ChainCodeForIV",
+        "line": 156,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 156,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 157,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "retailer_LO_PricePerCal2",
+        "line": 157,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "retailer_LO_Price",
+        "line": 157,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 157,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "NationalCals",
+        "line": 157,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Collapse to the group-by-area level, weighting by the retailer's average revenues in that product group",
+    "line": 159,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 160,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 160,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "UnitWeight",
+        "line": 160,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 160,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "LO_PricePerCal2",
+        "line": 160,
+        "column": 38
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "retailer_LO_PricePerCal2",
+        "line": 160,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "LO_PricePerCal",
+        "line": 160,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "retailer_LO_PricePerCal",
+        "line": 160,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "lnLO_dm_noCounty_PricePerCal",
+        "line": 161,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "lnretLO_dm_noCounty_PriceCal",
+        "line": 161,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "LO_dm_noCounty_PricePerCal",
+        "line": 161,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "reLO_dm_noCounty_PriceCal",
+        "line": 161,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "NationalPrice",
+        "line": 161,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "MeanStoreGroupRevenues",
+        "line": 162,
+        "column": 8
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 162,
+        "column": 30
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 162,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 162,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 162,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "fips_county_code",
+        "line": 162,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 162,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 162,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 166,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 166,
+        "column": 10
+      },
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/Instruments_CountyLevel.dta\"",
+        "line": 166,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "saveold",
+      "line": 167,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$Externals/Calculations/RMS/Instruments_CountyLevel.dta\"",
+        "line": 167,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 167,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\n\t\t/* Get Hausman instruments */",
+    "line": 172,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "* Both prices and de-meaned prices",
+    "line": 173,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "* Use prices outside the DMA",
+    "line": 174,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 175,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$Temp",
+        "line": 175,
+        "column": 7
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 175,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "RMS_UPCbyStorePrices_",
+        "line": 175,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`d'",
+        "line": 175,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 175,
+        "column": 37
+      },
+      {
+        "id": "`'",
+        "value": "`year'",
+        "line": 175,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 175,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 175,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Collapse to the DMA-by-group level",
+    "line": 177,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 178,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rawsum",
+        "line": 178,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 178,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 178,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 178,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "dm_PricePerCal",
+        "line": 178,
+        "column": 53
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 178,
+        "column": 72
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 178,
+        "column": 84
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 178,
+        "column": 69
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 178,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 178,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "dma_code",
+        "line": 178,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Construct leave-out mean (LO for leave-out)",
+    "line": 180,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 181,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Expend",
+        "line": 181,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 181,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 181,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 181,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 182,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dm_Expend",
+        "line": 182,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dm_PricePerCal",
+        "line": 182,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 182,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 182,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 184,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "TotalExpend",
+        "line": 184,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 184,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "Expend",
+        "line": 184,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 185,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Totaldm_Expend",
+        "line": 185,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 185,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "dm_Expend",
+        "line": 185,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 186,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "TotalCaloriesSold",
+        "line": 186,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 186,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 186,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 188,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "LO_PricePerCal",
+        "line": 188,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "TotalExpend",
+        "line": 188,
+        "column": 25
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 188,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Expend",
+        "line": 188,
+        "column": 37
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 188,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "TotalCalories",
+        "line": 188,
+        "column": 46
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 188,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "Calories",
+        "line": 188,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 189,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "LO_dm_PricePerCal",
+        "line": 189,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "Totaldm_Expend",
+        "line": 189,
+        "column": 28
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 189,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "dm_Expend",
+        "line": 189,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 189,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "TotalCalories",
+        "line": 189,
+        "column": 55
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 189,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "Calories",
+        "line": 189,
+        "column": 69
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 191,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dma_code",
+        "line": 191,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 191,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "LO_PricePerCal",
+        "line": 191,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "LO_dm_PricePerCal",
+        "line": 191,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 192,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 192,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`year'",
+        "line": 192,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 194,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 194,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 194,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 194,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 194,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 194,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Instruments_DMALevel.dta",
+        "line": 194,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "saveold",
+      "line": 195,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 195,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 195,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 195,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 195,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "Instruments_DMALevel.dta",
+        "line": 195,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 195,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*/",
+    "line": 197,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "/* Get average price by group and year */",
+    "line": 200,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "* For comparison and tests of first stages",
+    "line": 201,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*\tuse $Temp/RMS_UPCbyStorePrices_`d'_`year'.dta, replace ",
+    "line": 202,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tcollapse (mean) PricePerCal dm_PricePerCal [pw=CaloriesSold], by(group)*",
+    "line": 203,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tgen year = `year'",
+    "line": 204,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tappend using Calculations/RMS/GroupbyYearAveragePrices.dta",
+    "line": 205,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\tsaveold Calculations/RMS/GroupbyYearAveragePrices.dta, replace",
+    "line": 206,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*\t\terase $Temp/RMS_UPCbyStorePrices_`d'_`year'.dta",
+    "line": 208,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n*Create Percentile Instrument Measure\nuse Calculations/RMS/Instruments_zip3Level.dta, clear\nsort group lnLO_dm\nby group: gen order=[_n]/[_N]\nsaveold   Calculations/RMS/Instruments_zip3Level.dta, replace\n\n*Make group nutrient instruments\nuse Calculations/RMS/NationalPriceandSalesList.dta, clear\nmerge 1:1 upc upc_ver_uc using Calculations/OtherNielsen/Prepped-UPCs.dta, keep(match) nogen\n\ngen NationalCals=round(NationalUnits*cals_per1)\ngen StoreTime30=StoreTime\nreplace StoreTime30=30 if StoreTime>30\ngen StoreTime365=StoreTime\nreplace StoreTime365=365 if StoreTime>365\n\nreplace Fruit=1000*Fruit*Grams/cals_per1\nreplace Veg=1000*Veg*Grams/cals_per1\ndrop if cals_per1==0\ncollapse (mean) StoreTime30 StoreTime365 Convenience *_per1000Cal Fruit Veg [fw=NationalCals], by(group)\n\nsaveold Calculations/RMS/Instruments_group.dta, replace\n\n\n\n\n\n/* Tests */",
+    "line": 214,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 215,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 215,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 215,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 215,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "Instruments_DMALevel.dta",
+        "line": 215,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 215,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 216,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 216,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 216,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 216,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 216,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 216,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 216,
+        "column": 28
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 216,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 216,
+        "column": 41
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 216,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "GroupbyYearAveragePrices.dta",
+        "line": 216,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 217,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 217,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "LO_PricePerCal",
+        "line": 217,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 219,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 219,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 219,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 219,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "Instruments_zip3Level.dta",
+        "line": 219,
+        "column": 22
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 219,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 220,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 220,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 220,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 220,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 220,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 220,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 220,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 220,
+        "column": 28
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 220,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 220,
+        "column": 41
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 220,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "GroupbyYearAveragePrices.dta",
+        "line": 220,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 221,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PricePerCal",
+        "line": 221,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "LO_PricePerCal",
+        "line": 221,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*/",
+    "line": 223,
+    "column": 1
+  }
+]

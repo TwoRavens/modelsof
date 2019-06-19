@@ -1,0 +1,7394 @@
+[
+  {
+    "id": "comment",
+    "value": "* The Ticket to Easy Street?",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Scott Hankins, Mark Hoekstra, Paige Skiba",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* April 12 2010",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* \nThis do file merges the lottery, phonebook and bankruptcy data\nif you have any questions, please contact me\n* Scott Hankins\n* University of Kentucky\n* scott.hankins@gmail.com\n\n*/",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "number",
+      "value": "10",
+      "line": 8,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "version",
+          "line": 8,
+          "column": 1
+        }
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 9,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "macro",
+      "line": 10,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 10,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 10,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 11,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 11,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 11,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 12,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "1g",
+        "line": 12,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 14,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "bank1.smcl",
+        "line": 14,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 14,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\nloads the FL lottery data\n\ngenerates \n    indicators of the game played (lotto, fantasy5)\n    5 digit zip codes (zip5)\n    \n- merge phonebook (unique names at county level) with lottery (fl_lottery.dta) using first/last/county\n    save as fl_lottery_phone.dta\n\n- save the bankruptcy data with only name, county, state, zip, date filed, case_id\n- clean county names\n- saves the whole bankruptcy data as fl_bankruptcy_complete.dta\n- reshape then save as fl_bankruptcy.dta\n- merge with fl_lottery.dta\n\n- adjusts lottery amounts for inflation\n    ftp://ftp.bls.gov/pub/special.requests/cpi/cpiai.txt\n    *  CPI numbers (Annual Averages)\n    *  1988  118.3  207.3/118.3 = 1.7523\n    *  1989  124.0  1.6718\n    *  1990  130.7  1.5861\n    *  1991  136.2  1.522\n    *  1992  140.3  1.4775\n    *  1993  144.5  1.4346\n    *  1994  148.2  1.3988\n    *  1995  152.4  1.3602\n    *  1996  156.9  1.3212\n    *  1997  160.5  1.2916\n    *  1998  163.0  1.2718\n    *  1999  166.6  1.2443\n    *  2000  172.2  1.2038\n    *  2001  177.1  1.1705\n    *  2002  179.9  1.1523\n    *  2003  184.0  1.1266\n    *  2004  188.9  1.0974\n    *  2005  195.3  1.0614\n    *  2006  201.6  => 207.3/201.6 = 1.0283\n    *  2007  207.3  => 207.3/207.3 = 1.0000\n\n- saves merged data as lottery_bankruptcy_county.dta\n\n*/",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* change this to the directory where the data is stored ",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data_dir",
+        "line": 20,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"/media/disk/complete_bank/data\"",
+        "line": 20,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*the data has fixed width fields so this works and it avoids the few misplaced typos (commas) in the city names",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "infix",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 24,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 24,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "44",
+        "line": 24,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "city",
+        "line": 24,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "46",
+        "line": 24,
+        "column": 30
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "63",
+        "line": 24,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 24,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "65",
+        "line": 24,
+        "column": 44
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "74",
+        "line": 24,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 24,
+        "column": 54
+      },
+      {
+        "id": "number",
+        "value": "76",
+        "line": 24,
+        "column": 64
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "85",
+        "line": 24,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 24,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "87",
+        "line": 24,
+        "column": 85
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 87
+      },
+      {
+        "id": "number",
+        "value": "96",
+        "line": 24,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "game_type",
+        "line": 24,
+        "column": 95
+      },
+      {
+        "id": "number",
+        "value": "98",
+        "line": 24,
+        "column": 105
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 107
+      },
+      {
+        "id": "number",
+        "value": "108",
+        "line": 24,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 24,
+        "column": 112
+      },
+      {
+        "id": "identifier",
+        "value": "game_name",
+        "line": 24,
+        "column": 116
+      },
+      {
+        "id": "number",
+        "value": "110",
+        "line": 24,
+        "column": 126
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 129
+      },
+      {
+        "id": "number",
+        "value": "124",
+        "line": 24,
+        "column": 130
+      },
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 24,
+        "column": 134
+      },
+      {
+        "id": "number",
+        "value": "127",
+        "line": 24,
+        "column": 141
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 144
+      },
+      {
+        "id": "number",
+        "value": "139",
+        "line": 24,
+        "column": 145
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 24,
+        "column": 149
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 24,
+        "column": 155
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 24,
+        "column": 165
+      },
+      {
+        "id": "identifier",
+        "value": "FL_lottery_88_08.txt",
+        "line": 24,
+        "column": 166
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 25,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*some zip codes are 9 digit, gen 5 digit zip code ",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 28,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 28,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 28,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 28,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 28,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 28,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"^([0-9][0-9][0-9][0-9][0-9])\"",
+        "line": 28,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date1",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 30,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 30,
+        "column": 23
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 30,
+        "column": 32
+      },
+      {
+        "id": "string",
+        "value": "\"MDY\"",
+        "line": 30,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "format",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date1",
+        "line": 31,
+        "column": 8
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 31,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 31,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "claim_date1",
+        "line": 32,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 32,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 32,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 32,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"MDY\"",
+        "line": 32,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "format",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "claim_date1",
+        "line": 33,
+        "column": 8
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 33,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 33,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 35,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 35,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date1",
+        "line": 36,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 36,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "claim_date1",
+        "line": 37,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 37,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* it looks like some of the drawing and claim dates got reversed (i.e. drawing after claim)",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 40,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 40,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 41,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 41,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "claim_date",
+        "line": 41,
+        "column": 35
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 41,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 41,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 42,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 42,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 42,
+        "column": 29
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 42,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 42,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 43,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 43,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 45,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 45,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 45,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lotto",
+        "line": 47,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "game_name",
+        "line": 47,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 47,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"LOTTO\"",
+        "line": 47,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fantasy5",
+        "line": 48,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "game_name",
+        "line": 48,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 48,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"FANTASY5\"",
+        "line": 48,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* remove the .'s",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 51,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "name",
+        "line": 51,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 51,
+        "column": 30
+      },
+      {
+        "id": "string",
+        "value": "\".\"",
+        "line": 51,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 51,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 51,
+        "column": 38
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 51,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 51,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* remove any ('s",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 53,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 53,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 53,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 53,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\"(\"",
+        "line": 53,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 53,
+        "column": 43
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 53,
+        "column": 45
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 53,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 53,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 54,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 54,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 54,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 54,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\")\"",
+        "line": 54,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 54,
+        "column": 43
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 54,
+        "column": 45
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 54,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 54,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* strip out JR, SR,...",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 56,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 56,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 56,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 56,
+        "column": 33
+      },
+      {
+        "id": "string",
+        "value": "\" JR|SR|III|II|MD|111|3rd|2nd \"",
+        "line": 56,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 56,
+        "column": 67
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 56,
+        "column": 68
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* some of the names have just one letter at the end of the name",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 58,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 58,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 58,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 58,
+        "column": 33
+      },
+      {
+        "id": "string",
+        "value": "\" [A-Z]$\"",
+        "line": 58,
+        "column": 35
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 58,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 58,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* trims off trailing spaces at the end of a name",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 60,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rtrim",
+        "line": 60,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 60,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* trim leading spaces",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 62,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ltrim",
+        "line": 62,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 62,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* trim double spaces",
+    "line": 63,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 64,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "itrim",
+        "line": 64,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 64,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* some of the letter O are number 0 ",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 66,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 66,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 66,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 66,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"0\"",
+        "line": 66,
+        "column": 40
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 66,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"O\"",
+        "line": 66,
+        "column": 46
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 66,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 66,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* replace ` with '",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 68,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "subinstr",
+        "line": 68,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 68,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 68,
+        "column": 38
+      },
+      {
+        "id": "string",
+        "value": "\"`\"",
+        "line": 68,
+        "column": 40
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 68,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"'\"",
+        "line": 68,
+        "column": 46
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 68,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 68,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 70,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 70,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 70,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 70,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 70,
+        "column": 33
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 70,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"^([A-Z]*) +\"",
+        "line": 70,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 71,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 71,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 71,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 71,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 71,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 71,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"^([A-Z]*\\-*[A-Z]*) +\"",
+        "line": 71,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 71,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 71,
+        "column": 73
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 71,
+        "column": 79
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 71,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 72,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 72,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 72,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 72,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 72,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 72,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"^([A-Z]*'*[A-Z]*) +\"",
+        "line": 72,
+        "column": 47
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 72,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 72,
+        "column": 72
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 72,
+        "column": 78
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 72,
+        "column": 81
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 74,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 74,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 74,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 74,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 74,
+        "column": 32
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 74,
+        "column": 40
+      },
+      {
+        "id": "string",
+        "value": "\" +([A-Z']+)$\"",
+        "line": 74,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 75,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 75,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 75,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 75,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 75,
+        "column": 36
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 75,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"([A-Z]*\\-[A-Z]*)$\"",
+        "line": 75,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 75,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 75,
+        "column": 69
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 74
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 75,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 76,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 76,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 76,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 76,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "new_name",
+        "line": 76,
+        "column": 36
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 76,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"([A-Z]*'[A-Z]*)$\"",
+        "line": 76,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 76,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 76,
+        "column": 68
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 76,
+        "column": 73
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 76,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first_length",
+        "line": 78,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 78,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 78,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last_length",
+        "line": 79,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 79,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 79,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 81,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 81,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 81,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 82,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 82,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 82,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 84,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 86,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 86,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "first_length",
+        "line": 86,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 86,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 87,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 87,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "last_length",
+        "line": 87,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 87,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first_length",
+        "line": 88,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "last_length",
+        "line": 88,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 90,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "city",
+        "line": 90,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 90,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 90,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* merge county names using zips */",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 93,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 93,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 14
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 93,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 94,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 95,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 95,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 95,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 95,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "fl_zips",
+        "line": 95,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nokeep",
+        "line": 95,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 95,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "merge_county",
+        "line": 95,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 95,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 95,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "merge_county",
+        "line": 96,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 98,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 98,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 98,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* there are 2 different phonebook datasets because the names were looked up based on the game won",
+    "line": 100,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* merge county phone data */",
+    "line": 101,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 102,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 102,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 102,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 103,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 103,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 103,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 103,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 103,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 103,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "county_phone_results.dta",
+        "line": 103,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 103,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "county_phone_merge",
+        "line": 103,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "nokeep",
+        "line": 103,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "uniqusing",
+        "line": 103,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 103,
+        "column": 112
+      },
+      {
+        "id": "identifier",
+        "value": "county_phone_num",
+        "line": 103,
+        "column": 117
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "county_phone_merge",
+        "line": 104,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*merge county LOTTO phone data  */",
+    "line": 106,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 107,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 107,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 107,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lotto",
+        "line": 107,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 108,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 108,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 108,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "lotto",
+        "line": 108,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 108,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 108,
+        "column": 37
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 108,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "county_phone_lotto.dta",
+        "line": 108,
+        "column": 48
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "uniqusing",
+        "line": 108,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 108,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "lotto_phone_merge",
+        "line": 108,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 108,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "lotto_phone_num",
+        "line": 108,
+        "column": 113
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lotto_phone_merge",
+        "line": 109,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "county_phone_num",
+        "line": 111,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "lotto_phone_num",
+        "line": 111,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "county_phone_num",
+        "line": 111,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 111,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 111,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lotto_phone_num",
+        "line": 112,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* for name/county combinations that appear more than once, flag the first time someone won",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 115,
+      "column": 36
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 115,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "first",
+            "line": 115,
+            "column": 5
+          },
+          {
+            "id": "identifier",
+            "value": "last",
+            "line": 115,
+            "column": 11
+          },
+          {
+            "id": "identifier",
+            "value": "county",
+            "line": 115,
+            "column": 16
+          },
+          {
+            "id": "identifier",
+            "value": "draw_date",
+            "line": 115,
+            "column": 24
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "county_first_time",
+        "line": 115,
+        "column": 40
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 115,
+        "column": 60
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 115,
+        "column": 63
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 115,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* flag unique winners at the county level",
+    "line": 116,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 117,
+      "column": 24
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 117,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "first",
+            "line": 117,
+            "column": 5
+          },
+          {
+            "id": "identifier",
+            "value": "last",
+            "line": 117,
+            "column": 11
+          },
+          {
+            "id": "identifier",
+            "value": "county",
+            "line": 117,
+            "column": 16
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "county_unique",
+        "line": 117,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 117,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 117,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 119,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 119,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 120,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 120,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 122,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 123,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 123,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "fl_lottery.dta",
+        "line": 123,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 123,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***************   clean bankruptcy data    *******************/",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 126,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 127,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 127,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 127,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 127,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "dfiled",
+        "line": 127,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "caseid1",
+        "line": 127,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "addr1",
+        "line": 127,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "partyseqno",
+        "line": 127,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 127,
+        "column": 59
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 127,
+        "column": 65
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 127,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "flbkcy.dta",
+        "line": 127,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* keep the 1st 2 observations for each filing, some are parties are spouses",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 130,
+      "column": 27
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 130,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "caseid1",
+            "line": 130,
+            "column": 5
+          },
+          {
+            "id": "identifier",
+            "value": "partyseqno",
+            "line": 130,
+            "column": 14
+          }
+        ]
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 130,
+        "column": 40
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 130,
+        "column": 35
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 130,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 132,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*only keep those observations for the 1st party in a case or ",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* where both parties have the same adddress (assumed spouses)",
+    "line": 135,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tag",
+        "line": 136,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "caseid1",
+        "line": 136,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "addr1",
+        "line": 136,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 136,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "tag",
+        "line": 136,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 137,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 137,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "caseid",
+            "line": 137,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "one",
+        "line": 137,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 137,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 137,
+        "column": 28
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 137,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 137,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 138,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 138,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "one",
+        "line": 138,
+        "column": 12
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 138,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 138,
+        "column": 17
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 138,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "tag",
+        "line": 138,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 138,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 138,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 139,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 139,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 140,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 140,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 140,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 140,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 141,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 143,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "one",
+        "line": 143,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "tag",
+        "line": 143,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "addr1",
+        "line": 143,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 145,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 145,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 145,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 146,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 146,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 146,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 148,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 148,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 148,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 148,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 148,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 148,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 148,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 148,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 149,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 149,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 149,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 149,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 149,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 149,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 149,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 150,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 150,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 150,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 150,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 150,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 150,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 150,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 151,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 151,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 151,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 151,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 151,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 151,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 151,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 151,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 152,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 152,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 152,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 152,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 152,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 152,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 152,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 152,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 153,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 153,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 153,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 153,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\",\"",
+        "line": 153,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 153,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 153,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* some first names have initials or 2 names, use only the first letters",
+    "line": 155,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new",
+        "line": 156,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexs",
+        "line": 156,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 156,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 156,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 156,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 156,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"(^[A-Z]+) \"",
+        "line": 156,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 157,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "new",
+        "line": 157,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "new",
+        "line": 157,
+        "column": 24
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 157,
+        "column": 28
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 157,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new",
+        "line": 158,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 160,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 160,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 160,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 160,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 160,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 160,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 160,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 161,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 161,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 161,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 161,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 161,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 161,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 161,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 162,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 162,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 162,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 162,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 162,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 162,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 162,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 162,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 163,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 163,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 163,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 163,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 163,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 163,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 163,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 164,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 164,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 164,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 164,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 164,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"\\.\"",
+        "line": 164,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 164,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 164,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 165,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 165,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 165,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 165,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\",\"",
+        "line": 165,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 165,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 165,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 166,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 166,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regexr",
+        "line": 166,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 166,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\",\"",
+        "line": 166,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\" \"",
+        "line": 166,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 168,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 168,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "trim",
+        "line": 168,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 168,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 169,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 169,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "itrim",
+        "line": 169,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 169,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 170,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "trim",
+        "line": 170,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 170,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 171,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 171,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "itrim",
+        "line": 171,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 171,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***********  merge county names by zip code  *************************/",
+    "line": 173,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 174,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 174,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 175,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 176,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 176,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 176,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 176,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "fl_zips.dta",
+        "line": 176,
+        "column": 29
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "uniqusing",
+        "line": 176,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "nokeep",
+        "line": 176,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 176,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "zip_merge",
+        "line": 176,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 176,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 176,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 177,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip_merge",
+        "line": 177,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 179,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 179,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 179,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 179,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 180,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 180,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 180,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 180,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 181,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 181,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 181,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 181,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 182,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 182,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 182,
+        "column": 15
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 182,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 183,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 183,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 183,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"FL\"",
+        "line": 183,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 183,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 183,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 183,
+        "column": 32
+      },
+      {
+        "id": "string",
+        "value": "\"Fl\"",
+        "line": 183,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 185,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 185,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "upper",
+        "line": 185,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 185,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 187,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 188,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_filed",
+        "line": 188,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 188,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "dfiled",
+        "line": 188,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 189,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year_filed",
+        "line": 189,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/**************     make county level data     **************************/",
+    "line": 191,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 192,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 192,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 192,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 192,
+        "column": 16
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 192,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 193,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 193,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "length",
+        "line": 193,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 193,
+        "column": 16
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 193,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 195,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "report",
+        "line": 195,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 195,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 195,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 195,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 197,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 197,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 197,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 198,
+      "column": 25
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 198,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "fname",
+            "line": 198,
+            "column": 5
+          },
+          {
+            "id": "identifier",
+            "value": "lname",
+            "line": 198,
+            "column": 11
+          },
+          {
+            "id": "identifier",
+            "value": "county",
+            "line": 198,
+            "column": 17
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 198,
+        "column": 33
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 198,
+        "column": 38
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 198,
+        "column": 41
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 198,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 199,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 199,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "id",
+            "line": 199,
+            "column": 5
+          },
+          {
+            "id": "identifier",
+            "value": "dfiled",
+            "line": 199,
+            "column": 9
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "order",
+        "line": 199,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 199,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 200,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 200,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "id",
+            "line": 200,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "total_cases",
+        "line": 200,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 200,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* only keep the first 10 cases for each name/county combination",
+    "line": 202,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 203,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "total_cases",
+        "line": 203,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 203,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 203,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 205,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip5",
+        "line": 205,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "state",
+        "line": 205,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "partyseqno",
+        "line": 205,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 207,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "order",
+        "line": 207,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 208,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 208,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "dfiled",
+        "line": 208,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "year_filed",
+        "line": 208,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "caseid1",
+        "line": 208,
+        "column": 32
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 208,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 208,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 208,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "order",
+        "line": 208,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 210,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 212,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 213,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 213,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 213,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 214,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 214,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "fl_bankruptcy_county.dta",
+        "line": 214,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 214,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/***********  merge lottery/phone and bankruptcy    *********************/",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 218,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 219,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 219,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 219,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "fl_lottery.dta",
+        "line": 219,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 220,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 220,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 220,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 220,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 221,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "fname",
+        "line": 221,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "lname",
+        "line": 221,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "county",
+        "line": 221,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 221,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 221,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 221,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "fl_bankruptcy_county.dta",
+        "line": 221,
+        "column": 43
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 221,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "bank_merge",
+        "line": 221,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "uniqusing",
+        "line": 221,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "nokeep",
+        "line": 221,
+        "column": 98
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 222,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "bank_merge",
+        "line": 222,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**********************************************************",
+    "line": 224,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 225,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "double",
+        "line": 225,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 225,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 225,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 226,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 226,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 226,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 226,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.7523",
+        "line": 226,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 226,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 226,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1988",
+        "line": 226,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 227,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 227,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 227,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.6718",
+        "line": 227,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 227,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 227,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1989",
+        "line": 227,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 228,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 228,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 228,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.5861",
+        "line": 228,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 228,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1990",
+        "line": 228,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 229,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 229,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 229,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.522",
+        "line": 229,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 229,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 229,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1991",
+        "line": 229,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 230,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 230,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 230,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 230,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.4775",
+        "line": 230,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 230,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 230,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1992",
+        "line": 230,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 231,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 231,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 231,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 231,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.4346",
+        "line": 231,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 231,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1993",
+        "line": 231,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 232,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 232,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 232,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 232,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.3988",
+        "line": 232,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 232,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 232,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1994",
+        "line": 232,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 233,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 233,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 233,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 233,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.3602",
+        "line": 233,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 233,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 233,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1995",
+        "line": 233,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 234,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 234,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 234,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 234,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.3212",
+        "line": 234,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 234,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 234,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1996",
+        "line": 234,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 235,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 235,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 235,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 235,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.2916",
+        "line": 235,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 235,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 235,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1997",
+        "line": 235,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 236,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 236,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 236,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.2718",
+        "line": 236,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 236,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 236,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1998",
+        "line": 236,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 237,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 237,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 237,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 237,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.2443",
+        "line": 237,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 237,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 237,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1999",
+        "line": 237,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 238,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 238,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 238,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 238,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.2038",
+        "line": 238,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 238,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 238,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 238,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 239,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 239,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 239,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.1705",
+        "line": 239,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 239,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 239,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2001",
+        "line": 239,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 240,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 240,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 240,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 240,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.1523",
+        "line": 240,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 240,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 240,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 240,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 241,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 241,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 241,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 241,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.1266",
+        "line": 241,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 241,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 241,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2003",
+        "line": 241,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 242,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 242,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 242,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.0974",
+        "line": 242,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 242,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 242,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2004",
+        "line": 242,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 243,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 243,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 243,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 243,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.0614",
+        "line": 243,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 243,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 243,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2005",
+        "line": 243,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 244,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 244,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 244,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 244,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1.0283",
+        "line": 244,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 244,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 244,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2006",
+        "line": 244,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 245,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 245,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 245,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 245,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 245,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 245,
+        "column": 37
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 245,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "2007",
+        "line": 245,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 247,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "draw_year",
+        "line": 247,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 247,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "2008",
+        "line": 247,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 249,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "double",
+        "line": 249,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "amount_1000",
+        "line": 249,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 249,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 249,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1000",
+        "line": 249,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 250,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 250,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_amount",
+        "line": 250,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 251,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "amount_1000",
+        "line": 251,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 251,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**********************************************************",
+    "line": 253,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 254,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 254,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 254,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 254,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 254,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 254,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 255,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 255,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 255,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dfiled",
+        "line": 255,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 255,
+        "column": 21
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 255,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 255,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* generate new difference between winning and bankruptcy",
+    "line": 259,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* pre_diff accounts for bankruptcy cases before winning",
+    "line": 260,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* post_diff accounts for bankruptcy cases after winning",
+    "line": 261,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 262,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 262,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 262,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 262,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 262,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 262,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 263,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pre_diff",
+        "line": 263,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 263,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 263,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 263,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 264,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pre_diff",
+        "line": 264,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 264,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 264,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "pre_diff",
+        "line": 264,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 264,
+        "column": 36
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 264,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 264,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 265,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post_diff",
+        "line": 265,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 265,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 265,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 265,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 266,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post_diff",
+        "line": 266,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 266,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 266,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "post_diff",
+        "line": 266,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 266,
+        "column": 38
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 266,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 266,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* the pre or post differences are averaged for ease of coding",
+    "line": 269,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 270,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ave_pre_diff",
+        "line": 270,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowmean",
+        "line": 270,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "pre_diff",
+        "line": 270,
+        "column": 30
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 270,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 271,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ave_post_diff",
+        "line": 271,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowmean",
+        "line": 271,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "post_diff",
+        "line": 271,
+        "column": 30
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 271,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* mark figured out which players had matched 5 numbers and which players had only played one time that day",
+    "line": 273,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*****  merge match5 and playedonce indicators  ****",
+    "line": 274,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 275,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 275,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 275,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 276,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "draw_date",
+        "line": 276,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "amount",
+        "line": 276,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 276,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 276,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 276,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "match5.dta",
+        "line": 276,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nokeep",
+        "line": 276,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 276,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "merge_match5",
+        "line": 276,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 276,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "match5",
+        "line": 276,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "playedonce",
+        "line": 276,
+        "column": 93
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 277,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "merge_match5",
+        "line": 277,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*********************************************************************************",
+    "line": 278,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 280,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 281,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`data_dir'",
+        "line": 281,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 281,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "lottery_bankruptcy_county.dta",
+        "line": 281,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 281,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 283,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 283,
+        "column": 5
+      }
+    ]
+  }
+]

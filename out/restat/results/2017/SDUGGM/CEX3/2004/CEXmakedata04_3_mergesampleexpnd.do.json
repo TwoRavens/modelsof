@@ -1,0 +1,1257 @@
+[
+  {
+    "id": "comment",
+    "value": "/* \n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\nDO-FILE DESCRIPTION\n\nJeroen Sabbe, last updated 19 May 10\nlast updated 9 Jan 17\n\nThis do-file merges the fmlydsample file and the exp3comm file: it links the household characteristics to the expenditure data.\nNext, data are deseasonalised to eliminate seasonal effects due to the very short diary period (2 weeks)\n\nInputs: \nfmlydsample`yearshort'.dta and exp3comm`yearshort'.dta\n(assumed stored at location specified in local \"inputpath\")\n\nOutput:\nCEX`yearshort'`hhtype'.dta: one file for each year and for each hhtype (sing, coup, fam)\n\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------------------------------\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*-------------------------------USER INPUT!!!------------------------------------",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// USER INPUT!! Year must contain exactly 4 digits (eg \"2005\")",
+    "line": 6,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearlong",
+        "line": 6,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"2004\"",
+        "line": 6,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yearshort",
+        "line": 7,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 7,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"`yearlong'\"",
+        "line": 7,
+        "column": 24
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 7,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 7,
+        "column": 37
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 7,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 7,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "inputpath",
+        "line": 8,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 8,
+        "column": 17
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 8,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "CodesPublishedVersion",
+        "line": 8,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "CEX3",
+        "line": 8,
+        "column": 42
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 8,
+        "column": 46
+      },
+      {
+        "id": "`'",
+        "value": "`yearlong'",
+        "line": 8,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outputpath",
+        "line": 9,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 9,
+        "column": 18
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 9,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 9,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "CodesPublishedVersion",
+        "line": 9,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 9,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "CEX3",
+        "line": 9,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 9,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`yearlong'",
+        "line": 9,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhtypelist",
+        "line": 11,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"fam\"",
+        "line": 11,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 12,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "commlist",
+        "line": 12,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"food nond serv\"",
+        "line": 12,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sharelist",
+        "line": 13,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"foodshare nondshare servshare\"",
+        "line": 13,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dscommlist",
+        "line": 14,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"dsfood dsnond dsserv\"",
+        "line": 14,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhtype",
+        "line": 16,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 16,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 16,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "hhtypelist",
+        "line": 16,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 16,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------------------",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Merge fmlydsample and exp3comm data",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -----------------------------------",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`inputpath'",
+        "line": 20,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mergemembd",
+        "line": 21,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 21,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`hhtype'",
+        "line": 21,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 21,
+        "column": 34
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 21,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 22,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 22,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "exp3comm",
+        "line": 22,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 22,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sort",
+        "line": 22,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 23,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 23,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 23,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 23,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* -------------",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Deseasonalize",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* -------------",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "comm",
+        "line": 29,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 29,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 29,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "commlist",
+        "line": 29,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 29,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// will contain yearly deseasonalised expenditures",
+    "line": 30,
+    "column": 17
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 30,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 30,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 30,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 31,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 31,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 31,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "i.strtmnth",
+        "line": 31,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 32,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "residuals",
+        "line": 32,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 33,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 33,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 33,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 33,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//eg dsfood = deseasonalised food",
+    "line": 34,
+    "column": 32
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 34,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 34,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 34,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 34,
+        "column": 22
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 34,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 35,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 35,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 35,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 35,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 35,
+        "column": 25
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 35,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 35,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*drop if ds`comm'<0",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "count",
+      "line": 37,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 38,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// calc total yearly deseasonalised expenditures",
+    "line": 40,
+    "column": 38
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dstotexp",
+        "line": 40,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 40,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`dscommlist'",
+        "line": 40,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "comm",
+        "line": 41,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 41,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 41,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "commlist",
+        "line": 41,
+        "column": 23
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 41,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// calc share of each commodity",
+    "line": 42,
+    "column": 38
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 42,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 42,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "share",
+        "line": 42,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 42,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`comm'",
+        "line": 42,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 42,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "dstotexp",
+        "line": 42,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_I",
+        "line": 44,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 44,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// we only move on with deseasonalised data",
+    "line": 46,
+    "column": 42
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`commlist'",
+        "line": 46,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`sharelist'",
+        "line": 46,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 46,
+        "column": 29
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 46,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "totexp",
+        "line": 46,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 47,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "strtmnth",
+        "line": 47,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "refpersonwage",
+        "line": 47,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "spousewage",
+        "line": 47,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "ds",
+        "line": 47,
+        "column": 47
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 47,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "share",
+        "line": 47,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cuid",
+        "line": 48,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "dsfood",
+        "line": 48,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dsnond",
+        "line": 48,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "dsserv",
+        "line": 48,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "dstotexp",
+        "line": 48,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`outputpath'",
+        "line": 50,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// this is the file that should be used as an input for the Matlab m-files",
+    "line": 51,
+    "column": 42
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CEX",
+        "line": 51,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 51,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`hhtype'",
+        "line": 51,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 51,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 51,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outfile",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 52,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "CEX",
+        "line": 52,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`yearshort'",
+        "line": 52,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`hhtype'",
+        "line": 52,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": ".txt",
+        "line": 52,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "w",
+        "line": 52,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 52,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*log close",
+    "line": 56,
+    "column": 1
+  }
+]

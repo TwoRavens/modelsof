@@ -1,0 +1,2227 @@
+[
+  {
+    "id": "comment",
+    "value": "/***************************************************************************\nFile-Name:    ancheckiv.do                         \nDate:         Jan 29th, 2009                                    \nAuthor:       Fernando Martel                                 \nPurpose:      Replicate the independendt variables in Ross(2006) using the \n              quinquennial and annual frequency data sets. My aim is to \n              check the various coding decisions that where made.\n\n              The mnemonics are:\n              Annual dataset does not contain demyrs, cannot replicate\n              Polity         in annual dataset - \"nonsovereign yrs filled in\"\n              Polity_1       in quinquennial dataset - the actual independent\n                             variable\n              logDEMYRS_1    in quinquennial dataset \n              autocracy_mod  Annual - MR modified ACLP var to fill in some \n                             nonsovereign states\n              autocracy_new  Annual - ACLP update, autocracy=1\n              democracy      Annual - ACLP measure (autocracy_mod reversed so\n                             1=dem)\n              transition_1   Quinquennial dataset\n\n\n              The datasets:\n              quinquennial: replication data - 5 year panels.dta\n              annual:       main_replication_data.dta  \nData Input:   - main_replication_data.dta\n              Received from author via e-mail Feb 25th 2007.  \n              Contains ANNUAL data used in the paper, except for HIV data \n              and democratic years.\n              Data spans 1965 to 2000\n              - replication data - 5 year panels.dta\n              Received from author via e-mail Aug 18th 2008.  \n              Data spans 1970 to 2000\n\nOutput File:  None\nData Output:  None                                   \nPrevious file:pure_rep_master.do\nStatus:       Complete                                     \nMachine:      IBM, X41 tablet running Windows XP spck 3                                \n***************************************************************************/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 5,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 6,
+        "column": 1
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 6,
+        "column": 2
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "Users",
+        "line": 6,
+        "column": 4
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Fernando",
+        "line": 6,
+        "column": 10
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Documents",
+        "line": 6,
+        "column": 19
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "docs",
+        "line": 6,
+        "column": 29
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "research_projects",
+        "line": 6,
+        "column": 34
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Replication",
+        "line": 6,
+        "column": 52
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 6,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "analysis",
+        "line": 6,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$path\"",
+        "line": 7,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nCopy anual frequency data set main_replication_data.dta as Ross1y.dta\n*************************************************************************/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\main_replication_data.dta\"",
+        "line": 11,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\".\\Ross1y.dta\"",
+        "line": 12,
+        "column": 2
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 12,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross1y",
+        "line": 13,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nReplicate the IV using the annual data\n*************************************************************************/",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Select the relevant variables",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 19,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 19,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 19,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 19,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*All data missing before 1970.  Why?  We know data exists?",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 22,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 22,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 22,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 22,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 22,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 22,
+        "column": 32
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 22,
+        "column": 37
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 22,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 22,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 23,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 23,
+        "column": 4
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1969",
+        "line": 23,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 23,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 23,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Create indicator for five year blocks by country",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time_block",
+        "line": 26,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "seq",
+        "line": 26,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "from",
+        "line": 26,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 26,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "to",
+        "line": 26,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`_N'",
+        "line": 26,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "block",
+        "line": 26,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 26,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 26,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 26,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\nCollapse\nNote the default for collapse is to ignore missings, i.e. if only three data \npoints are avialable in a quinquennia, then these are averaged and reported \nas the five year average. Compare, for example, AGO's GDP growth in the annual \nand quinquennial data.\n*/",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Note collapse is back centered",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 33,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 33,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 33,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 33,
+        "column": 28
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 33,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 33,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 33,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "time_block",
+        "line": 33,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time_block",
+        "line": 35,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 36,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 36,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 37,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 37,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 37,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 38,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 38,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Drop observations for quinquennia 1965 - all missing.  ",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Replication data - 5 year panels.dta only starts in 1970",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 42,
+        "column": 4
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 42,
+        "column": 14
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 42,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 42,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 43,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 43,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 43,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 43,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Create lag of Polity as Polity_1b",
+    "line": 45,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 46,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 46,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 46,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delta",
+        "line": 46,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 46,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 47,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "L.Polity",
+        "line": 47,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*replication data - 5 year panels.dta does not have a \"year\" variable,",
+    "line": 49,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*only \"period\", so replicate it here, that way I can merge the data",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 51,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "seq",
+        "line": 51,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "from",
+        "line": 51,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 51,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "to",
+        "line": 51,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`_N'",
+        "line": 51,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 51,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 51,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Save as Polity5y.dta",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 54,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 54,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 54,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 55,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 55,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 56,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nNow merge with the quinquennial dataset: replication data - 5 year panels.dta\nCopy it to local drive and sort it by merge variables\n*************************************************************************/",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\replication data - 5 year panels.dta\"",
+        "line": 60,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "Ross5y.dta",
+        "line": 61,
+        "column": 1
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 61,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross5y",
+        "line": 62,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 63,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 63,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 63,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross5y",
+        "line": 64,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 64,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 65,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 67,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 68,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 68,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 68,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Ross5y",
+        "line": 68,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 69,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 69,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 69,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 69,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 69,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 69,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 70,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 70,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 70,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 70,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Po",
+        "line": 70,
+        "column": 25
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 70,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 70,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 71,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 71,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 1 - Check periods and years are properly aligned and merge went well\n*************************************************************************/",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Should all be 3s",
+    "line": 76,
+    "column": 15
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 76,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//Should have coeffient of 5 exactly, no error",
+    "line": 77,
+    "column": 20
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 77,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 77,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 77,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 2 - Check values Polity_1 against Polity_1b are exactly identical\n*************************************************************************/",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 83,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 83,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* scatter Polity_1 Polity_1b if year>1970 // ignore 1970 bc annual data only ",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// start in 1970, so lag for 1970",
+    "line": 85,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// is missing",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Different no. of obs. and different moments why?",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 89,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 89,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 89,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 89,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 89,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 89,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 90,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 90,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 90,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 90,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 90,
+        "column": 36
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 90,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 90,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Measures are different\"",
+        "line": 91,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* How big are the differences",
+    "line": 93,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 94,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 94,
+        "column": 12
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 94,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 94,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "diff",
+        "line": 95,
+        "column": 4
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 95,
+        "column": 12
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 95,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 95,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 3 - Check lagged values\nContrary to what happened with logCMRwdi_1 Polity_1 seems to have been \ncreated before the sample was truncated in 1970, so it does not appear to\nhave been imputed systematically in 1970.  However, note that Polity in\nthe annual dataset is truncated at 1970.  Not sure then where data for \nthe lag in 1970 (e.g. from 1965-69) came from.  Cannot replicate.\n*************************************************************************/",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 101,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 101,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 101,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 101,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 101,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 101,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 102,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 102,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 102,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 102,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 102,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 102,
+        "column": 34
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 102,
+        "column": 46
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 102,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 102,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 103,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 103,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Po",
+        "line": 103,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 103,
+        "column": 16
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 103,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 103,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 103,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 104,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 104,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 104,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 104,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 104,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1b",
+        "line": 104,
+        "column": 36
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 104,
+        "column": 49
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 104,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 104,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 4 - Check Polity against imputed dataset\n*************************************************************************/",
+    "line": 107,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 108,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\mr1replication1.dta\"",
+        "line": 109,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "imputed.dta",
+        "line": 110,
+        "column": 1
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 110,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imputed",
+        "line": 111,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 112,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 112,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 112,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "imputed",
+        "line": 113,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 113,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 114,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 116,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 117,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 118,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 118,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 118,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 119,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 119,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 120,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 120,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 120,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "imputed",
+        "line": 120,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 121,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 121,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 121,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 121,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "Polity",
+        "line": 121,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 121,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 122,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 122,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 122,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 122,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 122,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Po",
+        "line": 122,
+        "column": 25
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 122,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 122,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Polity5y",
+        "line": 123,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 123,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* check merge",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 126,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* we see that CYP was not included in the imputations",
+    "line": 127,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 128,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 128,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 128,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 128,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* check that Polity_1 in Ross (2006) quinquennial dataset and PolityB_1 in",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* his multiply imputed dataset are the same except for missing values",
+    "line": 131,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 132,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 132,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 132,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PolityB_1",
+        "line": 132,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 132,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "Polity_1",
+        "line": 132,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Turns out they are exactly identical => Polity was never imputed and",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* was never included in the imputation model",
+    "line": 135,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Indeed PolityB_1 from multiply imputed dataset has missing values",
+    "line": 136,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabmiss",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PolityB_1",
+        "line": 137,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\nIssue: Control and independent variables are not centered.  E.g. data for\n1960 does not refer to 1958-1962 but rather to 1960-64, whereas averages are\ncentered in the middle of the quinquennia\n\nAlso cannot replicate Polity in quinquenial dataset.  \n\nAnd Polity was never included in the imputation model.\n*/",
+    "line": 140,
+    "column": 1
+  }
+]

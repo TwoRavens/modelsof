@@ -1,0 +1,6671 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n Vancouver, November 2015\n \n This code accompanies the paper\n   \"Estimation in the fixed effects ordered logit model\"\n by Chris Muris. \n \n For any questions about this code, please email me\n at cmuris@sfu.ca. \n \n If you use this code, please cite the latest version of the paper \n (title above). See my website for more information (www.sfu.ca/~cmuris).\n \n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 3,
+        "column": 5
+      },
+      {
+        "id": "string",
+        "value": "\"Muris-FEOL-Illustration\"",
+        "line": 3,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 3,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//////////////////////////////////////////\n// 1. Load the data ///////////////////////\n///////////////////////////////////////////\n",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Preliminaries",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 7,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The data used in this paper is MEPS panel 16.",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// You can get the data from: ",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    http://meps.ahrq.gov/data_stats/download_data_files_detail.jsp?cboPufNumber=HC-156",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  The .dta file is created by running the do-file \"h156stu.txt\", also",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    available on the website. Make sure the resulting H156.dta file is ",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//    in the working directory.",
+    "line": 14,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"H156.dta\"",
+        "line": 15,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "///////////////////////////////////////////\n// 2. Select data+sample in paper /////////\n///////////////////////////////////////////\n",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// First, select children whose age who had not reached age 18 by the end of ",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   the survey, to be consistent with the analysis in Murasko (2008).",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 20,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "AGEY2X",
+        "line": 20,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 20,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "18",
+        "line": 20,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 21,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "AGEY2X",
+        "line": 21,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 21,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 21,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Throw out anomalous data based on family income and family size.",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 23,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY1",
+        "line": 23,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 23,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 23,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 24,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY2",
+        "line": 24,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 24,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 24,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 25,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FAMSY1",
+        "line": 25,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 25,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 25,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 26,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FAMSY2",
+        "line": 26,
+        "column": 9
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 26,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 26,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Age is measured at beginning of sample",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 29,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGEY1X",
+        "line": 29,
+        "column": 11
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 29,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// There are five rounds of interviews, but only two observations for income.",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Based on the timing of the interviews, it makes sense",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   to assign the second and fourth round as year one and two.",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   See paper.",
+    "line": 34,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH1",
+        "line": 35,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH2",
+        "line": 35,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH2",
+        "line": 36,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH4",
+        "line": 36,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Throw away the rounds we do not need.",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH3",
+        "line": 39,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "RTHLTH4",
+        "line": 39,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "RTHLTH5",
+        "line": 39,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Keep only the variables that we will use in the following analysis",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DUID",
+        "line": 42,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "PID",
+        "line": 42,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 42,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 42,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 42,
+        "column": 27
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 42,
+        "column": 36
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "WAGEPY",
+        "line": 42,
+        "column": 43
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "WAGIMPY",
+        "line": 42,
+        "column": 51
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "UNINSY",
+        "line": 42,
+        "column": 60
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "ENDRFYY",
+        "line": 42,
+        "column": 68
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 42,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "SEX",
+        "line": 42,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "REGIONY1",
+        "line": 43,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "MSAY1",
+        "line": 43,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "RACEV1X",
+        "line": 43,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//////////////////////////////////////////////////////\n// 3. Prepare the data for the OL estimators /////////\n//////////////////////////////////////////////////////\n",
+    "line": 45,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Change some variable names for the reshape command that follows.",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "WAGEPY1X",
+        "line": 47,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "WAGEPY1",
+        "line": 47,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "WAGEPY2X",
+        "line": 48,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "WAGEPY2",
+        "line": 48,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "MSAY1",
+        "line": 49,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "MSA",
+        "line": 49,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "REGIONY1",
+        "line": 50,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "REGION",
+        "line": 50,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Setting up the cross-section identifier.",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 53,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 53,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Force into panel data using the \"reshape\" command",
+    "line": 55,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 56,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 56,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 56,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 56,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "WAGEPY",
+        "line": 56,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 56,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "UNINSY",
+        "line": 56,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "ENDRFYY",
+        "line": 56,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 56,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 56,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 56,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 56,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set the panel dimensions",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 59,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 59,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Balance the panel",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 62,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 62,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "CASEID",
+            "line": 62,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nyear",
+        "line": 62,
+        "column": 17
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 62,
+        "column": 24
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 62,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 63,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nyear",
+        "line": 63,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 63,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 64,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 64,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 64,
+        "column": 23
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 64,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 64,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 64,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 64,
+        "column": 29
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 64,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 64,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Deal with the missing data on the health outcomes.",
+    "line": 66,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 67,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 67,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 67,
+        "column": 23
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 67,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 67,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 68,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 68,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 68,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 68,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Truncate family size at 5.",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 71,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 71,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 71,
+        "column": 22
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 71,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 71,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set up age categories, as in Murasko (2008) and in earlier work.",
+    "line": 73,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE1",
+        "line": 74,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 74,
+        "column": 12
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 74,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 74,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE2",
+        "line": 75,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 75,
+        "column": 12
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 75,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 75,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 75,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 75,
+        "column": 20
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 75,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 75,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE3",
+        "line": 76,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 76,
+        "column": 12
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 76,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 76,
+        "column": 16
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 76,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 76,
+        "column": 20
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 76,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 76,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE4",
+        "line": 77,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 77,
+        "column": 12
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 77,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 77,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// For the main explanatory variable, use logs and drop the highest-income fams.",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Age-income gradient",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 81,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 81,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 81,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 81,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 81,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "trimmer",
+        "line": 82,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 82,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "p95",
+        "line": 82,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 83,
+      "column": 1
+    },
+    "=": [
+      {
+        "id": "`'",
+        "value": "`trimmer'",
+        "line": 83,
+        "column": 20
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 83,
+        "column": 9
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 83,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Normalize",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 87,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 87,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 87,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 87,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 87,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "4.18778",
+        "line": 87,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGEOLD",
+        "line": 88,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 88,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 89,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 89,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 89,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 89,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 89,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "7.402057",
+        "line": 89,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 90,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 90,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 90,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 90,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 90,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "10.52615",
+        "line": 90,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Generate the interactions",
+    "line": 93,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 94,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 94,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 94,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 94,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 94,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE1INC",
+        "line": 95,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE1",
+        "line": 95,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 95,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE2INC",
+        "line": 96,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE2",
+        "line": 96,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 96,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 96,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE3INC",
+        "line": 97,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE3",
+        "line": 97,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 97,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 97,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGE4INC",
+        "line": 98,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGE4",
+        "line": 98,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 98,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 98,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 100,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 100,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//////////\n// CMLE //",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//////////\n",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Compute the number of transformations / CMLEs",
+    "line": 104,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 105,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "5",
+        "line": 105,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Jminone",
+        "line": 106,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`J'",
+        "line": 106,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 106,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 106,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jminonet",
+        "line": 107,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 107,
+        "column": 19
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 107,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 107,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The following double for loop computes each of the CMLEs",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   and saves the results in est`j1'`j2' for each pair of cut points.",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j1",
+        "line": 112,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 112,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 112,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 112,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 112,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 113,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j2",
+        "line": 113,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 113,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 113,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`Jminone'",
+        "line": 113,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 113,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 114,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 114,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 114,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 114,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 114,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 115,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 115,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 115,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 115,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 115,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 116,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 116,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 116,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 116,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 116,
+        "column": 20
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 116,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 116,
+        "column": 40
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 116,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 116,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 116,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 116,
+        "column": 53
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 116,
+        "column": 32
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 116,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 117,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 117,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 117,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 117,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 117,
+        "column": 20
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 117,
+        "column": 40
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 117,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 117,
+        "column": 47
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 117,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 117,
+        "column": 53
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 117,
+        "column": 32
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 117,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 118,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 118,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 118,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 118,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 118,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 118,
+        "column": 29
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 118,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 118,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 118,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 120,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 120,
+        "column": 7
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 120,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 120,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 120,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 121,
+      "column": 8
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 121,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 121,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 121,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 121,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 121,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 121,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 121,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 121,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 121,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 123,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 123,
+        "column": 7
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 123,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 123,
+        "column": 13
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 123,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 124,
+      "column": 17
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 124,
+          "column": 5
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "eststo",
+            "line": 124,
+            "column": 9
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 124,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 124,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 124,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 124,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 124,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 124,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 124,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 124,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 127,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 127,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 128,
+      "column": 8
+    },
+    "meta": {
+      "predictors": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 128,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 128,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 128,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 128,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 128,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 128,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 128,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "i.cut",
+        "line": 128,
+        "column": 46
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 128,
+        "column": 51
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 128,
+        "column": 55
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 128,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 128,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sto",
+      "line": 130,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 130,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "est",
+        "line": 130,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`j1'",
+        "line": 130,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`j2'",
+        "line": 130,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/////////////////////////////////\n// CORRELATED RANDOM EFFECTS  ///\n/////////////////////////////////\n",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain the variables to include for the approximation of alpha_i.",
+    "line": 135,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// AGE, SEX, MSA, i.REGION",
+    "line": 137,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 138,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 138,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "CASEID",
+            "line": 138,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY_AV",
+        "line": 138,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 138,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 138,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 139,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 139,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "CASEID",
+            "line": 139,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGEINC_AV",
+        "line": 139,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 139,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 139,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 140,
+      "column": 13
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bys",
+          "line": 140,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "CASEID",
+            "line": 140,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMSY_AV",
+        "line": 140,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 140,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 140,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtologit",
+      "line": 142,
+      "column": 13
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 142,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "eststo",
+            "line": 142,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 142,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 142,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 142,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 142,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 143,
+      "column": 1
+    },
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "cut2",
+        "line": 143,
+        "column": 9
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 143,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 143,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 143,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "cut1",
+        "line": 143,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 143,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 143,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 144,
+      "column": 1
+    },
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "cut3",
+        "line": 144,
+        "column": 9
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 144,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 144,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 144,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "cut2",
+        "line": 144,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 144,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 144,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 145,
+      "column": 1
+    },
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "cut4",
+        "line": 145,
+        "column": 9
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 145,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 145,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 145,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "cut3",
+        "line": 145,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 145,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 145,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtologit",
+      "line": 147,
+      "column": 13
+    },
+    "meta": {
+      "predictors": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 147,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "eststo",
+            "line": 147,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 147,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 147,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 147,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 147,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 147,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "SEX",
+        "line": 147,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "MSA",
+        "line": 147,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "i.REGION",
+        "line": 147,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "RACEV1X",
+        "line": 147,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY_AV",
+        "line": 147,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC_AV",
+        "line": 147,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY_AV",
+        "line": 147,
+        "column": 100
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 148,
+      "column": 1
+    },
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "cut2",
+        "line": 148,
+        "column": 9
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 148,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 148,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 148,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "cut1",
+        "line": 148,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 148,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 148,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 149,
+      "column": 1
+    },
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "cut3",
+        "line": 149,
+        "column": 9
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 149,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 149,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 149,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "cut2",
+        "line": 149,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 149,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 149,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 150,
+      "column": 1
+    },
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "cut4",
+        "line": 150,
+        "column": 9
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 150,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 150,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 150,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "cut3",
+        "line": 150,
+        "column": 21
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 150,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_cons",
+        "line": 150,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Obtain APE",
+    "line": 152,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 153,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 153,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "pu0",
+        "line": 153,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 154,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 154,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 154,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 154,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 155,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 155,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 155,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 155,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "probnew",
+        "line": 156,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 156,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "pu0",
+        "line": 156,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Present",
+    "line": 158,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 159,
+        "column": 5
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 159,
+        "column": 9
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 159,
+        "column": 14
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 159,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 159,
+        "column": 22
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 159,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "AGEOLD",
+        "line": 159,
+        "column": 26
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 159,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "15",
+        "line": 159,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Reset the covariate values",
+    "line": 161,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 162,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 162,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 162,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 162,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 162,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 163,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 163,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 163,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "AGE",
+        "line": 163,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//xtreg RTHLTH FAMINCY AGEINC FAMSY AGE SEX MSA i.REGION RACEV1X FAMINCY_AV AGEINC_AV FAMSY_AV, fe",
+    "line": 165,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "///////////////////////////\n// COMPOSITE LIKELIHOOD ///\n///////////////////////////\n",
+    "line": 168,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Set the number of transformations",
+    "line": 169,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 170,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "jminonet",
+        "line": 170,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`J'",
+        "line": 170,
+        "column": 19
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 170,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 170,
+        "column": 23
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 170,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 170,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Make 16 copies of the data.",
+    "line": 171,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "expand",
+      "line": 172,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 172,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 172,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Sort and generate a \"tid\" identifier, \"tid\" for \"transformation ID\"",
+    "line": 173,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 174,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 174,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 174,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 174,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 175,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mod",
+        "line": 175,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 175,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 175,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 175,
+        "column": 18
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 175,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`jminonet'",
+        "line": 175,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 175,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 175,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Set the cutpoints.",
+    "line": 177,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// 16 transformations, for cuts in total",
+    "line": 178,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  4 are j,j",
+    "line": 179,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  6 are j,k, j<k",
+    "line": 180,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  last 6 are transpose of the second group, i.e. k,j",
+    "line": 181,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 182,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 182,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 182,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// First four: j,j",
+    "line": 184,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 185,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// 1. pi = (1,1)",
+    "line": 186,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 187,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 187,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 187,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 187,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 187,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 187,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 187,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 2. pi = (2,2)",
+    "line": 188,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 189,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 189,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 189,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 189,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 189,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 189,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 189,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 3. pi = (3,3)",
+    "line": 190,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 191,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 191,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 191,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 191,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 191,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 191,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 191,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 4. pi = (4,4)",
+    "line": 192,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 193,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 193,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 193,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 193,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 193,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 193,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 193,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 194,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Second six, j<k",
+    "line": 195,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// ",
+    "line": 196,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// 5. pi = (1,2)",
+    "line": 197,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 198,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 198,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 198,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 198,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 198,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 198,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 198,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 198,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 198,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 198,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 198,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 199,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 199,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 199,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 199,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 199,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 199,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 199,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 199,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 199,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 199,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 199,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 6. pi = (1,3)",
+    "line": 200,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 201,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 201,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 201,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 201,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 201,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 201,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 201,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 201,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 201,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 201,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 201,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 202,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 202,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 202,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 202,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 202,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 202,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 202,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 202,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 202,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 202,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 202,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 7. pi = (1,4)",
+    "line": 203,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 204,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 204,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 204,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 204,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 204,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 204,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 204,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 204,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 204,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 204,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 204,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 205,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 205,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 205,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 205,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 205,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 205,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 205,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 205,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 205,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 205,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 205,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 8. pi = (2,3)",
+    "line": 206,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 207,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 207,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 207,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 207,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 207,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 207,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 207,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 207,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 207,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 207,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 207,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 208,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 208,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 208,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 208,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 208,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 208,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 208,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 208,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 208,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 208,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 208,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 9. pi = (2,4)",
+    "line": 209,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 210,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 210,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 210,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 210,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 210,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 210,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 210,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 210,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 210,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 210,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 210,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 211,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 211,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 211,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 211,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 211,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 211,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 211,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 211,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 211,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 211,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 211,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 10. pi = (3,4)",
+    "line": 212,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 213,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 213,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 213,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 213,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 213,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 213,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 213,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 213,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 213,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 213,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 213,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 214,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 214,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 214,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 214,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 214,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 214,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 214,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 214,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 214,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 214,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 214,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 215,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Third six, j>k. Mirrors second group",
+    "line": 216,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// ",
+    "line": 217,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// 11. pi = (2,1)",
+    "line": 218,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 219,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 219,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 219,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 219,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 219,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 219,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 219,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 219,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 219,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 219,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 219,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 220,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 220,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 220,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 220,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 220,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 220,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "11",
+        "line": 220,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 220,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 220,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 220,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 220,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 12. pi = (3,1)",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 222,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 222,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 222,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 222,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 222,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 222,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 222,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 222,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 222,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 222,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 222,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 223,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 223,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 223,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 223,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 223,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 223,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 223,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 223,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 223,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 223,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 223,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 13. pi = (4,1)",
+    "line": 224,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 225,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 225,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 225,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 225,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 225,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 225,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "13",
+        "line": 225,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 225,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 225,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 225,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 225,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 226,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 226,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 226,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 226,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 226,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 226,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "13",
+        "line": 226,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 226,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 226,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 226,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 226,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 14. pi = (3,2)",
+    "line": 227,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 228,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 228,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 228,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 228,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 228,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "14",
+        "line": 228,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 228,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 228,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 228,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 228,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 229,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 229,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 229,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 229,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 229,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 229,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "14",
+        "line": 229,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 229,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 229,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 229,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 229,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 15. pi = (4,2)",
+    "line": 230,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 231,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 231,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 231,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 231,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 231,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "15",
+        "line": 231,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 231,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 231,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 231,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 231,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 232,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 232,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 232,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 232,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 232,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 232,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "15",
+        "line": 232,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 232,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 232,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 232,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 232,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// 16. pi = (4,3)",
+    "line": 233,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 234,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 234,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 234,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 234,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 234,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 234,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 234,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 234,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 234,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 234,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 234,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 235,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 235,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 235,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 235,
+        "column": 19
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 235,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 235,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "16",
+        "line": 235,
+        "column": 31
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 235,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "YEAR",
+        "line": 235,
+        "column": 36
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 235,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 235,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The dependent variable is RTHLTH",
+    "line": 238,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "LHS",
+        "line": 239,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "RTHLTH",
+        "line": 239,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The explanatory variables (see paper)",
+    "line": 240,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//local RHS FAMINCY AGEINC FAMSY i.ENDRFYY i.cut",
+    "line": 241,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "RHS",
+        "line": 242,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "FAMINCY",
+        "line": 242,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "AGEINC",
+        "line": 242,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "FAMSY",
+        "line": 242,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "i.cut",
+        "line": 242,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// The dependent variable in the implementation is a transformation",
+    "line": 244,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   of RTHLTH.",
+    "line": 245,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 246,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 246,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`LHS'",
+        "line": 246,
+        "column": 12
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 246,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "cut",
+        "line": 246,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// And adjust the group identifier, so that different transformations",
+    "line": 248,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//   of the same cross-section unit are viewed as different cross-section units.",
+    "line": 249,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 250,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 250,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 250,
+        "column": 13
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 250,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 250,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 250,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 250,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 252,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Column 2",
+    "line": 253,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// BUC estimator (Baetschmann et al. (2015) uses only the ones with constant cutoffs, i.e. tid <= 4",
+    "line": 254,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 255,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 256,
+      "column": 13
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 256,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "eststo",
+            "line": 256,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 256,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`RHS'",
+        "line": 256,
+        "column": 25
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "4",
+        "line": 256,
+        "column": 39
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "tid",
+        "line": 256,
+        "column": 34
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 256,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 256,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 256,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 256,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 256,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 258,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Column 3",
+    "line": 259,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Estimator in the paper uses all transformations",
+    "line": 260,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 261,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clogit",
+      "line": 262,
+      "column": 9
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "eststo",
+          "line": 262,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ybin",
+        "line": 262,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`RHS'",
+        "line": 262,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "group",
+        "line": 262,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "newid",
+        "line": 262,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 262,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "CASEID",
+        "line": 262,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 263,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "3.cut",
+        "line": 263,
+        "column": 8
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 263,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "2.cut",
+        "line": 263,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 264,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "4.cut",
+        "line": 264,
+        "column": 8
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 264,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "3.cut",
+        "line": 264,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "///////////////////////////////////\n// 5. Present the results  ////////\n///////////////////////////////////\n",
+    "line": 267,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 268,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Remember: reported results for transformed estimators should be multiplied by (-1).\"",
+        "line": 268,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "esttab",
+      "line": 270,
+      "column": 1
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 270,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 270,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "a2",
+        "line": 270,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "mtitle",
+        "line": 270,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"pi=(3,3)\"",
+        "line": 270,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"RE\"",
+        "line": 270,
+        "column": 36
+      },
+      {
+        "id": "string",
+        "value": "\"CRE\"",
+        "line": 270,
+        "column": 41
+      },
+      {
+        "id": "string",
+        "value": "\"BUC\"",
+        "line": 270,
+        "column": 47
+      },
+      {
+        "id": "string",
+        "value": "\"CLE\"",
+        "line": 270,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "eststo",
+      "line": 271,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 271,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 273,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 273,
+        "column": 5
+      }
+    ]
+  }
+]

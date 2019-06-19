@@ -1,0 +1,2387 @@
+[
+  {
+    "id": "comment",
+    "value": "/*\n**************************************************************************\nFile-Name:    ancheckcv.do                         \nDate:         Jan 29th, 2009                                    \nAuthor:       Fernando Martel                                 \nPurpose:      Replicate the control variables in Ross(2006) using the \n              quinquennial and annual frequency data sets. My aim is to \n              check the various coding decisions that where made.\n\n              Quinquennial data:\n              logGDPcap_1   Lag of log GDP per capita\n              logHIV_1      Log of HIV prevalence rate, UNAIDS/CIA data, \n                            extrapolated back from 2001\n              logDen_1      Log of population density, data from WDI 2004\n              GDPgrowth_1   Lag GDP growth\n              \n              Annual data:\n              rgdpch        GDP pr capita, chain series; plus values \n                            for 1970&2000 from short dataset\n              HIV           not in annual dataset, cannot replicate.\n              density       Population density (people per sq km)--\n              GDPgrowth     GDP growth (annual %)\n\n              The datasets:\n              quinquennial: replication data - 5 year panels.dta\n              annual:       main_replication_data.dta  \n\nData Input:   - main_replication_data.dta\n              Received from author via e-mail Feb 25th 2007.  \n              Contains ANNUAL data used in the paper, except for HIV data \n              and democratic years.\n              Data spans 1965 to 2000\n              - replication data - 5 year panels.dta\n              Received from author via e-mail Aug 18th 2008.  \n              Data spans 1970 to 2000\n\nOutput File:  None\nData Output:  None                                   \nPrevious file:Pure_rep_master.do\nStatus:       Complete                                     \nMachine:      IBM, X41 tablet running Windows XP spck 3                                \n**************************************************************************\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 4,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "C",
+        "line": 5,
+        "column": 1
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 5,
+        "column": 2
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "Users",
+        "line": 5,
+        "column": 4
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "Fernando",
+        "line": 5,
+        "column": 10
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Documents",
+        "line": 5,
+        "column": 19
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "docs",
+        "line": 5,
+        "column": 29
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "research_projects",
+        "line": 5,
+        "column": 34
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "Replication",
+        "line": 5,
+        "column": 52
+      },
+      {
+        "id": "\\",
+        "value": "\\",
+        "line": 5,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "analysis",
+        "line": 5,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$path\"",
+        "line": 6,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nCopy anual frequency data set main_replication_data.dta as Ross1y.dta\n*************************************************************************/",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\main_replication_data.dta\"",
+        "line": 11,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\".\\Ross1y.dta\"",
+        "line": 12,
+        "column": 2
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 12,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Ross1y",
+        "line": 13,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nReplicate the control vars using the annual data\n*************************************************************************/",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Select the relevant variables",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 19,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 19,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 19,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 19,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 19,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 19,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "GDPgrowth",
+        "line": 20,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb",
+        "line": 20,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*There are no observations for density in annual data prior*; ",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*to 1970.  ",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 24,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 24,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 24,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 24,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 24,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 24,
+        "column": 35
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 24,
+        "column": 40
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 24,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 24,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Create indicator for five year blocks by country",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* NOTE AVERAGE FOR 1970 WILL BE AVERAGE OF 1970-74 -- NOT CENTERED",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time_block",
+        "line": 28,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "seq",
+        "line": 28,
+        "column": 19
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "from",
+        "line": 28,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 28,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "to",
+        "line": 28,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`_N'",
+        "line": 28,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "block",
+        "line": 28,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 28,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 28,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 28,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Take logs",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Regressions in Table 3 uses the natural logs of all variables save GDP",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* growth.  It appears logs were taken before collapsing data, i.e.",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Take logs -> collapse -> create lag",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "varlist1",
+        "line": 35,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"rgdpch density\"",
+        "line": 35,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 36,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 36,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 36,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "varlist1",
+        "line": 36,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 36,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "di",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`x'\"",
+        "line": 37,
+        "column": 3
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 38,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 38,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 38,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 38,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 38,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 40,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 40,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 40,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check1",
+        "line": 41,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 41,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Collapse to quinquenial",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\nNote the default for collapse is to ignore missings, i.e. if only three data \npoints are avialable in a quinquennia, then these are averaged and reported \nas the five year average. Compare, for example, AGO's GDP growth in the annual \nand quinquennial data.\n*/",
+    "line": 44,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "min",
+        "line": 45,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 45,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 45,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 45,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 45,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb",
+        "line": 45,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 45,
+        "column": 54
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 45,
+        "column": 56
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 46,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 46,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 46,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "time_block",
+        "line": 46,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time_block",
+        "line": 47,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 48,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 48,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 48,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 49,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 49,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 49,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 50,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check1",
+        "line": 50,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 50,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Create lag",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 53,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 53,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "delta",
+        "line": 53,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 53,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 54,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb",
+        "line": 54,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "rgdpch",
+        "line": 54,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "density",
+        "line": 54,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lnrgdpch",
+        "line": 54,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "lndensity",
+        "line": 54,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "x",
+        "line": 55,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 55,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 55,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 55,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 55,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 56,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 56,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_1",
+        "line": 56,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "L.",
+        "line": 56,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`x'",
+        "line": 56,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 58,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 58,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 58,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check1",
+        "line": 59,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 59,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*replication data - 5 year panels.dta does not have a \"year\" variable,*;",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*only \"period\", so replicate it here, that way I can merge the data*;",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 63,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "seq",
+        "line": 63,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "from",
+        "line": 63,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 63,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "to",
+        "line": 63,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`_N'",
+        "line": 63,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 63,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 63,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Save as check1.dta",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 66,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 66,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 66,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check1",
+        "line": 67,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 67,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 68,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nNow merge with the quinquennial dataset: replication data - 5 year panels.dta\nCopy it to local drive and sort it by merge variables\n*************************************************************************/",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "copy",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"..\\data_raw\\Ross_Replication_Data\\replication data - 5 year panels.dta\"",
+        "line": 72,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "actual.dta",
+        "line": 73,
+        "column": 1
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 73,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "actual",
+        "line": 74,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 75,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 75,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 75,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "actual",
+        "line": 76,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 76,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 77,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check1",
+        "line": 78,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 79,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 79,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 79,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "actual",
+        "line": 79,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 79,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 79,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 79,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 79,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 80,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id1",
+        "line": 80,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 80,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 80,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "check1",
+        "line": 81,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 81,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 1 - Check periods and years are properly aligned and merge went well\n*************************************************************************/",
+    "line": 84,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Should have coeffient of one exactly, no error",
+    "line": 85,
+    "column": 26
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 85,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 85,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "period",
+        "line": 85,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 2 - Check lagged values\nCheck whether lagged values where created before the sample was truncated \nin 1970 or after.  So far I created it before so we could observe a diff.\nIf created after, the lagged value in 1970 should be missing\n*************************************************************************/",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//Should all be 3s except observations for 1965 ",
+    "line": 89,
+    "column": 27
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tab",
+      "line": 89,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 89,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 90,
+        "column": 4
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 90,
+        "column": 12
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 90,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 90,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* It appears annual data was truncated in 1970 before collapsing, so all",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* data for covariates (though not polity, smallstate, or transition)",
+    "line": 93,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 94,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 94,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 94,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 94,
+        "column": 24
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 94,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 94,
+        "column": 34
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 94,
+        "column": 39
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 94,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 94,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lndensity",
+        "line": 95,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "lnrgdpch",
+        "line": 95,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb",
+        "line": 95,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 95,
+        "column": 38
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 95,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 95,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 96,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 96,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 96,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 96,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 96,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 96,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lndensity_1",
+        "line": 97,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "lnrgdpch_1",
+        "line": 97,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 97,
+        "column": 28
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 97,
+        "column": 44
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 97,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 97,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Quinquennial data set essentially throws out all 1970 lagged control ",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*variable data!",
+    "line": 100,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Replication data - 5 year panels.dta *;",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* only starts in 1970 (Why drop one whole set of observations for 1965?)*;",
+    "line": 103,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 104,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 104,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 104,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1965",
+        "line": 104,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*************************************************************************\nTest 3 - Check  values are exactly identical\n*************************************************************************/",
+    "line": 106,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Due to truncation lag values in 1970 missing from Ross (2006)",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnrgdpch_1",
+        "line": 109,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 109,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "lndensity_1",
+        "line": 109,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 109,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 109,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 109,
+        "column": 63
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 109,
+        "column": 78
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 109,
+        "column": 83
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 109,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnrgdpch_1",
+        "line": 110,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 110,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "lndensity_1",
+        "line": 110,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 110,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 110,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 110,
+        "column": 63
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 110,
+        "column": 78
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 110,
+        "column": 83
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 110,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Different no. of obs. and different moments for GDP per capita, why? ",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* CYPRUS",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Cyprus has annual data but all quinquennial data bar Polity is missing",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* in Ross(2006)",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnrgdpch_1",
+        "line": 116,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 116,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "lndensity_1",
+        "line": 116,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "logDen_1",
+        "line": 116,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 116,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 116,
+        "column": 63
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 116,
+        "column": 78
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 116,
+        "column": 83
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 116,
+        "column": 85
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 116,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 116,
+        "column": 92
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 116,
+        "column": 95
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 116,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 117,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 117,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "lnrgdpch_1",
+        "line": 117,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 117,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 117,
+        "column": 40
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 117,
+        "column": 42
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 117,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 118,
+      "column": 17
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 118,
+          "column": 1
+        }
+      },
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 118,
+          "column": 9
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnrgdpch_1",
+        "line": 118,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 118,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "logGDPcap_1",
+        "line": 118,
+        "column": 38
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 118,
+        "column": 53
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 118,
+        "column": 55
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 118,
+        "column": 57
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 118,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 118,
+        "column": 65
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 118,
+        "column": 70
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 118,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Different no. of obs. and different moments for GDP growth, why? CYPRUS and*;",
+    "line": 121,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*small diffs in GBR, GRC, IRL, THA",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "su",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 123,
+        "column": 4
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 123,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 123,
+        "column": 32
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 123,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 123,
+        "column": 39
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 123,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 123,
+        "column": 46
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 123,
+        "column": 49
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 123,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "list",
+      "line": 124,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 124,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 124,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 124,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 124,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 124,
+        "column": 42
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 124,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"CYP\"",
+        "line": 124,
+        "column": 46
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 124,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 124,
+        "column": 54
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 124,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "1970",
+        "line": 124,
+        "column": 61
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 124,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowthb_1",
+        "line": 124,
+        "column": 68
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 124,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrowth_1",
+        "line": 124,
+        "column": 84
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\nIssue: Control and independent variables are not centered.  E.g. data for\n1960 does not refer to 1958-1962 but rather to 1960-64, whereas DVs are\ncentered in the middle of the quinquennia\n*/",
+    "line": 127,
+    "column": 1
+  }
+]

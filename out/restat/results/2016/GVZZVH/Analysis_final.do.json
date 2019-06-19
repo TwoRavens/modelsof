@@ -1,0 +1,7497 @@
+[
+  {
+    "id": "comment",
+    "value": "* Review of Economics and Statistics MS 17989",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/*\n\nThis Stata(12) program creates all of the tables, figures, and numbers reported in the texts of:\n\n  - Agarwal, Sumit, and Wenlan Qian. January 2016. \"Access to Home Equity and Consumption:\n\tEvidence from a Policy Experiment\" \n\nData: Due to confidentially agreements with the data providers, the data used in this \n\tanalysis is not available for public distribution. We will store the data at NUS \n\tand any researcher can come and access the data on a stand-alone computer for \n\treplication and validation purposes.  \n\t\nData files for the anlaysis: \n\tHousingConsumption_final.dta: the sample data of Singaporeans living in HDB market \n \n\t\nKey regressors:\n\t(log)totspend: (natural logarithm of) total monthly spending on debit and credit cards at the individual level\n\t(log)debitspend: (natural logarithm of) total monthly spending on debit cards at the individual level\n\t(log)totccspend: (natural logarithm of) total monthly spending on credit cards at the individual level\n\t(log)totspend_durable: (natural lograithm) of total monthly card spending on (small) durable goods (apparel, \n\t\telectronics or computers,office and home furnishings)\n\t(log)totspend_nondurable: (natural lograithm) of total monthly card spending on non-durable items \n\t\nOther Key variables:\n\tcinmask: unique identifier for each consumer\n\n\tpremarried: treatment dummy, = 1 if the consumer is married (as of the pre-policy period), 0 otherwise\n\tpremarried_aft: = 1 for consumers in the treatment group in months after 2010:08, and 0 otherwise\n\tpremarried_pre: = 1 for consumers in the treatment group between 2010:05 and 2010:08, and 0 otherwise\n\n\tfemale: = 1 for female, 0 otherwise\n\tchinese:  = 1 for ethnically Chinese, 0 otherwise\n\thighedu: = 1 if the consumer's highest education is college degree or above\n\t\n\tpreinc: the average income in the pre-policy period \n\tpreaveprice: the average quarterly public housing price (at the postal sector level) between 2000 and 2012\n\tpreage: age (in years) as of 2010:08\n\t\n\tlowpreccroom: = 1 if the consumer's (percentage) difference between the granted credit limit and the average \n\t\toutstanding credit card debt between 2010:04 and 2010:08 is in the bottom tercile of the sample distribution),0 otherwise\n\thiprebal: = 1 if the consumer\u2019s average checking account balance between 2010:04 and 2010:08 is in the top \n\t\ttercile of the sample distribution, 0 otherwise. \n\thipreinc: = 1 if the consumer\u2019s average monthly income between 2010:05-2010:08 is in the top tercile of \n\t\tthe sample distribution, 0 otherwise. \n\tlowprefunds: =1 if the consumer's combined liquid funds (checking account balance + remaining credit) between \n\t\t2010:04 and 2010:08 is in the bottom tercile of the sample distribution, 0 otherwise\n\thipricegrowth: = 1 if the treated consumers live in a postal sector that experienced an above median average \n\t\tgrowth rate in the HDB resale price during 2007-2009, 0 otherwise\n\t\n*/",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "outputdir",
+        "line": 5,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"`where you save the results'\"",
+        "line": 5,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "workdir",
+        "line": 6,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"`where the test data are placed'\"",
+        "line": 6,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******\tTable 1",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************  ",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** SUMMARY STATISTICS",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$workdir\\HousingConsumption_final\"",
+        "line": 13,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 13,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 14,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 14,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "cinmask",
+            "line": 14,
+            "column": 9
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totspendmave",
+        "line": 14,
+        "column": 24
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 14,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "totspend",
+        "line": 14,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 15,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 15,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "cinmask",
+            "line": 15,
+            "column": 9
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totccspendmave",
+        "line": 15,
+        "column": 24
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 15,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "totccspend",
+        "line": 15,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 16,
+      "column": 19
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 16,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "cinmask",
+            "line": 16,
+            "column": 9
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totdbspendmave",
+        "line": 16,
+        "column": 24
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 16,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "debitspend",
+        "line": 16,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**",
+    "line": 17,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 18,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 18,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "yrmo",
+        "line": 18,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 19,
+      "column": 28
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 19,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "by",
+            "line": 19,
+            "column": 10
+          },
+          {
+            "id": "identifier",
+            "value": "cinmask",
+            "line": 19,
+            "column": 14
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dupck",
+        "line": 19,
+        "column": 32
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 19,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "_N",
+        "line": 19,
+        "column": 45
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 19,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 19,
+        "column": 49
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 19,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 19,
+        "column": 51
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 19,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 19,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 20,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "dupck",
+        "line": 20,
+        "column": 10
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 20,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 20,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**",
+    "line": 21,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 23,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 23,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table1.log\"",
+        "line": 23,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 23,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**",
+    "line": 24,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 25,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totspendmave",
+        "line": 25,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 25,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 25,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 26,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totccspendmave",
+        "line": 26,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 26,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 26,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 27,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "totdbspendmave",
+        "line": 27,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 27,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 27,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 28,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "preinc",
+        "line": 28,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 28,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 28,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 29,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prebal",
+        "line": 29,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 29,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 29,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 30,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "preaveprice",
+        "line": 30,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 30,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 30,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 31,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "preage",
+        "line": 31,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 31,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 31,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 32,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 32,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 32,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 32,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 33,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 33,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 33,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 33,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ttest",
+      "line": 34,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "chinese",
+        "line": 34,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 34,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 34,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 35,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 35,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 38,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******\tTable 2",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************  ",
+    "line": 40,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Average Treatment Effect\t",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"$workdir\\HousingConsumption_final\"",
+        "line": 42,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 42,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 44,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 44,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 44,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 44,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 44,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 44,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 44,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 44,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 44,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 44,
+        "column": 83
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 45,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 45,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table2a\"",
+        "line": 45,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 45,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 45,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 45,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 45,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 45,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 45,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 45,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 45,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 45,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 45,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 45,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 45,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log total card spending\"",
+        "line": 45,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 45,
+        "column": 123
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 46,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 46,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 46,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 46,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 46,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 46,
+        "column": 55
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 46,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 46,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 46,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 46,
+        "column": 85
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 47,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 47,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table2a\"",
+        "line": 47,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 47,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 47,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 47,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 47,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 47,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 47,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 47,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 47,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 47,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 47,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 47,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 47,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log credit card spending\"",
+        "line": 47,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 48,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 48,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 48,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 48,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 48,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 48,
+        "column": 56
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 48,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 48,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 48,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 48,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 49,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 49,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table2a\"",
+        "line": 49,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 49,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 49,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 49,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 49,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 49,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 49,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 49,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 49,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 49,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 49,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 49,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 49,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 49,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 51,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 51,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend_durable",
+        "line": 51,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 51,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 51,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 51,
+        "column": 60
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 51,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 51,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 51,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 51,
+        "column": 90
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 52,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 52,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table2b\"",
+        "line": 52,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 52,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 52,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 52,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 52,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 52,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 52,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 52,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 52,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 52,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 52,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 52,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 52,
+        "column": 90
+      },
+      {
+        "id": "string",
+        "value": "\"Durable\"",
+        "line": 52,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 52,
+        "column": 108
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 53,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 53,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend_nondurable",
+        "line": 53,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 53,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 53,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 53,
+        "column": 63
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 53,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 53,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 53,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 53,
+        "column": 93
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 54,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 54,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table2b\"",
+        "line": 54,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 54,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 54,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 54,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 54,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 54,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 54,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 54,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 54,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 54,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 54,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 54,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 54,
+        "column": 90
+      },
+      {
+        "id": "string",
+        "value": "\"Non-Durable\"",
+        "line": 54,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******\tTable 3",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*************************************** ",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Credit Constraints ",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** close distance to credit limit",
+    "line": 61,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 62,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_lowccroom_aft",
+        "line": 62,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 62,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 62,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "lowpreccroom",
+        "line": 62,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 64,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 64,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 64,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 64,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_lowccroom_aft",
+        "line": 64,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 64,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 64,
+        "column": 79
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 64,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 64,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 64,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 64,
+        "column": 109
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 65,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 65,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table3\"",
+        "line": 65,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 65,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 65,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 65,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 65,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 65,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 65,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 65,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 65,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 65,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 65,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 65,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"Log total card spending\"",
+        "line": 65,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 65,
+        "column": 123
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 66,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 66,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 66,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 66,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_lowccroom_aft",
+        "line": 66,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 66,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 66,
+        "column": 80
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 66,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 66,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 66,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 66,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 67,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 67,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table3\"",
+        "line": 67,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 67,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 67,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 67,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 67,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 67,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 67,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 67,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 67,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 67,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 67,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 67,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 67,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 67,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 68,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 68,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 68,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 68,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_lowccroom_aft",
+        "line": 68,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 68,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 68,
+        "column": 80
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 68,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 68,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 68,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 68,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 69,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 69,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table3\"",
+        "line": 69,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 69,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 69,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 69,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 69,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 69,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 69,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 69,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 69,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 69,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 69,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 69,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 69,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 69,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******\tTable 4",
+    "line": 73,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** The Role of Precautionary Savings   ",
+    "line": 75,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** high checking account balance",
+    "line": 77,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 78,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_highbal_aft",
+        "line": 78,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 78,
+        "column": 29
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 78,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "hiprebal",
+        "line": 78,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 80,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 80,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 80,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 80,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_highbal_aft",
+        "line": 80,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 80,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 80,
+        "column": 77
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 80,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 80,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 80,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 80,
+        "column": 107
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 81,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 81,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4a\"",
+        "line": 81,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 81,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 81,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 81,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 81,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 81,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 81,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 81,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 81,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 81,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 81,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 81,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 81,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log total card spending\"",
+        "line": 81,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 81,
+        "column": 123
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 82,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 82,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 82,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 82,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_highbal_aft",
+        "line": 82,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 82,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 82,
+        "column": 78
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 82,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 82,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 82,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 82,
+        "column": 108
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 83,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 83,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4a\"",
+        "line": 83,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 83,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 83,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 83,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 83,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 83,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 83,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 83,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 83,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 83,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 83,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 83,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 83,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 83,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 84,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 84,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 84,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 84,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_highbal_aft",
+        "line": 84,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 84,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 84,
+        "column": 78
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 84,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 84,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 84,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 84,
+        "column": 108
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 85,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 85,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4a\"",
+        "line": 85,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 85,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 85,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 85,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 85,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 85,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 85,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 85,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 85,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 85,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 85,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 85,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 85,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 85,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** alternative measure of precautionary savings",
+    "line": 88,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 89,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "highrisk",
+        "line": 89,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "highedu",
+        "line": 89,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 89,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 89,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 90,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_highriskhighinc_aft",
+        "line": 90,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 90,
+        "column": 39
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 90,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "highrisk",
+        "line": 90,
+        "column": 56
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 90,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "highpreinc",
+        "line": 90,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 92,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 92,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 92,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 92,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_highriskhighinc_aft",
+        "line": 92,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 92,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 92,
+        "column": 86
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 92,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 92,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 92,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 92,
+        "column": 115
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 93,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 93,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4b\"",
+        "line": 93,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 93,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 93,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 93,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 93,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 93,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 93,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 93,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 93,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 93,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 93,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 93,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 93,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log total card spending\"",
+        "line": 93,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 93,
+        "column": 123
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 94,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 94,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 94,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 94,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_highriskhighinc_aft",
+        "line": 94,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 94,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 94,
+        "column": 87
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 94,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 94,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 94,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 94,
+        "column": 117
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 95,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 95,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4b\"",
+        "line": 95,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 95,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 95,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 95,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 95,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 95,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 95,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 95,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 95,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 95,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 95,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 95,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 95,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 96,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 96,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 96,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 96,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_highriskhighinc_aft",
+        "line": 96,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 96,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 96,
+        "column": 87
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 96,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 96,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 96,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 96,
+        "column": 117
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 97,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 97,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4b\"",
+        "line": 97,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 97,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 97,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 97,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 97,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 97,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 97,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 97,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 97,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 97,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 97,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 97,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 97,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 97,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* low total funds",
+    "line": 100,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 101,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_lowfunds_aft",
+        "line": 101,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 101,
+        "column": 30
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 101,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "lowprefunds",
+        "line": 101,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 103,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 103,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 103,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 103,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_lowfunds_aft",
+        "line": 103,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 103,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 103,
+        "column": 78
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 103,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 103,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 103,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 103,
+        "column": 108
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 104,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 104,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4c\"",
+        "line": 104,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 104,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 104,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 104,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 104,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 104,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 104,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 104,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 104,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 104,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 104,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 104,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 104,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log total card spending\"",
+        "line": 104,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 104,
+        "column": 123
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 105,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 105,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 105,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 105,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_lowfunds_aft",
+        "line": 105,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 105,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 105,
+        "column": 79
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 105,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 105,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 105,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 105,
+        "column": 109
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 106,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 106,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4c\"",
+        "line": 106,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 106,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 106,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 106,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 106,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 106,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 106,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 106,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 106,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 106,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 106,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 106,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 106,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 106,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 107,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 107,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 107,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 107,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_lowfunds_aft",
+        "line": 107,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 107,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 107,
+        "column": 79
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 107,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 107,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 107,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 107,
+        "column": 109
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 108,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 108,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table4c\"",
+        "line": 108,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 108,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 108,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 108,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 108,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 108,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 108,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 108,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 108,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 108,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 108,
+        "column": 83
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 108,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 108,
+        "column": 89
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 108,
+        "column": 96
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 110,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******\tTable 5",
+    "line": 111,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************\t",
+    "line": 112,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** By Regional House Price Growth\t",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 115,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_pricegrowth_aft",
+        "line": 115,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 115,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 115,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "hipricegrowth",
+        "line": 115,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 117,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 117,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 117,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 117,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pricegrowth_aft",
+        "line": 117,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 117,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 117,
+        "column": 80
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 117,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 117,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 117,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 117,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 118,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 118,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table5\"",
+        "line": 118,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 118,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 118,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 118,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 118,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 118,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 118,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 118,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 118,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 118,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 118,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 118,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 118,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"Log total card spending\"",
+        "line": 118,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 118,
+        "column": 122
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 119,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 119,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 119,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 119,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pricegrowth_aft",
+        "line": 119,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 119,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 119,
+        "column": 82
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 119,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 119,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 119,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 119,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 120,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 120,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table5\"",
+        "line": 120,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 120,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 120,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 120,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 120,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 120,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 120,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 120,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 120,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 120,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 120,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 120,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 120,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 120,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 121,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 4
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 121,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 121,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft",
+        "line": 121,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pricegrowth_aft",
+        "line": 121,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_pre",
+        "line": 121,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 121,
+        "column": 82
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 121,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 121,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 121,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 121,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "outreg2",
+      "line": 122,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 122,
+        "column": 11
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Table5\"",
+        "line": 122,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "word",
+        "line": 122,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "bdec",
+        "line": 122,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 122,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "tdec",
+        "line": 122,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 122,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 122,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "coef",
+        "line": 122,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "tstat",
+        "line": 122,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 122,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "_Iy",
+        "line": 122,
+        "column": 82
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 122,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "ctitle",
+        "line": 122,
+        "column": 88
+      },
+      {
+        "id": "string",
+        "value": "\"Log debit card spending\"",
+        "line": 122,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***************************************",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "******\tFigure 1",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***************************************\t",
+    "line": 126,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "** Dynamics of Consumption Response\t\t\t",
+    "line": 127,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tabulate",
+      "line": 129,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "yrmo",
+        "line": 129,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "201005",
+        "line": 129,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "yrmo",
+        "line": 129,
+        "column": 19
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 129,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 129,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "aft201008_",
+        "line": 129,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 130,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 130,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "aft201008_",
+        "line": 130,
+        "column": 10
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 130,
+        "column": 20
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 130,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 130,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 130,
+        "column": 32
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 130,
+        "column": 34
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 130,
+        "column": 39
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 130,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 130,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 131,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 131,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "aft201008_",
+        "line": 131,
+        "column": 10
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 131,
+        "column": 20
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 131,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "gen",
+        "line": 131,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_X",
+        "line": 131,
+        "column": 28
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "X",
+        "line": 131,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 131,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "premarried",
+        "line": 131,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**total spend",
+    "line": 133,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*---------------------------------------**---------------------------------------*",
+    "line": 134,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 135,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 135,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotspend",
+        "line": 135,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_",
+        "line": 135,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 135,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 135,
+        "column": 45
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 135,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 135,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 135,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 135,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 136,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 136,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Figure1.log\"",
+        "line": 136,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 136,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**",
+    "line": 137,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 138,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 138,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 139,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 139,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 139,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 139,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 140,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 140,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 140,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 140,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 140,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 140,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 141,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 141,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 141,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 141,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 141,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 141,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 141,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 141,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 142,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 142,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 142,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 142,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 142,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 142,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 142,
+        "column": 103
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 143,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 143,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 143,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 143,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 143,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 143,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 143,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 143,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 144,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 144,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 144,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 144,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 144,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 144,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 144,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 144,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 144,
+        "column": 149
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 145,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 145,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 145,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 145,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 145,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 145,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 145,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 145,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 145,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 145,
+        "column": 172
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 146,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 146,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 146,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 146,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 146,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 146,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 146,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 146,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 146,
+        "column": 172
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 146,
+        "column": 194
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_9",
+        "line": 146,
+        "column": 195
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 147,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 147,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 147,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 147,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 147,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 147,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 147,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 147,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 147,
+        "column": 172
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 194
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_9",
+        "line": 147,
+        "column": 195
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 147,
+        "column": 217
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_10",
+        "line": 147,
+        "column": 218
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 148,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 148,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*---------------------------------------**---------------------------------------*",
+    "line": 150,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "**total CC spend",
+    "line": 151,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*---------------------------------------**---------------------------------------*",
+    "line": 152,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 153,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 153,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logtotccspend",
+        "line": 153,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_",
+        "line": 153,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 153,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 153,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 153,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 153,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 153,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 153,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 155,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 155,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Figure1.log\"",
+        "line": 155,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 155,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**",
+    "line": 156,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 157,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 157,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 158,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 158,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 158,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 158,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 159,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 159,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 159,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 159,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 159,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 159,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 160,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 160,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 160,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 160,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 160,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 160,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 160,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 160,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 161,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 161,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 161,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 161,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 161,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 161,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 161,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 161,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 161,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 161,
+        "column": 103
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 162,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 162,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 162,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 162,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 162,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 162,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 162,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 162,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 162,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 162,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 162,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 162,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 163,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 163,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 163,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 163,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 163,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 163,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 163,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 163,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 163,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 163,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 163,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 163,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 163,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 163,
+        "column": 149
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 164,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 164,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 164,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 164,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 164,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 164,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 164,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 164,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 164,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 164,
+        "column": 172
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 165,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 165,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 165,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 165,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 165,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 165,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 165,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 165,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 165,
+        "column": 172
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 165,
+        "column": 194
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_9",
+        "line": 165,
+        "column": 195
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 166,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 166,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 166,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 166,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 166,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 166,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 166,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 166,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 166,
+        "column": 172
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 194
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_9",
+        "line": 166,
+        "column": 195
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 166,
+        "column": 217
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_10",
+        "line": 166,
+        "column": 218
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 167,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 167,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*---------------------------------------**---------------------------------------*",
+    "line": 169,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "**total DB spend",
+    "line": 170,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*---------------------------------------**---------------------------------------*",
+    "line": 171,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 172,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 3
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 172,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "logdebitspend",
+        "line": 172,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_",
+        "line": 172,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 172,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "i.yrmo",
+        "line": 172,
+        "column": 47
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 172,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 172,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 172,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "cinmask",
+        "line": 172,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 174,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 174,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"$outputdir\\Figure1.log\"",
+        "line": 174,
+        "column": 13
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "append",
+        "line": 174,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**",
+    "line": 175,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 176,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 176,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 177,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 177,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 177,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 177,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 178,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 178,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 178,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 178,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 178,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 178,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 179,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 179,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 179,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 179,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 179,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 179,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 179,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 179,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 180,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 180,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 180,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 180,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 180,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 180,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 180,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 180,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 180,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 180,
+        "column": 103
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 181,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 181,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 181,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 181,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 181,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 181,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 181,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 181,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 181,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 181,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 181,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 181,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 182,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 182,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 182,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 182,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 182,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 182,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 182,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 182,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 182,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 182,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 182,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 182,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 182,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 182,
+        "column": 149
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 183,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 183,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 183,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 183,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 183,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 183,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 183,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 183,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 183,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 183,
+        "column": 172
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 184,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 184,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 184,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 184,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 184,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 184,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 184,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 184,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 184,
+        "column": 172
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 184,
+        "column": 194
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_9",
+        "line": 184,
+        "column": 195
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lincom",
+      "line": 185,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_1",
+        "line": 185,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_2",
+        "line": 185,
+        "column": 34
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_3",
+        "line": 185,
+        "column": 57
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_4",
+        "line": 185,
+        "column": 80
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 102
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_5",
+        "line": 185,
+        "column": 103
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 125
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_6",
+        "line": 185,
+        "column": 126
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_7",
+        "line": 185,
+        "column": 149
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 171
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_8",
+        "line": 185,
+        "column": 172
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 194
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_9",
+        "line": 185,
+        "column": 195
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 185,
+        "column": 217
+      },
+      {
+        "id": "identifier",
+        "value": "premarried_aft201008_10",
+        "line": 185,
+        "column": 218
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 186,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 186,
+        "column": 7
+      }
+    ]
+  }
+]

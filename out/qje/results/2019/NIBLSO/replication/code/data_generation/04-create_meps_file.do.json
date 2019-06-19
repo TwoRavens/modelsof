@@ -1,0 +1,8206 @@
+[
+  {
+    "id": "comment",
+    "value": "/*****************************************************************************************\nAUTHORS: David Chan and Michael Dickstein, QJE (2019), \"Industry Input in Policymaking: \nEvidence from Medicare\"\n\nPURPOSE: Generate bins of patient characteristics based on MEPS\n\nINPUTS:\n- See lines 32-34 for raw files from MEPS website\n- icd9_mdc_xwalk.txt\n- mdc_dx_allyrs.dta\n\nOUTPUTS:\n- meps_file.dta\n\nNOTES:\n- See MEPS website for more information on how each file is constructed.\n- Used to scale up frequencies in MarketScan data.\n- Bins are identified by sex and age (from consolidated household files), CCC (from \n  medical conditions files), insurance type (from person round plan files), and year.\n- Raw data not included in replication package (can be downloaded from MEPS website);\n  only output of this file (meps_file.dta) is included.\n*****************************************************************************************/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${dir}\"",
+        "line": 3,
+        "column": 4
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 3,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"\"",
+        "line": 3,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "cd",
+        "line": 3,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"${dir}\"",
+        "line": 3,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Can set global macro for root directory of replication package ending with",
+    "line": 4,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// \"/replication\". Otherwise, ensure that Stata is in the root directory.",
+    "line": 5,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "assert",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regexm",
+        "line": 6,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"`c(pwd)'\"",
+        "line": 6,
+        "column": 15
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 6,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"replication$\"",
+        "line": 6,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 7,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "program",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 8,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 8,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "adopath",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "+",
+        "value": "+",
+        "line": 9,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ado",
+        "line": 9,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Import MEPS data *********************************************************************",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Variables to keep from MEPS data",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhcons_keepers",
+        "line": 13,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 13,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "SEX",
+        "line": 13,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "DOBYY",
+        "line": 13,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "PERWT",
+        "line": 13,
+        "column": 41
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 13,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "medcond_keepers",
+        "line": 14,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 14,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "ICD9",
+        "line": 14,
+        "column": 32
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 14,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "CCCODEX",
+        "line": 14,
+        "column": 38
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 14,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "NUM",
+        "line": 14,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "insplan_keepers",
+        "line": 15,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 15,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "TYPEFLAG",
+        "line": 15,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// List the file names (not included in package; can be downloaded from MEPS website)",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhcons_files",
+        "line": 18,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "20",
+        "line": 18,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "28",
+        "line": 18,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "38",
+        "line": 18,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 18,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 18,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "70",
+        "line": 18,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "79",
+        "line": 18,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": "89",
+        "line": 18,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "97",
+        "line": 18,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "105",
+        "line": 18,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "113",
+        "line": 18,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "121",
+        "line": 18,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "129",
+        "line": 18,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "138",
+        "line": 18,
+        "column": 63
+      },
+      {
+        "id": "number",
+        "value": "147",
+        "line": 18,
+        "column": 67
+      },
+      {
+        "id": "number",
+        "value": "155",
+        "line": 18,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "medcond_files",
+        "line": 19,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "18",
+        "line": 19,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "27",
+        "line": 19,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "37",
+        "line": 19,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "52",
+        "line": 19,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "61",
+        "line": 19,
+        "column": 33
+      },
+      {
+        "id": "number",
+        "value": "69",
+        "line": 19,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "78",
+        "line": 19,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "87",
+        "line": 19,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "96",
+        "line": 19,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "104",
+        "line": 19,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "112",
+        "line": 19,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "120",
+        "line": 19,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "128",
+        "line": 19,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "137",
+        "line": 19,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "146",
+        "line": 19,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "154",
+        "line": 19,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "insplan_files",
+        "line": 20,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "47f1",
+        "line": 20,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "47f2",
+        "line": 20,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "47f3",
+        "line": 20,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "47f4",
+        "line": 20,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "57",
+        "line": 20,
+        "column": 41
+      },
+      {
+        "id": "number",
+        "value": "66",
+        "line": 20,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "76",
+        "line": 20,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "88",
+        "line": 20,
+        "column": 50
+      },
+      {
+        "id": "number",
+        "value": "95",
+        "line": 20,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "103",
+        "line": 20,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "111",
+        "line": 20,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "119",
+        "line": 20,
+        "column": 64
+      },
+      {
+        "id": "number",
+        "value": "127",
+        "line": 20,
+        "column": 68
+      },
+      {
+        "id": "number",
+        "value": "136",
+        "line": 20,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "145",
+        "line": 20,
+        "column": 76
+      },
+      {
+        "id": "number",
+        "value": "153",
+        "line": 20,
+        "column": 80
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 1 | REPEAT THE PROCESS FOR EACH MODULE",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 25,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "hhcons",
+        "line": 25,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "medcond",
+        "line": 25,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "insplan",
+        "line": 25,
+        "column": 29
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 25,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 2 | DECLARE APPROPRIATE CD",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cd",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 30,
+        "column": 4
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "raw",
+        "line": 30,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "MEPS",
+        "line": 30,
+        "column": 13
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 30,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 30,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 3 | INITIALIZE TEMPFILE AND COUNTER",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 35,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 36,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 36,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4 | LOOP THRU THE TEXT FILES",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 41,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "`'",
+        "value": "``i'",
+        "line": 41,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "_files",
+        "line": 41,
+        "column": 18
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 41,
+        "column": 24
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 41,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-1. call the infix statements provided by MEPS",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 44,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 44,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"./h`j'stu.txt\"",
+        "line": 44,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nostop",
+        "line": 44,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-2. fix inconsistencies in weight name when needed",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 47,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 47,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "WTDPER",
+        "line": 47,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 47,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "PERWT",
+        "line": 47,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 47,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "F",
+        "line": 47,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 48,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "capture",
+          "line": 48,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "PERWT",
+        "line": 48,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "PERWT",
+        "line": 48,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-3. keep list of variables declared above",
+    "line": 50,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``i'",
+        "line": 51,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_keepers",
+        "line": 51,
+        "column": 10
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 51,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-4. record the file name",
+    "line": 53,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 54,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 54,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1997",
+        "line": 54,
+        "column": 11
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 54,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`b'",
+        "line": 54,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-5. stack up the different years",
+    "line": 56,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`b'",
+        "line": 57,
+        "column": 4
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 57,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 58,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "``i'",
+        "line": 58,
+        "column": 14
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 58,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 60,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "``i'",
+        "line": 60,
+        "column": 6
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 60,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 60,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "+",
+        "value": "+",
+        "line": 61,
+        "column": 7
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 61,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "b",
+        "line": 61,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 5 | OUTPUT ABRIDGED FILES TO SEPARATE FOLDER",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/intermediate/`i'.dta\"",
+        "line": 67,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 67,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Process MEPS data ********************************************************************",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1 | PREPARE CONSOLIDATED HOUSEHOLD FILE",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 1-1. create a simple age variable and gender dummy",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/intermediate/hhcons.dta\"",
+        "line": 75,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 75,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 76,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "SEX",
+        "line": 76,
+        "column": 13
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 76,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 76,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 77,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 77,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 77,
+        "column": 9
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 77,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "DOBYY",
+        "line": 77,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 1-2. organize and save",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 80,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "PERWT",
+        "line": 80,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 80,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 80,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 81,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 81,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 81,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 81,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 81,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 82,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 82,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 82,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 82,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 82,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 83,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 83,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hhcons",
+        "line": 84,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`hhcons'",
+        "line": 85,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 85,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 2 | PREPARE MEDICAL CONDITIONS FILE",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 2-1. remove missings and pharmacy-treated or untreated conditions",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 91,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/intermediate/medcond.dta\"",
+        "line": 91,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 91,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 92,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "real",
+        "line": 92,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 92,
+        "column": 14
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 92,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 92,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "doc_encounter",
+        "line": 93,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowmax",
+        "line": 93,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "HHNUM",
+        "line": 93,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "IPNUM",
+        "line": 93,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "OPNUM",
+        "line": 93,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "OBNUM",
+        "line": 93,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "ERNUM",
+        "line": 93,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "DNNUM",
+        "line": 93,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "HSNUM",
+        "line": 93,
+        "column": 63
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 94,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 94,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "doc_encounter",
+        "line": 94,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "doc_encounter",
+        "line": 95,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 95,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "NUM",
+        "line": 95,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 2-2. create and join ICD-MDC bridge",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 98,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "infix",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 99,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 99,
+        "column": 11
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 99,
+        "column": 20
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 99,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 99,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "str",
+        "line": 99,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "mdc_",
+        "line": 99,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "7",
+        "line": 99,
+        "column": 33
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 99,
+        "column": 34
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 99,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 100,
+        "column": 1
+      },
+      {
+        "id": "string",
+        "value": "\"data/crosswalks/icd9_mdc_xwalk.txt\"",
+        "line": 100,
+        "column": 7
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 100,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 101,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "mdc_",
+        "line": 101,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 102,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 102,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 103,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "mdc_",
+        "line": 103,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 104,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 104,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "ICD9CODX",
+            "line": 104,
+            "column": 8
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 104,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 104,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 105,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "mdc_",
+        "line": 105,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 105,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 105,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 105,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 105,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 106,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "concat",
+        "line": 106,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "mdc_",
+        "line": 106,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 106,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mdc_",
+        "line": 107,
+        "column": 6
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 107,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 108,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 108,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 109,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mdc_bridge",
+        "line": 109,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`mdc_bridge'",
+        "line": 110,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 110,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 111,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 112,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 113,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 113,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 113,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 113,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 113,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 113,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`mdc_bridge'",
+        "line": 113,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "assert",
+        "line": 113,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 113,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 113,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 113,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 113,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 113,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 2-2. organize and save",
+    "line": 115,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 116,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 116,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "ICD9CODX",
+        "line": 116,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 116,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 116,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 117,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 117,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 117,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 117,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 118,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 118,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 118,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 119,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "medcond",
+        "line": 119,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`medcond'",
+        "line": 120,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 120,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 3 | PREPARE INSURANCE PLANS FILE",
+    "line": 123,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 3-1. create employer-based indicator",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/intermediate/insplan.dta\"",
+        "line": 126,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 126,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 127,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "TYPEFLAG",
+        "line": 127,
+        "column": 15
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 127,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 127,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 3-2. collapse to person level",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 130,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 130,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 130,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 130,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 130,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 3-3. organize and save",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 133,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "DUPERSID",
+        "line": 133,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 133,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 134,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 134,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 134,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 135,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 135,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "insplan",
+        "line": 136,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`insplan'",
+        "line": 137,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 137,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4 | MERGE THE COMPONENTS",
+    "line": 140,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 4-1. join modules",
+    "line": 142,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 143,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`hhcons'",
+        "line": 143,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 143,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 144,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 144,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 144,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 144,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 144,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 144,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`medcond'",
+        "line": 144,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 144,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "assert",
+        "line": 144,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 144,
+        "column": 49
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 144,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 145,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 145,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 145,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 145,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 145,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`insplan'",
+        "line": 145,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 145,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 145,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 145,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 145,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 146,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 146,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 146,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 146,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 146,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-2. remove duplicates",
+    "line": 148,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 149,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "firstnm",
+        "line": 149,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 149,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 149,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 149,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 149,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 149,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 149,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 149,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 149,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 150,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"ZZZ\"",
+        "line": 150,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 150,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 150,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 4-3. output final dataset",
+    "line": 152,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 153,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 153,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"person id (DUPERSID)\"",
+        "line": 153,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 154,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 154,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 154,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"year of survey\"",
+        "line": 154,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 155,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 155,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 155,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"=1 if female\"",
+        "line": 155,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 156,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 156,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 156,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"age (year-DOBYY)\"",
+        "line": 156,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 157,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 157,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 157,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"=1 if having employer insurance\"",
+        "line": 157,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 158,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 158,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"icd9 diagnosis code (first 3)\"",
+        "line": 158,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 159,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 159,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"person weight (PERWTYYF)\"",
+        "line": 159,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 160,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 160,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 160,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 160,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 160,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 160,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 160,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 5 | INCORPORATE MARKETSCAN PROBABILITIES",
+    "line": 163,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 5-1. match age format",
+    "line": 165,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 166,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 166,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 166,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 166,
+        "column": 18
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 166,
+        "column": 21
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "17",
+        "line": 166,
+        "column": 23
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 166,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 166,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 166,
+        "column": 33
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 166,
+        "column": 36
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "34",
+        "line": 166,
+        "column": 38
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 166,
+        "column": 41
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 166,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 166,
+        "column": 48
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 166,
+        "column": 51
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "44",
+        "line": 166,
+        "column": 53
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 166,
+        "column": 56
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 166,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 166,
+        "column": 63
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 166,
+        "column": 66
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 67
+      },
+      {
+        "id": "number",
+        "value": "54",
+        "line": 166,
+        "column": 68
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 70
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 166,
+        "column": 71
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 166,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 166,
+        "column": 78
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 166,
+        "column": 81
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 166,
+        "column": 82
+      },
+      {
+        "id": "number",
+        "value": "64",
+        "line": 166,
+        "column": 83
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 85
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 166,
+        "column": 86
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 166,
+        "column": 87
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 166,
+        "column": 88
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 167,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 167,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "fage",
+        "line": 167,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 167,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"17 & under\"",
+        "line": 167,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 167,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"18-34\"",
+        "line": 167,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 167,
+        "column": 44
+      },
+      {
+        "id": "string",
+        "value": "\"35-44\"",
+        "line": 167,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 167,
+        "column": 54
+      },
+      {
+        "id": "string",
+        "value": "\"45-54\"",
+        "line": 167,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 167,
+        "column": 64
+      },
+      {
+        "id": "string",
+        "value": "\"55-64\"",
+        "line": 167,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 167,
+        "column": 74
+      },
+      {
+        "id": "string",
+        "value": "\"65 & over\"",
+        "line": 167,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 168,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "values",
+        "line": 168,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 168,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "fage",
+        "line": 168,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 5-2. pull frequencies and generate probabilities",
+    "line": 170,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 171,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 172,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/intermediate/mdc_dx_allyrs\"",
+        "line": 172,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 172,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 173,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 173,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 173,
+        "column": 13
+      },
+      {
+        "id": "number",
+        "value": "1996",
+        "line": 173,
+        "column": 15
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 173,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 173,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 173,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "2013",
+        "line": 173,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 174,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dx_3dig",
+        "line": 174,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "freq_cnt",
+        "line": 174,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 174,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "freq",
+        "line": 174,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 175,
+      "column": 18
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 175,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "year",
+            "line": 175,
+            "column": 8
+          },
+          {
+            "id": "identifier",
+            "value": "icd",
+            "line": 175,
+            "column": 13
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 175,
+        "column": 23
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 175,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "freq",
+        "line": 175,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 176,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "freq",
+        "line": 176,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 176,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 176,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 177,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 177,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 177,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 178,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mktscan_probs",
+        "line": 178,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 179,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`mktscan_probs'",
+        "line": 179,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 180,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "* 5-3. merge probabilities and output unmatched",
+    "line": 182,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "joinby",
+      "line": 183,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 183,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 183,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 183,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`mktscan_probs'",
+        "line": 183,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "unmatched",
+        "line": 183,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "both",
+        "line": 183,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 184,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 184,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 184,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 184,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 185,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 185,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 186,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 186,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"ZZ\"",
+        "line": 186,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 186,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 186,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"ZZZ\"",
+        "line": 186,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 187,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 187,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 187,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 187,
+        "column": 19
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 187,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"ZZZ\"",
+        "line": 187,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 188,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 188,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"18\"",
+        "line": 188,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 188,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 188,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1999",
+        "line": 188,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 188,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 188,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 188,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\"V08\"",
+        "line": 188,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 189,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 189,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 189,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 189,
+        "column": 19
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 189,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1999",
+        "line": 189,
+        "column": 25
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 189,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 189,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 189,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"V08\"",
+        "line": 189,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 190,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 190,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"23\"",
+        "line": 190,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 190,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 190,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1999",
+        "line": 190,
+        "column": 27
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 190,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 190,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 190,
+        "column": 37
+      },
+      {
+        "id": "string",
+        "value": "\"V69\"",
+        "line": 190,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 191,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 191,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 191,
+        "column": 14
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 191,
+        "column": 19
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 191,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1999",
+        "line": 191,
+        "column": 25
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 191,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 191,
+        "column": 32
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 191,
+        "column": 35
+      },
+      {
+        "id": "string",
+        "value": "\"V69\"",
+        "line": 191,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 192,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 192,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 192,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 192,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 192,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 192,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 192,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 193,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 193,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 193,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 193,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 193,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 193,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 193,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 194,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 194,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 194,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"major diagnostic category\"",
+        "line": 194,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 6 | RESHAPE TO ALLOW FOR DIFFERENT WEIGHT VARIANTS",
+    "line": 197,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 199,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "total",
+        "line": 199,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 200,
+      "column": 48
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "bysort",
+          "line": 200,
+          "column": 1
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "year",
+            "line": 200,
+            "column": 8
+          },
+          {
+            "id": "identifier",
+            "value": "id",
+            "line": 200,
+            "column": 13
+          },
+          {
+            "id": "identifier",
+            "value": "female",
+            "line": 200,
+            "column": 16
+          },
+          {
+            "id": "identifier",
+            "value": "age",
+            "line": 200,
+            "column": 23
+          },
+          {
+            "id": "identifier",
+            "value": "empbased",
+            "line": 200,
+            "column": 27
+          },
+          {
+            "id": "identifier",
+            "value": "weight",
+            "line": 200,
+            "column": 36
+          },
+          {
+            "id": "identifier",
+            "value": "mdc",
+            "line": 200,
+            "column": 43
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pivot",
+        "line": 200,
+        "column": 52
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 200,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 201,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 201,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "icd",
+        "line": 201,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "freq",
+        "line": 201,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 201,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 201,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 201,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 201,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 201,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 201,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 201,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 201,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 201,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 201,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "pivot",
+        "line": 201,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 7 | CREATE SOME WEIGHT VARIANTS (FOR COPIED MDCS)",
+    "line": 204,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 206,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max_stat",
+        "line": 206,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowmax",
+        "line": 206,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 206,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 206,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 207,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum_stat",
+        "line": 207,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 207,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 207,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 207,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 208,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum_stat",
+        "line": 208,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 208,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sum_stat",
+        "line": 208,
+        "column": 23
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 208,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 208,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 209,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 209,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 209,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 210,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 210,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 210,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 210,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "prob",
+        "line": 210,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 210,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 210,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 211,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 211,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 211,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 211,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 211,
+        "column": 28
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 211,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 211,
+        "column": 30
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 211,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 211,
+        "column": 40
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 211,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 213,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 213,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 213,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 213,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 213,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 214,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 214,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat",
+        "line": 214,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"max probability within mdc\"",
+        "line": 214,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 215,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 215,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat",
+        "line": 215,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"summed probability within mdc\"",
+        "line": 215,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 216,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 216,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 216,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"comp of product of comp probs within mdc\"",
+        "line": 216,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 217,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 217,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 217,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 218,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 218,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_stat",
+        "line": 218,
+        "column": 8
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "after",
+        "line": 218,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 218,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 8 | AGGREGATE OVER ID FOR SCALING",
+    "line": 221,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 223,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 223,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 223,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 223,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "prd",
+        "line": 223,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 223,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 224,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 224,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_stat",
+        "line": 224,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "weight",
+        "line": 224,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 224,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 224,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "_stat",
+        "line": 224,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 226,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 226,
+        "column": 11
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 226,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "_stat",
+        "line": 226,
+        "column": 17
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 226,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 226,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 226,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 226,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 226,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 226,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 227,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 227,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat",
+        "line": 227,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"max probability within mdc\"",
+        "line": 227,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 228,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 228,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat",
+        "line": 228,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"summed probability within mdc\"",
+        "line": 228,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 229,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 229,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat",
+        "line": 229,
+        "column": 16
+      },
+      {
+        "id": "string",
+        "value": "\"comp of product of comp probs within mdc\"",
+        "line": 229,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 9 | ADD SMOOTHED WEIGHTS",
+    "line": 232,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* 9-1. shift employer variable to separate column",
+    "line": 234,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 235,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 235,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "max",
+        "line": 235,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 235,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "prd",
+        "line": 235,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 235,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 236,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 236,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "_stat_emp",
+        "line": 236,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 236,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "_stat",
+        "line": 236,
+        "column": 21
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "empbased",
+        "line": 236,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 237,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 237,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "_stat",
+        "line": 237,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 237,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "_stat_all",
+        "line": 237,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 239,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 239,
+        "column": 11
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 239,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "stat",
+        "line": 239,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 239,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 239,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 239,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 239,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 239,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 239,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 240,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stats",
+        "line": 240,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 241,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 241,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 241,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 241,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 241,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 242,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`stats'",
+        "line": 242,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 242,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 9-2. create template of all possible combos",
+    "line": 244,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 245,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "template",
+        "line": 245,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 246,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 246,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 246,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 246,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 246,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 246,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 246,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 246,
+        "column": 37
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 246,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 247,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 248,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 248,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "duplicates",
+      "line": 249,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 249,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 250,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`i'\"",
+        "line": 250,
+        "column": 4
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 250,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"mdc\"",
+        "line": 250,
+        "column": 11
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 250,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "cross",
+      "line": 251,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 251,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`template'",
+        "line": 251,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 253,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`template'",
+        "line": 253,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 253,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 254,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 256,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`template'",
+        "line": 256,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 256,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 257,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 257,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 257,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 257,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 257,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 9-3. merge realized stats onto template",
+    "line": 259,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 260,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 260,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 260,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 260,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 260,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 260,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 260,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 260,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 260,
+        "column": 31
+      },
+      {
+        "id": "`'",
+        "value": "`stats'",
+        "line": 260,
+        "column": 37
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "assert",
+        "line": 260,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 260,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 260,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 260,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 261,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 261,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 261,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 261,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 261,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 9-4. create rectangularly and triangularly smoothed weights",
+    "line": 263,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 264,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wide",
+        "line": 264,
+        "column": 9
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 264,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "_stat_",
+        "line": 264,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 264,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 264,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 264,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 264,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 264,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 264,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 264,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 265,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "s",
+        "line": 265,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 265,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 266,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 266,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "max_stat_all",
+        "line": 266,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_all",
+        "line": 266,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_all",
+        "line": 266,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_emp",
+        "line": 267,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_emp",
+        "line": 267,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_emp",
+        "line": 267,
+        "column": 27
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 267,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 268,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 268,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1994",
+        "line": 268,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 268,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1996",
+        "line": 268,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 268,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 269,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 269,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 269,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 269,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 271,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 271,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2013",
+        "line": 271,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 271,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "2015",
+        "line": 271,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 271,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 272,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 272,
+        "column": 5
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 272,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 272,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forval",
+      "line": 274,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 274,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1997",
+        "line": 274,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 274,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "2012",
+        "line": 274,
+        "column": 15
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 274,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 275,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "___j",
+        "line": 275,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 275,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 275,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 275,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 276,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "__j",
+        "line": 276,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 276,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 276,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 276,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 277,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_j",
+        "line": 277,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 277,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 277,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 277,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 278,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j_",
+        "line": 278,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 278,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 278,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 278,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 279,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j__",
+        "line": 279,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 279,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 279,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 279,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 280,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "j___",
+        "line": 280,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 280,
+        "column": 16
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 280,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 280,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 281,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 281,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "_rect",
+        "line": 281,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 281,
+        "column": 15
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowmean",
+        "line": 281,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 281,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`_j'",
+        "line": 281,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 281,
+        "column": 35
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 281,
+        "column": 38
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 281,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`j_'",
+        "line": 281,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 282,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 282,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`___j'",
+        "line": 282,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 282,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 282,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 282,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 282,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 282,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 282,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 282,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 282,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 282,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 282,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`___j'",
+        "line": 282,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 283,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 283,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`__j'",
+        "line": 283,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 283,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 283,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 283,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 283,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 283,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 283,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 283,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 283,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 283,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 283,
+        "column": 41
+      },
+      {
+        "id": "`'",
+        "value": "`__j'",
+        "line": 283,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 284,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 284,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`_j'",
+        "line": 284,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 284,
+        "column": 13
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 284,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 284,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 284,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 284,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 284,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 284,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 284,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 284,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 284,
+        "column": 40
+      },
+      {
+        "id": "`'",
+        "value": "`_j'",
+        "line": 284,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 285,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 285,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 285,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 285,
+        "column": 12
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 285,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 285,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 285,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 285,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 286,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 286,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`j___'",
+        "line": 286,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 286,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 286,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 286,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 286,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 286,
+        "column": 21
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 286,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 286,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 286,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 286,
+        "column": 34
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 286,
+        "column": 42
+      },
+      {
+        "id": "`'",
+        "value": "`j_'",
+        "line": 286,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 287,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 287,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`j__'",
+        "line": 287,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 287,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 287,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 287,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 287,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 287,
+        "column": 20
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 287,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 287,
+        "column": 24
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 287,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 287,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 287,
+        "column": 41
+      },
+      {
+        "id": "`'",
+        "value": "`j__'",
+        "line": 287,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 288,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 288,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`j_'",
+        "line": 288,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 288,
+        "column": 13
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 288,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 288,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 288,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`s'",
+        "line": 288,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 288,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 288,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "!",
+        "value": "!",
+        "line": 288,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "missing",
+        "line": 288,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 288,
+        "column": 40
+      },
+      {
+        "id": "`'",
+        "value": "`j___'",
+        "line": 288,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 289,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "denom",
+        "line": 289,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 289,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 289,
+        "column": 22
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 289,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 290,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 290,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`___j'",
+        "line": 290,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 290,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`___j'",
+        "line": 290,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 290,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 290,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`___j'",
+        "line": 290,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 291,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 291,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`__j'",
+        "line": 291,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 291,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`__j'",
+        "line": 291,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 291,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 291,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`__j'",
+        "line": 291,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 292,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 292,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`_j'",
+        "line": 292,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 292,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`_j'",
+        "line": 292,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 292,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 292,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`_j'",
+        "line": 292,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 293,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 293,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 293,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 293,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 293,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 293,
+        "column": 21
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 293,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 293,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 294,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 294,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`j_'",
+        "line": 294,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 294,
+        "column": 17
+      },
+      {
+        "id": "`'",
+        "value": "`j_'",
+        "line": 294,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 294,
+        "column": 23
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 294,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`j_'",
+        "line": 294,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 295,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 295,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`j__'",
+        "line": 295,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 295,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`j__'",
+        "line": 295,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 295,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 295,
+        "column": 26
+      },
+      {
+        "id": "`'",
+        "value": "`j__'",
+        "line": 295,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 296,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 296,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`j___'",
+        "line": 296,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 296,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`j___'",
+        "line": 296,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 296,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 296,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`j___'",
+        "line": 296,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 297,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numer",
+        "line": 297,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 297,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 297,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 297,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 298,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 298,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "_trig",
+        "line": 298,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`j'",
+        "line": 298,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "numer",
+        "line": 298,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 298,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "denom",
+        "line": 298,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 299,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "numer",
+        "line": 299,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "denom",
+        "line": 299,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "wt",
+        "line": 299,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 299,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 302,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "*",
+        "value": "*",
+        "line": 302,
+        "column": 6
+      },
+      {
+        "id": "number",
+        "value": "94",
+        "line": 302,
+        "column": 7
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 302,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "95",
+        "line": 302,
+        "column": 11
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 302,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "96",
+        "line": 302,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 302,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "13",
+        "line": 302,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 302,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "14",
+        "line": 302,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 302,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "15",
+        "line": 302,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* 9-5. reshape and save result",
+    "line": 304,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reshape",
+      "line": 305,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "long",
+        "line": 305,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_all",
+        "line": 305,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_all",
+        "line": 305,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_all",
+        "line": 305,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_all_trig",
+        "line": 306,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_all_trig",
+        "line": 306,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_all_trig",
+        "line": 306,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_all_rect",
+        "line": 307,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_all_rect",
+        "line": 307,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_all_rect",
+        "line": 307,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_emp",
+        "line": 308,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_emp",
+        "line": 308,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_emp",
+        "line": 308,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_emp_trig",
+        "line": 309,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_emp_trig",
+        "line": 309,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_emp_trig",
+        "line": 309,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_emp_rect",
+        "line": 310,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_emp_rect",
+        "line": 310,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_emp_rect",
+        "line": 310,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 311,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 311,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 311,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 311,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "j",
+        "line": 311,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 311,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 312,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "i",
+        "line": 312,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 312,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 312,
+        "column": 14
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 312,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "_stat_",
+        "line": 312,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 312,
+        "column": 29
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 312,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 313,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "variable",
+        "line": 313,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`i'",
+        "line": 313,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 315,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "max_stat_all",
+        "line": 315,
+        "column": 7
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 315,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_all",
+        "line": 315,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 315,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_all",
+        "line": 315,
+        "column": 35
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 315,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "max_stat_emp",
+        "line": 316,
+        "column": 1
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 316,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "sum_stat_emp",
+        "line": 316,
+        "column": 15
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 316,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "prd_stat_emp",
+        "line": 316,
+        "column": 29
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 316,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "last",
+        "line": 316,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "order",
+      "line": 317,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 317,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 318,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 318,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "female",
+        "line": 318,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "age",
+        "line": 318,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "mdc",
+        "line": 318,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 319,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 319,
+        "column": 7
+      },
+      {
+        "id": "string",
+        "value": "\"binned and smoothed diagnoses (year-sex-age-MDC)\"",
+        "line": 319,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 320,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "data",
+        "line": 320,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 320,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "intermediate",
+        "line": 320,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 320,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "meps_file",
+        "line": 320,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 320,
+        "column": 35
+      }
+    ]
+  }
+]

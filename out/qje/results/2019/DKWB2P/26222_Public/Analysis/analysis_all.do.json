@@ -1,0 +1,1140 @@
+[
+  {
+    "id": "comment",
+    "value": "/* This do-file generates all results in Costinot, Donaldson, Kyle and Williams (QJE, 2019)\n\nAll component do-files should be run in the order listed in this document, in order \nto create the results in the paper. \n\nNote: tab8ppml.do and EpsBootstrap.do, respectively, take ~45 and ~15 minutes \nto run, using an Intel I5, 4.2Ghz 4-core processor. \n\nNote: Be sure to specify the {path} noted in the directories section.  (Just replace the XX on line 29 with your home path.)\n*/",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 4,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 5,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 5,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\n* install needed Stata commands\ncapture {\n\tssc install reghdfe\n\tssc install ppml\n\tssc install listtex\n\tssc install tuples\n\tssc install labutil\n\t}\n*/",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "************************** specify directories ********************************",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 11,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "path",
+        "line": 11,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"XX\"",
+        "line": 11,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a working directory where the intermediate analysis datasets are saved",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "intersavedir",
+        "line": 14,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Analysis/Intermediate/\"",
+        "line": 14,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a working directory where the final analysis datasets are saved",
+    "line": 15,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "finalsavedir",
+        "line": 16,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Analysis/Final/\"",
+        "line": 16,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with sales data",
+    "line": 17,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "rawdata2013",
+        "line": 18,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/MIDAS_2000-2013/\"",
+        "line": 18,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with diseases data",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 20,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gbd",
+        "line": 20,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/WHO_GBD/\"",
+        "line": 20,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with population counts",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pop",
+        "line": 22,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/UScensus_population/\"",
+        "line": 22,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with GDP per capita data",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gdpdir",
+        "line": 24,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/World_bank_GDP/\"",
+        "line": 24,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with distances between countries data",
+    "line": 25,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gravity",
+        "line": 26,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/cepii/\"",
+        "line": 26,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory containing the NIH data",
+    "line": 27,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nih",
+        "line": 28,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/NIH_grants/\"",
+        "line": 28,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory containing the OECD Trade data",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 30,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/OECD_trade/\"",
+        "line": 30,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory containing the OECD Pharma data",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oecd_pharma",
+        "line": 32,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/OECD_pharma/\"",
+        "line": 32,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory containing the MEPS data",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "meps2012",
+        "line": 34,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/MEPS_2012/\"",
+        "line": 34,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with atc-gbd crosswalk",
+    "line": 35,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "atc_gbd",
+        "line": 36,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/ATC_GBD/\"",
+        "line": 36,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* corporation-origin country crosswalk",
+    "line": 37,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "crp_ctry",
+        "line": 38,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/crp_ctry_xwalk/\"",
+        "line": 38,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* exchange rates",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "exchange_rates",
+        "line": 40,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/exchange_rates/\"",
+        "line": 40,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* country crosswalk",
+    "line": 41,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ctry_xwalk",
+        "line": 42,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/ctry_xwalk/\"",
+        "line": 42,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* gbd to nih ic code crosswalk",
+    "line": 43,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "gbd_nih_xwalk",
+        "line": 44,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}Data/Raw/gbd_nih_xwalk/\"",
+        "line": 44,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with construction do files",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 47,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "consdo_dir",
+        "line": 47,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}do-files/Construction/\"",
+        "line": 47,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with construction log files",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "conslog_dir",
+        "line": 49,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}do-files/Construction/Logs/\"",
+        "line": 49,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with analysis do files",
+    "line": 52,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 53,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "do_dir",
+        "line": 53,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}do-files/Analysis/\"",
+        "line": 53,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory with analysis log files",
+    "line": 54,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 55,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "log_dir",
+        "line": 55,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}do-files/Logs/\"",
+        "line": 55,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* a directory for the output files (figures, etc)",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "output_dir",
+        "line": 58,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"${path}do-files/Output/\"",
+        "line": 58,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "************************** tables *********************************************",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* create misc numbers (throughout text) and figures",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}miscnumbers.do\"",
+        "line": 63,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}miscfigures.do\"",
+        "line": 64,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* conduct validation (to MEPS data, in Appendix B) ",
+    "line": 67,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}miscvalidation.do\"",
+        "line": 68,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* make a table with top 10 countries in terms of sales",
+    "line": 71,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 1",
+    "line": 72,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab1.do\"",
+        "line": 73,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* make a table with top 10 diseases in terms of sales",
+    "line": 76,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 2",
+    "line": 77,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 78,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab2.do\"",
+        "line": 78,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run baseline regressions",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 3",
+    "line": 82,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab3.do\"",
+        "line": 83,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run sensivity analysis I",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 4",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab4.do\"",
+        "line": 88,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run sensivity analysis II",
+    "line": 91,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 5",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab5.do\"",
+        "line": 93,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run sensivity analysis III",
+    "line": 96,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 6",
+    "line": 97,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab6.do\"",
+        "line": 98,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run sensivity analysis IV",
+    "line": 101,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 7 & result in Footnote 35 and footnote 29 (using 2004 data)",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab7.do\"",
+        "line": 103,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 104,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab7_FN35.do\"",
+        "line": 104,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}2004_robustness_FN29.do\"",
+        "line": 105,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run extensive margin analysis",
+    "line": 108,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 8",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 110,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab8.do\"",
+        "line": 110,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run extensive margin analysis (PPML)",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 8 PPML",
+    "line": 114,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab8ppml.do\"",
+        "line": 115,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run demand elasticity estimates (and result in footnote 41)",
+    "line": 118,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 9",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 120,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab9.do\"",
+        "line": 120,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab9_FN41.do\"",
+        "line": 121,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* run supply elasticity estimates",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table 10",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 126,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tab10.do\"",
+        "line": 126,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* compute elasticity estimates and bootstrapped confidence intervals from Section 6",
+    "line": 129,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}EpsBootstrap.do\"",
+        "line": 130,
+        "column": 4
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* predict disease burden using demographic variation",
+    "line": 133,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Table B1",
+    "line": 134,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "do",
+      "line": 135,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"${do_dir}tabB1.do\"",
+        "line": 135,
+        "column": 4
+      }
+    ]
+  }
+]

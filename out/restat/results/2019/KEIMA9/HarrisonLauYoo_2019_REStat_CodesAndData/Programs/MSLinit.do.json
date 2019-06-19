@@ -1,0 +1,2516 @@
+[
+  {
+    "id": "comment",
+    "value": "// MPMSL_init is a program to initialize estimation settings for MPMSL codes",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Required options",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// \tid(.):   name of subject ID variable",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\tnrep(.): number of Halton draws to make per subject",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\tburn(.): number of initial Halton draws to burn per subject ",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\tneq(.):  number of random parameters in the model ",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// Generates the following Mata objects to be used by an MSL estimation code later (N = total number of observations in the data file, N_panel = total number of subjects)",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//\tid:     [N x 1]       vector of subject id variable ",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  nrep:   [1 x 1]       scalar measuring the number of Halton draws ",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  ERR`k': [N x nrep]    matrix of N(0,1) draws from a Halton sequence. ERR1, ERR2, ..., ERR`neq' i.e. one matrix per each random parameter.",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "//  idDV:   [N x N_panel] matrix of subject dummies",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "program",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 15,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "MSLinit",
+        "line": 15,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "rclass",
+        "line": 15,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "syntax",
+      "line": 16,
+      "column": 2
+    },
+    "options": [
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 16,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "varname",
+        "line": 16,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 16,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "integer",
+        "line": 16,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 16,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "integer",
+        "line": 16,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 16,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "integer",
+        "line": 16,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "{",
+      "value": "{",
+      "line": 18,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 18,
+          "column": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// make sure that the data set is sorted by subjects",
+    "line": 19,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 20,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`id'",
+        "line": 20,
+        "column": 8
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "stable",
+        "line": 20,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//-----------------------------------------------------------------",
+    "line": 22,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// BLOCK 1: All operations are carried out in the Mata environment.",
+    "line": 23,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "//-----------------------------------------------------------------",
+    "line": 24,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// To carry out a big block of Mata operations within a Stata program, we must write that block out as a Mata function.",
+    "line": 25,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// The reason is because both Stata program and Mata block require -end- command to close. ",
+    "line": 26,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// If the Mata block were inserted here directly, Stata would mistake Mata's -end- for the program's own -end-.",
+    "line": 27,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// id: [N x 1] vector of subject id variable. N is the total number of observations in the current data set.",
+    "line": 29,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 30,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 30,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "st_view",
+        "line": 30,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 30,
+        "column": 17
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 30,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 30,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 30,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 30,
+        "column": 22
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 30,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "st_local",
+        "line": 30,
+        "column": 24
+      },
+      {
+        "id": "string",
+        "value": "\"id\"",
+        "line": 30,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// nrep, burn, and neq are [1 x 1] scalars",
+    "line": 32,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// number of Halton draws to make",
+    "line": 33,
+    "column": 44
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 33,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 33,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 33,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "strtoreal",
+        "line": 33,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "st_local",
+        "line": 33,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"nrep\"",
+        "line": 33,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// number of initial Halton draws to burn",
+    "line": 34,
+    "column": 44
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 34,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 34,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 34,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "strtoreal",
+        "line": 34,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "st_local",
+        "line": 34,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"burn\"",
+        "line": 34,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// number of random parameters in the model",
+    "line": 35,
+    "column": 43
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 35,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 35,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 35,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "strtoreal",
+        "line": 35,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "st_local",
+        "line": 35,
+        "column": 26
+      },
+      {
+        "id": "string",
+        "value": "\"neq\"",
+        "line": 35,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// generate [N x N_panel] matrix of subject dummies using \"id\" as input",
+    "line": 37,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 38,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 38,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "idDV",
+        "line": 38,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "idDV_generator",
+        "line": 38,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 38,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// generate [N x (neq*nrep)] matrix of N(0,1) using \"id\", \"nrep\", \"burn\" and \"neq\" as inputs",
+    "line": 40,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 41,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 41,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 41,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ERR_generator",
+        "line": 41,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 41,
+        "column": 29
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 41,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 41,
+        "column": 33
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 41,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 41,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 41,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 41,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "//--------------------------------------------------------------------------------------",
+    "line": 43,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// BLOCK 2: Operations are carried out in a combination of Stata and Mata environments.",
+    "line": 44,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "//--------------------------------------------------------------------------------------",
+    "line": 45,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// Split out each successive set of nrep columns in [N x (neq*nrep)] matrix \"ERR\" into an [N x nrep] matrix: call them ERR1, ERR2, and so on.",
+    "line": 47,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// We use the Stata enviroment's -forvalues- command to loop over matrix names; the Mata enviroment's -for- command does not allow us to loop over matrix names.  ",
+    "line": 48,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "forvalues",
+      "line": 49,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "k",
+        "line": 49,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 49,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 49,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`neq'",
+        "line": 49,
+        "column": 19
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 49,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 50,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 50,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 50,
+        "column": 10
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 50,
+        "column": 13
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 50,
+        "column": 19
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 50,
+        "column": 23
+      }
+    ],
+    "options": [
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 50,
+        "column": 28
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 50,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 32
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 50,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 50,
+        "column": 35
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 50,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "..",
+        "line": 50,
+        "column": 44
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 50,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 50,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 50,
+        "column": 50
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 50,
+        "column": 54
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 51,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 51,
+        "column": 8
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 51,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`neq'",
+        "line": 51,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 51,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "_matrices",
+        "line": 51,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`_matrices'",
+        "line": 51,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 51,
+        "column": 50
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 51,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 52,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 52,
+        "column": 8
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 52,
+        "column": 12
+      },
+      {
+        "id": "`'",
+        "value": "`neq'",
+        "line": 52,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "local",
+        "line": 52,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "_matrices",
+        "line": 52,
+        "column": 28
+      },
+      {
+        "id": "`'",
+        "value": "`_matrices'",
+        "line": 52,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 52,
+        "column": 50
+      },
+      {
+        "id": "`'",
+        "value": "`k'",
+        "line": 52,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Delete Mata matrix ERR which is no longer needed ",
+    "line": 55,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 56,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 56,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "mata",
+        "line": 56,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 56,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 56,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Inform subjects of what MPMSL has done ",
+    "line": 58,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 59,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 59,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 59,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 59,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"Sorted data by `id', using -sort `id', stable-\"",
+        "line": 59,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 60,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 60,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 60,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 60,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"Generated Mata scalar inputs for MSL: nrep = `nrep', burn = `burn'\"",
+        "line": 60,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "display",
+      "line": 61,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "noisily",
+          "line": 61,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "as",
+        "line": 61,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 61,
+        "column": 22
+      },
+      {
+        "id": "string",
+        "value": "\"Generated Mata matrix inputs for MSL: id, idDV, `_matrices'\"",
+        "line": 61,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "end",
+      "line": 63,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// Mata functions to be called by MPMSL_init",
+    "line": 65,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 66,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "function",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "idDV_generator",
+        "line": 67,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "transmorphic",
+        "line": 67,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "colvector",
+        "line": 67,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 67,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "{",
+      "value": "{",
+      "line": 68,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// panel:   [N_panel x 2] matrix. ",
+    "line": 69,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// N_panel: [1 x 1] scalar that measures the number of subjects identifed by column vector \"id\". ",
+    "line": 70,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tcolumn 1 of matrix \"panel\" reports the data row for the first observation on each subject. ",
+    "line": 71,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tcolumn 2 of matrix \"panel\" reports the data row for the last observation on each subject.",
+    "line": 72,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "panel",
+      "line": 73,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "panelsetup",
+        "line": 73,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 73,
+        "column": 23
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 73,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 73,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "N_panel",
+      "line": 74,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "panelstats",
+        "line": 74,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 74,
+        "column": 23
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 74,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 74,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// initialise a [N x N_panel] matrix of 0s. we will replace column c with 1s in data rows corresponding to subject c. ",
+    "line": 76,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// in the end, this matrix will look like a data set of subject dummies that equal 1 for particular subjects",
+    "line": 77,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "idDV",
+      "line": 78,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 78,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "rows",
+        "line": 78,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 78,
+        "column": 16
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 78,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "N_panel",
+        "line": 78,
+        "column": 21
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 78,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 78,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// loop over subjects update matrix \"ERR\" and matrix \"idDV\"  ",
+    "line": 80,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 81,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 81,
+        "column": 6
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 81,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 81,
+        "column": 8
+      },
+      {
+        "id": ";",
+        "value": ";",
+        "line": 81,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 81,
+        "column": 11
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 81,
+        "column": 12
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 81,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "N_panel",
+        "line": 81,
+        "column": 14
+      },
+      {
+        "id": ";",
+        "value": ";",
+        "line": 81,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 81,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 81,
+        "column": 24
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 81,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 81,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// N_n: [1 x 1] scalar that measures the number of observations on subject n",
+    "line": 83,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "N_n",
+      "line": 84,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 84,
+        "column": 9
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 84,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 84,
+        "column": 14
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 84,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 84,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 84,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 84,
+        "column": 23
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 84,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 84,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 84,
+        "column": 28
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 84,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 84,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 84,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 84,
+        "column": 37
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 84,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// In matrix \"idDV\", replace column n with 1 in N_n rows corresponding to subject n: ",
+    "line": 86,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "//\tresulting column n looks like a Stata dummy variable that equals 1 for observations on subject n and 0 otherwise",
+    "line": 87,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "idDV",
+      "line": 88,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 88,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "N_n",
+        "line": 88,
+        "column": 39
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 88,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 44
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 88,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 47
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 88,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 88,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 88,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 88,
+        "column": 16
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 88,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "..panel",
+        "line": 88,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 88,
+        "column": 28
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 88,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 88,
+        "column": 32
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 88,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// output of this function is a [N x N_panel] matrix of subject dummies, idDV.",
+    "line": 91,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "return",
+      "line": 92,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "idDV",
+        "line": 92,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "end",
+      "line": 94,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "mata",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 96,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "function",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ERR_generator",
+        "line": 97,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "transmorphic",
+        "line": 97,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "colvector",
+        "line": 97,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 97,
+        "column": 47
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 97,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "real",
+        "line": 97,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 97,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 97,
+        "column": 63
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 97,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "real",
+        "line": 97,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 97,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 97,
+        "column": 81
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 97,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "real",
+        "line": 97,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "scalar",
+        "line": 97,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 97,
+        "column": 99
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "{",
+      "value": "{",
+      "line": 98,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "// panel:   [N_panel x 2] matrix. ",
+    "line": 99,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// N_panel: [1 x 1] scalar that measures the number of subjects identifed by column vector \"id\". ",
+    "line": 100,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tcolumn 1 of matrix \"panel\" reports the data row for the first observation on each subject. ",
+    "line": 101,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "//\t\tcolumn 2 of matrix \"panel\" reports the data row for the last observation on each subject.",
+    "line": 102,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "panel",
+      "line": 103,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "panelsetup",
+        "line": 103,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 103,
+        "column": 23
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 103,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 103,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "N_panel",
+      "line": 104,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "panelstats",
+        "line": 104,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 104,
+        "column": 23
+      }
+    ],
+    "weight": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 104,
+        "column": 30
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 104,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// initialise a [N x (neq*nrep)] matrix of 0s. we will replace these 0s with N(0,1) draws based on Halton sequences.",
+    "line": 106,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// the number of columns equals (neq*nrep) since when the model has \"neq\" random parameters, we make \"nrep\" draws of each random parameter.  ",
+    "line": 107,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ERR",
+      "line": 108,
+      "column": 2
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 108,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "rows",
+        "line": 108,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "id",
+        "line": 108,
+        "column": 15
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 108,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 108,
+        "column": 21
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 108,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 108,
+        "column": 25
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 108,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 108,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// loop over subjects update matrix \"ERR\" and matrix \"idDV\"  ",
+    "line": 110,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "for",
+      "line": 111,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 111,
+        "column": 6
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 111,
+        "column": 7
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 111,
+        "column": 8
+      },
+      {
+        "id": ";",
+        "value": ";",
+        "line": 111,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 111,
+        "column": 11
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 111,
+        "column": 12
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 111,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "N_panel",
+        "line": 111,
+        "column": 14
+      },
+      {
+        "id": ";",
+        "value": ";",
+        "line": 111,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 111,
+        "column": 23
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 111,
+        "column": 24
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 111,
+        "column": 25
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 111,
+        "column": 28
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// N_n: [1 x 1] scalar that measures the number of observations on subject n",
+    "line": 113,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "N_n",
+      "line": 114,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 114,
+        "column": 9
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 114,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 114,
+        "column": 14
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 114,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 114,
+        "column": 20
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 114,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 114,
+        "column": 23
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 114,
+        "column": 24
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 114,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 114,
+        "column": 28
+      },
+      {
+        "id": "[",
+        "value": "[",
+        "line": 114,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 114,
+        "column": 34
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 114,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 114,
+        "column": 37
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 114,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// ERR_n: [nrep x neq] matrix of N(0,1) draws from Halton sequences for subject n",
+    "line": 116,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ERR_n",
+      "line": 117,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "invnormal",
+        "line": 117,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "halton",
+        "line": 117,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 117,
+        "column": 28
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 117,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 117,
+        "column": 33
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 117,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 38
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 117,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "burn",
+        "line": 117,
+        "column": 40
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 117,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 117,
+        "column": 45
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 117,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 117,
+        "column": 51
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 117,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 117,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Vectorize ERR_n into a [1 x (neq*nrep)] row vector where the first set of nrep draws are for the first random coef, ",
+    "line": 119,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// the second set of nrep draws are for the second random coef, and so on.",
+    "line": 120,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ERR_n",
+      "line": 121,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "vec",
+        "line": 121,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "ERR_n",
+        "line": 121,
+        "column": 15
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 121,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Expand ERR_n into a [N_n x (neq*nrep)] matrix by duplicating existing N(0,1) draws",
+    "line": 123,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ERR_n",
+      "line": 124,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "J",
+        "line": 124,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "N_n",
+        "line": 124,
+        "column": 13
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 124,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 124,
+        "column": 19
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 124,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 124,
+        "column": 23
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 124,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 124,
+        "column": 30
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 124,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 124,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "ERR_n",
+        "line": 124,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// In matrix \"ERR\", replace entire N_n rows corresponding to subject n with \"ERR_n\"",
+    "line": 126,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ERR",
+      "line": 127,
+      "column": 3
+    },
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ERR_n",
+        "line": 127,
+        "column": 48
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "panel",
+        "line": 127,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 127,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 127,
+        "column": 25
+      }
+    ],
+    "options": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 127,
+        "column": 15
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 127,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "..panel",
+        "line": 127,
+        "column": 17
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 127,
+        "column": 27
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 127,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "1..",
+        "line": 127,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "neq",
+        "line": 127,
+        "column": 35
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 127,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "nrep",
+        "line": 127,
+        "column": 39
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 127,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// output of this function is a [N x (neq*nrep)] matrix of N(0,1) draws ERR",
+    "line": 130,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "return",
+      "line": 131,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ERR",
+        "line": 131,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "end",
+      "line": 133,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "exit",
+      "line": 135,
+      "column": 1
+    }
+  }
+]

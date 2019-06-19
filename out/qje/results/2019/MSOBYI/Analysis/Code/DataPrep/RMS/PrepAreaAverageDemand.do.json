@@ -1,0 +1,4111 @@
+[
+  {
+    "id": "comment",
+    "value": "/* PrepAreaAverageDemand.do */",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* This gets average demand from RMS by area, e.g. by zip code, county, or state",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Absorb regressions absorb YVar for the average OtherMass category store in the zip/zip3/state.",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Then when we predict for the zip code, we predict based on the share of each category, ignoring OtherMass. This correctly gives the predicted YVar in non-mass merchant stores, weighted by store type share, in each area.",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* SETUP */",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// D_g_prot_per1000Cal D_g_fiber_per1000Cal D_g_fat_sat_per1000Cal D_g_sugar_per1000Cal D_g_sodium_per1000Cal D_g_cholest_per1000Cal",
+    "line": 8,
+    "column": 130
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "HealthVarList",
+        "line": 8,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"HealthIndex_per1000Cal lHEI_per1000Cal ShareCoke D_HealthIndex_per1000Cal D_lHEI_per1000Cal D_ShareCoke\"",
+        "line": 8,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// CZ C9 St\" // Z3 ",
+    "line": 9,
+    "column": 30
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 9,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "AreaTypeList",
+        "line": 9,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"Z Ct\"",
+        "line": 9,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* ESTIMATE HEALTHFULNESS IN RMS DATA */",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 13,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "$HealthVarList",
+        "line": 13,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "Fruit",
+        "line": 13,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "Veg",
+        "line": 13,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 13,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "cz",
+        "line": 13,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "cz1990",
+        "line": 13,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "state_countyFIPS",
+        "line": 13,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 13,
+        "column": 78
+      },
+      {
+        "id": "identifier",
+        "value": "C_",
+        "line": 13,
+        "column": 87
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 13,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 13,
+        "column": 91
+      },
+      {
+        "id": "identifier",
+        "value": "NUPCs",
+        "line": 13,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 14,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 14,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 14,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 14,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "RMS",
+        "line": 14,
+        "column": 36
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 14,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "Prepped.dta",
+        "line": 14,
+        "column": 40
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 14,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Produce",
+        "line": 15,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "Fruit",
+        "line": 15,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 15,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "Veg",
+        "line": 15,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* gen D_Produce=D_Fruit+D_Veg",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "// D_Produce",
+    "line": 17,
+    "column": 49
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "HealthVarList",
+        "line": 17,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"$HealthVarList Produce\"",
+        "line": 17,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 19,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 19,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "zip3",
+        "line": 19,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 19,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 19,
+        "column": 22
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 19,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 19,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 21,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 21,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$HealthVarList",
+        "line": 21,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 21,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Define weights",
+    "line": 23,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// If a demand variable, weight by calories sold",
+    "line": 24,
+    "column": 31
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 24,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "strpos",
+        "line": 24,
+        "column": 5
+      },
+      {
+        "id": "string",
+        "value": "\"`var'\"",
+        "line": 24,
+        "column": 12
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 24,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"D_\"",
+        "line": 24,
+        "column": 20
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 24,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 24,
+        "column": 27
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 24,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 25,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Weight",
+        "line": 25,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"CaloriesSold\"",
+        "line": 25,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// If a supply variable, weight by UPCs offered",
+    "line": 27,
+    "column": 9
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 27,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 27,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 28,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Weight",
+        "line": 28,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "string",
+        "value": "\"NUPCs\"",
+        "line": 28,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 31,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "areatype",
+        "line": 31,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$AreaTypeList",
+        "line": 31,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 31,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "include",
+      "line": 32,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Code",
+        "line": 32,
+        "column": 11
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 32,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "DataPrep",
+        "line": 32,
+        "column": 16
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 32,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "DefineGeonames.do",
+        "line": 32,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "areg",
+      "line": 34,
+      "column": 3
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 34,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "C_LargeGroc",
+        "line": 34,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "C_SmallGroc",
+        "line": 34,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "C_SuperClub",
+        "line": 34,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "C_Drug",
+        "line": 34,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "C_Conv",
+        "line": 34,
+        "column": 57
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`Weight'",
+        "line": 34,
+        "column": 68
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 34,
+        "column": 76
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 34,
+        "column": 65
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "absorb",
+        "line": 34,
+        "column": 79
+      },
+      {
+        "id": "`'",
+        "value": "`geoname'",
+        "line": 34,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 35,
+      "column": 8
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 35,
+          "column": 4
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 35,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 35,
+        "column": 24
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 35,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Store fixed effects",
+    "line": 37,
+    "column": 4
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 38,
+      "column": 4
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 39,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FE",
+        "line": 39,
+        "column": 12
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "d",
+        "line": 39,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 40,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 40,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "FE",
+        "line": 40,
+        "column": 20
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 40,
+        "column": 23
+      }
+    ],
+    "=": [
+      {
+        "id": "`'",
+        "value": "`Weight'",
+        "line": 40,
+        "column": 33
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 40,
+        "column": 41
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "aw",
+        "line": 40,
+        "column": 30
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 40,
+        "column": 44
+      },
+      {
+        "id": "`'",
+        "value": "`geoname'",
+        "line": 40,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "saveold",
+      "line": 41,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 41,
+        "column": 12
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 41,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 41,
+        "column": 23
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 41,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "Geographic",
+        "line": 41,
+        "column": 36
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 41,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "Temp",
+        "line": 41,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 41,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 41,
+        "column": 61
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 41,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 41,
+        "column": 67
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 41,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 42,
+      "column": 4
+    }
+  },
+  {
+    "id": "comment",
+    "value": "** Get unconditional average UPCs and calories sold by store type for weights below",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cat",
+        "line": 49,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "SmallGroc",
+        "line": 49,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "LargeGroc",
+        "line": 49,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "SuperClub",
+        "line": 49,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Drug",
+        "line": 49,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "Conv",
+        "line": 49,
+        "column": 51
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 49,
+        "column": 56
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 50,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NUPCs",
+        "line": 50,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "C_",
+        "line": 50,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 50,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 50,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 50,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 51,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NUPCs_",
+        "line": 51,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 51,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 51,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 51,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sum",
+      "line": 53,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 53,
+        "column": 6
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "C_",
+        "line": 53,
+        "column": 22
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 53,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 53,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 53,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "local",
+      "line": 54,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold_",
+        "line": 54,
+        "column": 8
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 54,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 54,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 54,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/*\n\nnb don't do this, just predict with the zip residual.\n\n** Get list of zips with RMS stores but no ZBP stores. (Many are other mass merchants, which we are explicitly not measuring in ZBP, but a few are convenience stores etc. that ZBP seems to have missed.)\n\t* these get merged below.\n\t* Note that there are no RMS stores in zips that are fully excluded from ZBP.\nmerge m:1 zip_code year using $Externals/Calculations/StoreEntryExit/ZipCodeBusinessPatterns.dta, keepusing(est_Grocery est_SuperClub est_Drug est_Conv) keep(match master)\ngen int NStores = est_Grocery+est_SuperClub+est_Drug+est_Conv\nkeep if NStores==0\n\n* Collapse to zip level\ncollapse (rawsum) CaloriesSold (mean) $HealthVarList [pw=CaloriesSold],by(zip_code)\nsaveold $Externals/Calculations/Geographic/Temp_RMSZipsWithNoZPBStores.dta, replace\n*/",
+    "line": 57,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* FIT PREDICTED HEALTHFULNESS */",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Get average of ZBP store counts over 2006-2013 RMS period",
+    "line": 62,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 63,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 63,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "est_VSmallGroc",
+        "line": 63,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "est_SmallGroc",
+        "line": 63,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "est_LargeGroc",
+        "line": 63,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "est_Grocery",
+        "line": 63,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "est_SuperClub",
+        "line": 63,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "est_Drug",
+        "line": 63,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "est_Conv",
+        "line": 63,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 64,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 64,
+        "column": 8
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 64,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 64,
+        "column": 19
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 64,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "StoreEntryExit",
+        "line": 64,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 64,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "ZipCodeBusinessPatterns.dta",
+        "line": 64,
+        "column": 47
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2006",
+        "line": 64,
+        "column": 94
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 64,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 64,
+        "column": 99
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 64,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "$MaxYear",
+        "line": 64,
+        "column": 105
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 64,
+        "column": 88
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 64,
+        "column": 92
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 64,
+        "column": 76
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 66,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 66,
+        "column": 17
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 66,
+        "column": 21
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 66,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 66,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Merge county and state",
+    "line": 69,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Some unmatched from using (if no businesses) and from master (these are sometimes zips within other zips, or PO box zip codes. Presumably there are few if any Homescan households in these.)",
+    "line": 70,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* We are keeping both, but in descriptive statistics we should not include zips that are not in ZipCodeData",
+    "line": 71,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "// lnZipMedIncome  ",
+    "line": 72,
+    "column": 155
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 72,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 72,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 72,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 72,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 72,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 72,
+        "column": 26
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 72,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 72,
+        "column": 37
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 72,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "Geographic",
+        "line": 72,
+        "column": 50
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 72,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "Z_Data.dta",
+        "line": 72,
+        "column": 61
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 72,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 72,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 72,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 72,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 72,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 72,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "state_countyFIPS",
+        "line": 72,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 72,
+        "column": 131
+      },
+      {
+        "id": "identifier",
+        "value": "ZipPop",
+        "line": 72,
+        "column": 147
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 73,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 73,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 73,
+        "column": 19
+      },
+      {
+        "id": "number",
+        "value": "99999",
+        "line": 73,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Merge CZ",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 75,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 75,
+        "column": 8
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 75,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "state_countyFIPS",
+        "line": 75,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 75,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 75,
+        "column": 34
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 75,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 75,
+        "column": 45
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 75,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "Geographic",
+        "line": 75,
+        "column": 58
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 75,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "CountytoCZCrosswalk.dta",
+        "line": 75,
+        "column": 69
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 75,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 75,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 75,
+        "column": 105
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 75,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 75,
+        "column": 119
+      },
+      {
+        "id": "identifier",
+        "value": "cz",
+        "line": 75,
+        "column": 129
+      },
+      {
+        "id": "identifier",
+        "value": "cz1990",
+        "line": 75,
+        "column": 132
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Fill in missing data for the zips not in Zip Business Patterns",
+    "line": 78,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* Missing in Zip Business Patterns means zero establishments",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 80,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 80,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 80,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 80,
+        "column": 24
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 80,
+        "column": 28
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 80,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 81,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 81,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 81,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 81,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 81,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 81,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen C_OtherMass = 0 // Ignore Other Mass merchants; we don't have precise store counts in ZBP data; closest we have is \"discount department stores\" or \"general stores,\" but seems most precise to omit these.",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NStores",
+        "line": 85,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "est_Grocery",
+        "line": 85,
+        "column": 15
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 85,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "est_SuperClub",
+        "line": 85,
+        "column": 27
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 85,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "est_Drug",
+        "line": 85,
+        "column": 41
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 85,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "est_Conv",
+        "line": 85,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* For fitting nutritional characterististics, put very small grocery stores (fewer than 10 employees as nutritional equivalents to Convenience stores)",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* This worsens predictions so comment out.",
+    "line": 88,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "*replace est_SmallGroc = est_SmallGroc-est_VSmallGroc",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*replace est_Conv = est_Conv+est_VSmallGroc",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Predict area characteristics */",
+    "line": 95,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 96,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "areatype",
+        "line": 96,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$AreaTypeList",
+        "line": 96,
+        "column": 21
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 96,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 97,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "**** Preparation",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "include",
+      "line": 100,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Code",
+        "line": 100,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 100,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "DataPrep",
+        "line": 100,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 100,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "DefineGeonames.do",
+        "line": 100,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 101,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`geoname'\"",
+        "line": 101,
+        "column": 5
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 101,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"zip_code\"",
+        "line": 101,
+        "column": 20
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 101,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 102,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`areatype'\"",
+        "line": 102,
+        "column": 6
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 102,
+        "column": 19
+      },
+      {
+        "id": "string",
+        "value": "\"Z3\"",
+        "line": 102,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 102,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 103,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 103,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "zip3",
+        "line": 103,
+        "column": 12
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 103,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "zip",
+        "line": 103,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 103,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 103,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 105,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 105,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 105,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 105,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "NStores",
+        "line": 105,
+        "column": 24
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 105,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`geoname'",
+        "line": 105,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Get predicted count of UPCs in the area",
+    "line": 108,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 109,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NUPCs",
+        "line": 109,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 109,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 110,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cat",
+        "line": 110,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "SmallGroc",
+        "line": 110,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "LargeGroc",
+        "line": 110,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "SuperClub",
+        "line": 110,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "Drug",
+        "line": 110,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "Conv",
+        "line": 110,
+        "column": 52
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 110,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 111,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "NUPCs",
+        "line": 111,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "NUPCs",
+        "line": 111,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 111,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 111,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 111,
+        "column": 31
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 111,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`NUPCs_`cat'",
+        "line": 111,
+        "column": 37
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 111,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Get predicted count of calories sold in the zip",
+    "line": 114,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 115,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 115,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 115,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 116,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cat",
+        "line": 116,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "SmallGroc",
+        "line": 116,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "LargeGroc",
+        "line": 116,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "SuperClub",
+        "line": 116,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "Drug",
+        "line": 116,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "Conv",
+        "line": 116,
+        "column": 52
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 116,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 117,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 117,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 117,
+        "column": 26
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 117,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 117,
+        "column": 41
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 117,
+        "column": 45
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 117,
+        "column": 50
+      },
+      {
+        "id": "`'",
+        "value": "`CaloriesSold_`cat'",
+        "line": 117,
+        "column": 51
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 117,
+        "column": 70
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* Loop through $HealthVarList and construct fits */",
+    "line": 123,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 124,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 124,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$HealthVarList",
+        "line": 124,
+        "column": 17
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 124,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Get the C_ variables",
+    "line": 126,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// If a demand variable, weight by calories sold",
+    "line": 127,
+    "column": 32
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 127,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "strpos",
+        "line": 127,
+        "column": 6
+      },
+      {
+        "id": "string",
+        "value": "\"`var'\"",
+        "line": 127,
+        "column": 13
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 127,
+        "column": 20
+      },
+      {
+        "id": "string",
+        "value": "\"D_\"",
+        "line": 127,
+        "column": 21
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 127,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 127,
+        "column": 28
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 127,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 128,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cat",
+        "line": 128,
+        "column": 12
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "SmallGroc",
+        "line": 128,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "LargeGroc",
+        "line": 128,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "SuperClub",
+        "line": 128,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "Drug",
+        "line": 128,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "Conv",
+        "line": 128,
+        "column": 54
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 128,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This gives the weight on each category: category sum calories sold/area sum calories sold.",
+    "line": 129,
+    "column": 65
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 129,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "C_",
+        "line": 129,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 129,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 129,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 129,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 129,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`CaloriesSold_`cat'",
+        "line": 129,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 129,
+        "column": 50
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 129,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "CaloriesSold",
+        "line": 129,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// If a supply variable, weight by UPCs offered",
+    "line": 132,
+    "column": 10
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "else",
+      "line": 132,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "{",
+        "value": "{",
+        "line": 132,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 133,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cat",
+        "line": 133,
+        "column": 12
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "SmallGroc",
+        "line": 133,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "LargeGroc",
+        "line": 133,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "SuperClub",
+        "line": 133,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "Drug",
+        "line": 133,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "Conv",
+        "line": 133,
+        "column": 54
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 133,
+        "column": 59
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// This gives the weight on each category: category sum UPCs/area sum UPCs",
+    "line": 134,
+    "column": 51
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 134,
+      "column": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "C_",
+        "line": 134,
+        "column": 9
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 134,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "est_",
+        "line": 134,
+        "column": 19
+      },
+      {
+        "id": "`'",
+        "value": "`cat'",
+        "line": 134,
+        "column": 23
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 134,
+        "column": 29
+      },
+      {
+        "id": "`'",
+        "value": "`NUPCs_`cat'",
+        "line": 134,
+        "column": 31
+      },
+      {
+        "id": "'",
+        "value": "'",
+        "line": 134,
+        "column": 43
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 134,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "NUPCs",
+        "line": 134,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*** Merge above regression results and predict",
+    "line": 138,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 139,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 9
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 139,
+        "column": 10
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 139,
+        "column": 11
+      },
+      {
+        "id": "`'",
+        "value": "`geoname'",
+        "line": 139,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 139,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 139,
+        "column": 29
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 139,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 139,
+        "column": 40
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 139,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "Geographic",
+        "line": 139,
+        "column": 53
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 139,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "Temp",
+        "line": 139,
+        "column": 64
+      },
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 139,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 139,
+        "column": 78
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 139,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 139,
+        "column": 84
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 139,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 139,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 139,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 139,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 139,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "FE",
+        "line": 139,
+        "column": 125
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 139,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 139,
+        "column": 135
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* If we wanted to do mean imputation:",
+    "line": 141,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*sum FE, meanonly",
+    "line": 142,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "*replace FE = r(mean) if FE==.",
+    "line": 143,
+    "column": 4
+  },
+  {
+    "id": "comment",
+    "value": "* Get xb (prediction based only on county store types)",
+    "line": 145,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 146,
+      "column": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "est",
+          "line": 146,
+          "column": 3
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 146,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 146,
+        "column": 25
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 146,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 147,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "XB",
+        "line": 147,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 147,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Main prediction Pr is the RMS residual adjusted for differences in store counts in RMS vs. the area.",
+    "line": 149,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// If FE (the RMS residual) is missing, just use the prediction based on store type.",
+    "line": 150,
+    "column": 38
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 150,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Pr",
+        "line": 150,
+        "column": 7
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 150,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cond",
+        "line": 150,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "FE",
+        "line": 150,
+        "column": 22
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 150,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 150,
+        "column": 26
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 150,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "XB",
+        "line": 150,
+        "column": 28
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 150,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "FE",
+        "line": 150,
+        "column": 31
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 150,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "XB",
+        "line": 150,
+        "column": 34
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Other demand variables",
+    "line": 152,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "// RMS raw mean in the area",
+    "line": 153,
+    "column": 24
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 153,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 153,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "Rm",
+        "line": 153,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 153,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Residual from the RMS regression: `var' residual of store type",
+    "line": 154,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 154,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "FE",
+        "line": 154,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "Rs",
+        "line": 154,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 154,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "// Prediction based on store type only",
+    "line": 155,
+    "column": 21
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 155,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "XB",
+        "line": 155,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "St",
+        "line": 155,
+        "column": 13
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 155,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* If we wanted mean imputation",
+    "line": 157,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*sum P`var', meanonly",
+    "line": 158,
+    "column": 3
+  },
+  {
+    "id": "comment",
+    "value": "*replace P`var' = r(mean) if NStores==0 & _m==1 // I am assigning the mean if there are no stores. Limit to _m==1 because if the zip is one of the 32 zips that have a residual (FE) from RMS but no ZBP-listed stores, just use the RMS residual.",
+    "line": 159,
+    "column": 3
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 161,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "C_",
+        "line": 161,
+        "column": 8
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 161,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 165,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "`'",
+        "value": "`geoname'",
+        "line": 165,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 165,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 165,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "compress",
+      "line": 167,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "saveold",
+      "line": 168,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 168,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 168,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 168,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 168,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "Geographic",
+        "line": 168,
+        "column": 34
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 168,
+        "column": 44
+      },
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 168,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "_DemandInfo.dta",
+        "line": 168,
+        "column": 55
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 168,
+        "column": 72
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 170,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "** Erase temporary files",
+    "line": 175,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 176,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 176,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$HealthVarList",
+        "line": 176,
+        "column": 16
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 176,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 177,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "areatype",
+        "line": 177,
+        "column": 10
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$AreaTypeList",
+        "line": 177,
+        "column": 22
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 177,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 178,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 178,
+        "column": 9
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 178,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 178,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 178,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Geographic",
+        "line": 178,
+        "column": 33
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 178,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "Temp",
+        "line": 178,
+        "column": 44
+      },
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 178,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "_",
+        "line": 178,
+        "column": 58
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 178,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": ".dta",
+        "line": 178,
+        "column": 64
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*erase Calculations/Geographic/Temp_RMSZipsWithNoZPBStores.dta",
+    "line": 182,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* ESTIMATE HEALTHFULNESS IN HOMESCAN DATA FOR COMPARISON */",
+    "line": 187,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 188,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "areatype",
+        "line": 188,
+        "column": 9
+      }
+    ],
+    "in": [
+      {
+        "id": "identifier",
+        "value": "$AreaTypeList",
+        "line": 188,
+        "column": 21
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 188,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 189,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 189,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 189,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 189,
+        "column": 17
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 189,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "Homescan",
+        "line": 189,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 189,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "HHxYear.dta",
+        "line": 189,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 189,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 191,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 191,
+        "column": 8
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 191,
+        "column": 9
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 191,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "household_code",
+        "line": 191,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "panel_year",
+        "line": 191,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 191,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 191,
+        "column": 44
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 191,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 191,
+        "column": 55
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 191,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "Homescan",
+        "line": 191,
+        "column": 68
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 191,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "Prepped",
+        "line": 191,
+        "column": 77
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 191,
+        "column": 84
+      },
+      {
+        "id": "identifier",
+        "value": "Household",
+        "line": 191,
+        "column": 85
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 191,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "Panel.dta",
+        "line": 191,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nogen",
+        "line": 192,
+        "column": 3
+      },
+      {
+        "id": "identifier",
+        "value": "keep",
+        "line": 192,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "match",
+        "line": 192,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "master",
+        "line": 192,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "keepusing",
+        "line": 192,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "projection_factor",
+        "line": 192,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 192,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "state_countyFIPS",
+        "line": 192,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "cz",
+        "line": 192,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "cz1990",
+        "line": 192,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "fips_state_code",
+        "line": 192,
+        "column": 92
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "include",
+      "line": 194,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Code",
+        "line": 194,
+        "column": 10
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 194,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "DataPrep",
+        "line": 194,
+        "column": 15
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 194,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "DefineGeonames.do",
+        "line": 194,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "if",
+      "line": 196,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"`areatype'\"",
+        "line": 196,
+        "column": 5
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 196,
+        "column": 18
+      },
+      {
+        "id": "string",
+        "value": "\"Z3\"",
+        "line": 196,
+        "column": 21
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 196,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 197,
+      "column": 3
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "int",
+        "line": 197,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "zip3",
+        "line": 197,
+        "column": 11
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "floor",
+        "line": 197,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "zip_code",
+        "line": 197,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 197,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 197,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen pw = Calories*projection_factor // Calorie weighting worsens the fits to RMS and state educ/income data",
+    "line": 200,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 201,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 201,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "projection_factor",
+        "line": 201,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 202,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 202,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "ShareCoke",
+        "line": 202,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "HealthIndex_per1000Cal",
+        "line": 202,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "Produce",
+        "line": 202,
+        "column": 51
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 202,
+        "column": 63
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 202,
+        "column": 65
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pw",
+        "line": 202,
+        "column": 60
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 202,
+        "column": 68
+      },
+      {
+        "id": "`'",
+        "value": "`geoname'",
+        "line": 202,
+        "column": 71
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 203,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "$Externals",
+        "line": 203,
+        "column": 7
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 203,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "Calculations",
+        "line": 203,
+        "column": 18
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 203,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "Homescan",
+        "line": 203,
+        "column": 31
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 203,
+        "column": 39
+      },
+      {
+        "id": "`'",
+        "value": "`areatype'",
+        "line": 203,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "_DemandInfo.dta",
+        "line": 203,
+        "column": 50
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 203,
+        "column": 67
+      }
+    ]
+  }
+]

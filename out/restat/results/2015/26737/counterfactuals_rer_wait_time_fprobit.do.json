@@ -1,0 +1,3680 @@
+[
+  {
+    "id": "comment",
+    "value": "*Code to simulate change in crossings for each CD if loonie appreictaes by 10%",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Written by AC, November 18, 2010",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Note: using its_regdata_2009_filledin.dta instead of its_regdata",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*this gives us the necessary covariates for 2009 in order to run counterfactuals",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*But be careful not to use the last 3 months of 2009 when generating estimates (i.e. running flogit)",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*modified november 29th by AC to use fractional logit, and calculate counterfactuals for 4 Ontario CDs",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Modified Feb 16th by AC to do the counterfactual for 2000 and 2007, not 2009",
+    "line": 7,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Modified by AC, October 20 2011, to use updated 2010 data, as well as the new specification that ",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*incorporates gas and income ",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Modiied by AC, November 12, 2011 to do the wait time counterfactual with ",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*either 13 or 52 min wait. ",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "all",
+        "line": 13,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 14,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "100m",
+        "line": 14,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 15,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 15,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tempfile",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp1",
+        "line": 16,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 16,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wait",
+        "line": 17,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "52",
+        "line": 17,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Set directory to \\data\\",
+    "line": 18,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*use ITS_regdata_2009_filledin, clear ",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 22,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ITS_regdata",
+        "line": 22,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 22,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lpg",
+        "line": 24,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "lpg",
+        "line": 24,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 24,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 24,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_ca",
+        "line": 24,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 24,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 24,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnW",
+        "line": 25,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "lnW",
+        "line": 25,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 25,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 25,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "cpi_ca",
+        "line": 25,
+        "column": 24
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 25,
+        "column": 30
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 25,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*USE Subdivision distances",
+    "line": 26,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "log_drive_dist",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 27,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "dd_min_wtmed",
+        "line": 27,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "log_drive_time",
+        "line": 28,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 28,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "26",
+        "line": 28,
+        "column": 25
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 28,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 28,
+        "column": 28
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 28,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "dt_min_wtmed",
+        "line": 28,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***end of new to subdiv",
+    "line": 29,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "log_rer",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 30,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "rer",
+        "line": 30,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "log_rer_sq",
+        "line": 31,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log_rer",
+        "line": 31,
+        "column": 16
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 31,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 31,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 32,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 14
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 32,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "2001",
+        "line": 32,
+        "column": 19
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 32,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 32,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 32,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2001",
+        "line": 32,
+        "column": 33
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 32,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 32,
+        "column": 40
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 32,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "8",
+        "line": 32,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "iceberg",
+        "line": 35,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"log_rer log_rer_sq ldrive\"",
+        "line": 35,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ldrive",
+        "line": 36,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log_drive_dist",
+        "line": 36,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "global",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "added",
+        "line": 39,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"lpg lnW \"",
+        "line": 39,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 41,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sameday",
+        "line": 41,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 41,
+        "column": 16
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 41,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 42,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`temp1'",
+        "line": 42,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "glm",
+      "line": 43,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cross_prob",
+        "line": 43,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "$iceberg",
+        "line": 43,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "$added",
+        "line": 43,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 43,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "ib59.prov_id",
+        "line": 43,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 43,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 43,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 43,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 43,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "family",
+        "line": 43,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "binomial",
+        "line": 43,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "link",
+        "line": 43,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "probit",
+        "line": 43,
+        "column": 103
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 45,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_predicted",
+        "line": 45,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Now we want the prediction when the loonie is 10% stronger",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*New rer is old rer divided by 1.1",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 49,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xb_drivedist",
+        "line": 49,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 49,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Generating the shock term",
+    "line": 50,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "shock",
+        "line": 51,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "-",
+        "value": "-",
+        "line": 51,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 51,
+        "column": 12
+      },
+      {
+        "id": "number",
+        "value": "1.1",
+        "line": 51,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 51,
+        "column": 21
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "log_rer",
+        "line": 51,
+        "column": 24
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 51,
+        "column": 31
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 51,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 51,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "1.1",
+        "line": 51,
+        "column": 40
+      },
+      {
+        "id": "^",
+        "value": "^",
+        "line": 51,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 51,
+        "column": 45
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 51,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "log_rer_sq",
+        "line": 51,
+        "column": 51
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 51,
+        "column": 61
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 51,
+        "column": 62
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 51,
+        "column": 63
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "log",
+        "line": 51,
+        "column": 65
+      },
+      {
+        "id": "number",
+        "value": "1.1",
+        "line": 51,
+        "column": 69
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "log_rer",
+        "line": 51,
+        "column": 74
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 51,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 51,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "log_rer_sq",
+        "line": 51,
+        "column": 85
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 51,
+        "column": 95
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 52,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xb_new",
+        "line": 52,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "xb_drivedist",
+        "line": 52,
+        "column": 12
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 52,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "shock",
+        "line": 52,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen cross_prob_counter=(1+exp(-xb_new))^-1",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 54,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_counter",
+        "line": 54,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "normal",
+        "line": 54,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "xb_new",
+        "line": 54,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 57,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 57,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pop_for_depvar",
+        "line": 57,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 57,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "car_own_rate",
+        "line": 57,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 57,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 57,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 58,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_predicted",
+        "line": 58,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 58,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 58,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 59,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_counter",
+        "line": 59,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 59,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 59,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*First doing Canada as a whole:",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 62,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 63,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 63,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 63,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 63,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 63,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 63,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 64,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 64,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 64,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 64,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 64,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 64,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 64,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 64,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 65,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 65,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 65,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "counterfactual_tables.txt",
+        "line": 65,
+        "column": 15
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "text",
+        "line": 65,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 65,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 66,
+        "column": 7
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 66,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 66,
+        "column": 22
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 66,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 66,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 66,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 66,
+        "column": 33
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 66,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 66,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 66,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 66,
+        "column": 59
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 66,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "9.2f",
+        "line": 66,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 67,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 67,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 67,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 68,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Now doing the provinces",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 71,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 72,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 72,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 72,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 72,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 72,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "prov_id",
+        "line": 72,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 72,
+        "column": 69
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 73,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 73,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 73,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 73,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 73,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 73,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 73,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 73,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 74,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 74,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 74,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prov_id",
+        "line": 75,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 75,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 75,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 75,
+        "column": 30
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 75,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 75,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 75,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 75,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 75,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 75,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 75,
+        "column": 67
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 75,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "9.2f",
+        "line": 75,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 76,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 76,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 76,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 77,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Now doing the 4 Ontario CDs",
+    "line": 79,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 80,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 80,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 80,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 80,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 80,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 80,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 80,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*keep if (cd_id==3537|cd_id==3536|cd_id==3525|cd_id==3520)",
+    "line": 81,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Update: October 25, 2011 by AC. Doing a new list of 3 CDs now, instead of the earlier 4.",
+    "line": 82,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 83,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 83,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3526",
+        "line": 83,
+        "column": 17
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 83,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 83,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "3525",
+        "line": 83,
+        "column": 29
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 83,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 83,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 83,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "3520",
+        "line": 83,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 84,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 84,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 84,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 84,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 84,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 84,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 84,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 84,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 85,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 85,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 85,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 86,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 86,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 86,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 86,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 86,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 86,
+        "column": 28
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 86,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 86,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 86,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 86,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 86,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 86,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 86,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 86,
+        "column": 65
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 86,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "9.2f",
+        "line": 86,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 87,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 87,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 87,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Now doing the counterfactual that doubles wait times. ",
+    "line": 89,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Use drive time specification with 26 minute wait. Subtract wait time term, add on wait time coeff*ln(2*wait+drivetime)",
+    "line": 90,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Update: doing this with a wait macro variable (measured in minutes) that can be changed",
+    "line": 91,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 93,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "`'",
+        "value": "`temp1'",
+        "line": 93,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 93,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 95,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ldrive",
+        "line": 95,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "log_drive_time",
+        "line": 95,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "glm",
+      "line": 96,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 5
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cross_prob",
+        "line": 96,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "$iceberg",
+        "line": 96,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "$added",
+        "line": 96,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "i.month",
+        "line": 96,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "ib59.prov_id",
+        "line": 96,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "post911",
+        "line": 96,
+        "column": 53
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 96,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 96,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 96,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "family",
+        "line": 96,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "binomial",
+        "line": 96,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "link",
+        "line": 96,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "probit",
+        "line": 96,
+        "column": 103
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 97,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_predicted",
+        "line": 97,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "predict",
+      "line": 98,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xb_drivetime",
+        "line": 98,
+        "column": 9
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "xb",
+        "line": 98,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 99,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "new_log_drive_time",
+        "line": 99,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ln",
+        "line": 99,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "$wait",
+        "line": 99,
+        "column": 27
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 99,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "60",
+        "line": 99,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 99,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "dt_min_wtmed",
+        "line": 99,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 100,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "shock",
+        "line": 100,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 100,
+        "column": 11
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "ldrive",
+        "line": 100,
+        "column": 14
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 100,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 100,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "new_log_drive_time",
+        "line": 100,
+        "column": 22
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 100,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "_b",
+        "line": 100,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "ldrive",
+        "line": 100,
+        "column": 44
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 100,
+        "column": 50
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 100,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "log_drive_time",
+        "line": 100,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 101,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "xb_new",
+        "line": 101,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "xb_drivetime",
+        "line": 101,
+        "column": 12
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 101,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "shock",
+        "line": 101,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*gen cross_prob_counter=(1+exp(-xb_new))^-1",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 103,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_counter",
+        "line": 103,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "normal",
+        "line": 103,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "xb_new",
+        "line": 103,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 105,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 105,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pop_for_depvar",
+        "line": 105,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 105,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "car_own_rate",
+        "line": 105,
+        "column": 33
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 105,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "30",
+        "line": 105,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 106,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 106,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_predicted",
+        "line": 106,
+        "column": 20
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 106,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 106,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 107,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 107,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cross_prob_counter",
+        "line": 107,
+        "column": 18
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 107,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 107,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*First doing Canada as a whole",
+    "line": 109,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 110,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 111,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 111,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "cars",
+        "line": 111,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 111,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 111,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 111,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 111,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 111,
+        "column": 66
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 112,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 112,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 112,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 112,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 112,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 112,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 112,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 112,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 112,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*table year if (year==2000|year==2009), c(mean pct_change) format(%9.2f)",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 114,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 114,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 114,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 115,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 115,
+        "column": 7
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 115,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 115,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 115,
+        "column": 22
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 115,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 115,
+        "column": 27
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 115,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 115,
+        "column": 33
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 115,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 115,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 115,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 115,
+        "column": 59
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 115,
+        "column": 66
+      },
+      {
+        "id": "number",
+        "value": "9.2f",
+        "line": 115,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 116,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 116,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 116,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 117,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Now doing the provinces",
+    "line": 119,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "preserve",
+      "line": 120,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 121,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 121,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "cars",
+        "line": 121,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 121,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 121,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 121,
+        "column": 49
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 121,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "prov_id",
+        "line": 121,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 121,
+        "column": 74
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*graph bar cross_prob_predicted_prov cross_prob_counter_prov if year==2009, over(prov_id)",
+    "line": 122,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 123,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 123,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 123,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 123,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 123,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 123,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 123,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 123,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*table prov_id year, c(mean pct_change) format(%9.2f)",
+    "line": 124,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*table prov_id year if (year==2000|year==2009), c(mean pct_change) format(%9.2f)",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 126,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 126,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 126,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "prov_id",
+        "line": 127,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 15
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 24
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 127,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 127,
+        "column": 30
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 127,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 127,
+        "column": 35
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 127,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 127,
+        "column": 41
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 127,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 127,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 127,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 127,
+        "column": 67
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 127,
+        "column": 74
+      },
+      {
+        "id": "number",
+        "value": "9.2f",
+        "line": 127,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 128,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 128,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 128,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "restore",
+      "line": 129,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Now doing the 4 Ontario CDs",
+    "line": 130,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 131,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 131,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 131,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 131,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "cars_at_risk",
+        "line": 131,
+        "column": 44
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 131,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 131,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 131,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*keep if (cd_id==3537|cd_id==3536|cd_id==3525|cd_id==3520)",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 133,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 133,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 133,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "3526",
+        "line": 133,
+        "column": 17
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 133,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 133,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 133,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": "3525",
+        "line": 133,
+        "column": 29
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 133,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 133,
+        "column": 34
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 133,
+        "column": 39
+      },
+      {
+        "id": "number",
+        "value": "3520",
+        "line": 133,
+        "column": 41
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 134,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cars_counter",
+        "line": 134,
+        "column": 17
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 134,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 134,
+        "column": 30
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 134,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cars_predicted",
+        "line": 134,
+        "column": 46
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 134,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "100",
+        "line": 134,
+        "column": 61
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 135,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 135,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "on",
+        "line": 135,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cd_id",
+        "line": 136,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 136,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 136,
+        "column": 22
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 136,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "2002",
+        "line": 136,
+        "column": 28
+      },
+      {
+        "id": "|",
+        "value": "|",
+        "line": 136,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 136,
+        "column": 33
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 136,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "2010",
+        "line": 136,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "c",
+        "line": 136,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 136,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "pct_change",
+        "line": 136,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "format",
+        "line": 136,
+        "column": 65
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 136,
+        "column": 72
+      },
+      {
+        "id": "number",
+        "value": "9.2f",
+        "line": 136,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 137,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 137,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 137,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "log",
+      "line": 138,
+      "column": 5
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "qui",
+          "line": 138,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "close",
+        "line": 138,
+        "column": 9
+      }
+    ]
+  }
+]

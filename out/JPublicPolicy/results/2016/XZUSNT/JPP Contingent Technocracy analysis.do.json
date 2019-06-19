@@ -1,0 +1,4520 @@
+[
+  {
+    "id": "comment",
+    "value": "***LOAD DATA***",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 3,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Insert local file location at [XXXXX]",
+    "line": 5,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "import",
+      "line": 6,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "excel",
+        "line": 6,
+        "column": 8
+      },
+      {
+        "id": "string",
+        "value": "\"[XXXXX]\\AfricanPrivatization_JPP dataverse.xlsx\"",
+        "line": 6,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "sheet",
+        "line": 6,
+        "column": 65
+      },
+      {
+        "id": "string",
+        "value": "\"Data\"",
+        "line": 6,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "firstrow",
+        "line": 6,
+        "column": 79
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***TWO-STAGE ANALYSIS w/PROPSNSITY SCORING***",
+    "line": 9,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Using Hirano & Imbens (2004) approach, as described in Guo & Fraser (2015)",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**STAGE 1: CALCULATING GENERALIZED PROPENSITY SCORE**",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "**Creating independence scores = zero for country-years with no agency, new variable 'indieX'",
+    "line": 14,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 15,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 15,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 15,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 16,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 16,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepX",
+        "line": 16,
+        "column": 17
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "indepX",
+        "line": 16,
+        "column": 27
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 16,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 16,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Creating cut points ('indieCUT') using new zero-based independence scores",
+    "line": 17,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "centile",
+      "line": 18,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 18,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "centile",
+        "line": 18,
+        "column": 18
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 18,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 18,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "90",
+        "line": 18,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 19,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 19,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indieCUT",
+        "line": 19,
+        "column": 14
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 19,
+        "column": 25
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 19,
+        "column": 30
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 19,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": ".14",
+        "line": 19,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 20,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 20,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indieCUT",
+        "line": 20,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 20,
+        "column": 27
+      },
+      {
+        "id": "number",
+        "value": ".43",
+        "line": 20,
+        "column": 53
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 20,
+        "column": 32
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 20,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": ".14",
+        "line": 20,
+        "column": 39
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 20,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 20,
+        "column": 45
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 20,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 21,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 21,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indieCUT",
+        "line": 21,
+        "column": 18
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 21,
+        "column": 27
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 21,
+        "column": 32
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 21,
+        "column": 38
+      },
+      {
+        "id": "number",
+        "value": ".43",
+        "line": 21,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**Analyzing propensity score using generalized method to estimate relative independence of privatization agency as a function of other variables",
+    "line": 23,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gpscore2",
+      "line": 24,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "polity4",
+        "line": 24,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "IMF_SBA",
+        "line": 24,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 24,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 24,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "pctKformGDP",
+        "line": 24,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 24,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrow",
+        "line": 24,
+        "column": 67
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "t",
+        "line": 24,
+        "column": 77
+      },
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 24,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "gpscore",
+        "line": 24,
+        "column": 87
+      },
+      {
+        "id": "identifier",
+        "value": "indepSCORE",
+        "line": 24,
+        "column": 95
+      },
+      {
+        "id": "identifier",
+        "value": "predict",
+        "line": 24,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "p_indep",
+        "line": 24,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "sigma",
+        "line": 24,
+        "column": 124
+      },
+      {
+        "id": "identifier",
+        "value": "sigma_indep",
+        "line": 24,
+        "column": 130
+      },
+      {
+        "id": "identifier",
+        "value": "cutpoints",
+        "line": 24,
+        "column": 143
+      },
+      {
+        "id": "identifier",
+        "value": "indieCUT",
+        "line": 24,
+        "column": 153
+      },
+      {
+        "id": "identifier",
+        "value": "index",
+        "line": 24,
+        "column": 163
+      },
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 24,
+        "column": 169
+      },
+      {
+        "id": "identifier",
+        "value": "nq_gps",
+        "line": 25,
+        "column": 2
+      },
+      {
+        "id": "number",
+        "value": "10",
+        "line": 25,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "family",
+        "line": 25,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "binomial",
+        "line": 25,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "link",
+        "line": 25,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "logit",
+        "line": 25,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "test",
+        "line": 25,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "Bayes_factor",
+        "line": 25,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "estat",
+      "line": 26,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ic",
+        "line": 26,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*generates propensity score 'indepSCORE'. Converts to weights with inverse function:",
+    "line": 28,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 29,
+      "column": 4
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 29,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 20
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 29,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "indepSCORE",
+        "line": 29,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "**STAGE 2: POOLED OLS ESTIMATOR*",
+    "line": 31,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Estimates cumulative percent of SOEs privatized, adjusting for independence propensity by weighting using inverse of 'indepSCORE', 'indepWEIGHT' (see Guo & Fraser 2015, p.314).",
+    "line": 32,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Generating standardized PolityIV and agendcy independence scores.",
+    "line": 34,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 35,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "polity4",
+        "line": 35,
+        "column": 15
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 35,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": ".998",
+        "line": 35,
+        "column": 23
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 35,
+        "column": 28
+      },
+      {
+        "id": "number",
+        "value": "5.622",
+        "line": 35,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 36,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indieX",
+        "line": 36,
+        "column": 14
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 36,
+        "column": 20
+      },
+      {
+        "id": "number",
+        "value": ".316",
+        "line": 36,
+        "column": 21
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 36,
+        "column": 26
+      },
+      {
+        "id": "number",
+        "value": ".240",
+        "line": 36,
+        "column": 27
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Analysis 1--Direct effects only",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 40,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 51
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 40,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 40,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 40,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 40,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 40,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 40,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 40,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 40,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "ALG",
+        "line": 40,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "BEN",
+        "line": 40,
+        "column": 92
+      },
+      {
+        "id": "identifier",
+        "value": "BF",
+        "line": 40,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "BOT",
+        "line": 40,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "CAM",
+        "line": 40,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "CDI",
+        "line": 40,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "ETH",
+        "line": 41,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "GHA",
+        "line": 41,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "KEN",
+        "line": 41,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "LES",
+        "line": 41,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "MAD",
+        "line": 41,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "MLI",
+        "line": 41,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "MLW",
+        "line": 41,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "MOR",
+        "line": 41,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "MOZ",
+        "line": 41,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "MRS",
+        "line": 41,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "NBA",
+        "line": 41,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "NGA",
+        "line": 41,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "NGR",
+        "line": 41,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "RWA",
+        "line": 41,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "SAF",
+        "line": 41,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "SEN",
+        "line": 41,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "SIL",
+        "line": 41,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "TAN",
+        "line": 42,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "TOG",
+        "line": 42,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "TUN",
+        "line": 42,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "UGA",
+        "line": 42,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ZAM",
+        "line": 42,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "y1991",
+        "line": 42,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "y1992",
+        "line": 42,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "y1993",
+        "line": 42,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "y1994",
+        "line": 42,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "y1995",
+        "line": 42,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "y1996",
+        "line": 42,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "y1997",
+        "line": 42,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "y1998",
+        "line": 42,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "y1999",
+        "line": 42,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "y2000",
+        "line": 42,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "y2001",
+        "line": 42,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "y2002",
+        "line": 42,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "y2003",
+        "line": 42,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "y2004",
+        "line": 42,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "y2005",
+        "line": 42,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "y2006",
+        "line": 42,
+        "column": 112
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 42,
+        "column": 127
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 42,
+        "column": 138
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pweight",
+        "line": 42,
+        "column": 119
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 42,
+        "column": 141
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 42,
+        "column": 145
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "fitstat",
+      "line": 43,
+      "column": 2
+    }
+  },
+  {
+    "id": "comment",
+    "value": "*Analysis 2--Democracy x independence interaction",
+    "line": 46,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 48,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 52
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 48,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 48,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 48,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 48,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 48,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 48,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 48,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 48,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 48,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "ALG",
+        "line": 48,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "BEN",
+        "line": 48,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "BF",
+        "line": 48,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "BOT",
+        "line": 48,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "CAM",
+        "line": 48,
+        "column": 124
+      },
+      {
+        "id": "identifier",
+        "value": "CDI",
+        "line": 48,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "ETH",
+        "line": 49,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "GHA",
+        "line": 49,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "KEN",
+        "line": 49,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "LES",
+        "line": 49,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "MAD",
+        "line": 49,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "MLI",
+        "line": 49,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "MLW",
+        "line": 49,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "MOR",
+        "line": 49,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "MOZ",
+        "line": 49,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "MRS",
+        "line": 49,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "NBA",
+        "line": 49,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "NGA",
+        "line": 49,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "NGR",
+        "line": 49,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "RWA",
+        "line": 49,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "SAF",
+        "line": 49,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "SEN",
+        "line": 49,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "SIL",
+        "line": 49,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "TAN",
+        "line": 50,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "TOG",
+        "line": 50,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "TUN",
+        "line": 50,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "UGA",
+        "line": 50,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ZAM",
+        "line": 50,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "y1991",
+        "line": 50,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "y1992",
+        "line": 50,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "y1993",
+        "line": 50,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "y1994",
+        "line": 50,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "y1995",
+        "line": 50,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "y1996",
+        "line": 50,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "y1997",
+        "line": 50,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "y1998",
+        "line": 50,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "y1999",
+        "line": 50,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "y2000",
+        "line": 50,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "y2001",
+        "line": 50,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "y2002",
+        "line": 50,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "y2003",
+        "line": 50,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "y2004",
+        "line": 50,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "y2005",
+        "line": 50,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "y2006",
+        "line": 50,
+        "column": 112
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 50,
+        "column": 127
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 50,
+        "column": 138
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pweight",
+        "line": 50,
+        "column": 119
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 50,
+        "column": 141
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 50,
+        "column": 145
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "fitstat",
+      "line": 51,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 52,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 52,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 52,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 52,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 52,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 52,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 52,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 52,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 52,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 52,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 52,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 53,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***ROBUSTNESS CHECKS***",
+    "line": 56,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "***Model D1: ENDOGENOUS TREATMENT EFFECTS REGRESSION***",
+    "line": 58,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "etregress",
+      "line": 59,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 52
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 59,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 59,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 59,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 59,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 59,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 59,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 59,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 59,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 59,
+        "column": 99
+      },
+      {
+        "id": "identifier",
+        "value": "ALG",
+        "line": 60,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "BEN",
+        "line": 60,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "BF",
+        "line": 60,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "BOT",
+        "line": 60,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "CAM",
+        "line": 60,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "CDI",
+        "line": 60,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "ETH",
+        "line": 60,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "GHA",
+        "line": 60,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "KEN",
+        "line": 60,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "LES",
+        "line": 60,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "MAD",
+        "line": 60,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "MLI",
+        "line": 61,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "MLW",
+        "line": 61,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "MOR",
+        "line": 61,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "MOZ",
+        "line": 61,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "MRS",
+        "line": 61,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "NBA",
+        "line": 61,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "NGA",
+        "line": 61,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "NGR",
+        "line": 61,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "RWA",
+        "line": 61,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "SAF",
+        "line": 61,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "SEN",
+        "line": 61,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "SIL",
+        "line": 61,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "TAN",
+        "line": 62,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "TOG",
+        "line": 62,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "TUN",
+        "line": 62,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "UGA",
+        "line": 62,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "ZAM",
+        "line": 62,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "y1991",
+        "line": 63,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "y1992",
+        "line": 63,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "y1993",
+        "line": 63,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "y1994",
+        "line": 63,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "y1995",
+        "line": 63,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "y1996",
+        "line": 63,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "y1997",
+        "line": 63,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "y1998",
+        "line": 63,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "y1999",
+        "line": 63,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "y2000",
+        "line": 63,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "y2001",
+        "line": 63,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "y2002",
+        "line": 63,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "y2003",
+        "line": 63,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "y2004",
+        "line": 63,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "y2005",
+        "line": 63,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "y2006",
+        "line": 63,
+        "column": 91
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "treat",
+        "line": 64,
+        "column": 1
+      },
+      {
+        "id": "identifier",
+        "value": "agency",
+        "line": 64,
+        "column": 7
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 64,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 64,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "IMF_SBA",
+        "line": 64,
+        "column": 25
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 64,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 64,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "pctKformGDP",
+        "line": 64,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 64,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "GDPgrow",
+        "line": 64,
+        "column": 73
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 65,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 65,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 65,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Zindie",
+        "line": 65,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 65,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 65,
+        "column": 34
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 65,
+        "column": 42
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 65,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 65,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": ".5",
+        "line": 65,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 65,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 66,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D2: FIXED EFFECTS MODEL w/o WEIGHTS***",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "codeno",
+        "line": 69,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "Year",
+        "line": 69,
+        "column": 14
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "yearly",
+        "line": 69,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 70,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 8
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 70,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 70,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 70,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 70,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 70,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 70,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 70,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 70,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 70,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 70,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 71,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 71,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 71,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 71,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 71,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 71,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 71,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 71,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 71,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 71,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 71,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 72,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D3: TIME SERIES MODEL w/DRISCOLL-KRAAY STANDARD ERRORS***",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 75,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "demXindieX",
+        "line": 75,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 75,
+        "column": 16
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 75,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 75,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtscc",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 76,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 76,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 76,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "demXindieX",
+        "line": 76,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 76,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 76,
+        "column": 53
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 76,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 76,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 76,
+        "column": 85
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "YearNo",
+        "line": 76,
+        "column": 104
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 76,
+        "column": 110
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 76,
+        "column": 111
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 76,
+        "column": 114
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "***Model D4: JACKKNIFED STANDARD ERRORS",
+    "line": 78,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "jackknife",
+      "line": 79,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": ":",
+        "value": ":",
+        "line": 79,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "xtreg",
+        "line": 79,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 79,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 79,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 79,
+        "column": 39
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 79,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 79,
+        "column": 68
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 79,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 79,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 79,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 79,
+        "column": 106
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 79,
+        "column": 123
+      },
+      {
+        "id": "identifier",
+        "value": "cluster",
+        "line": 79,
+        "column": 126
+      },
+      {
+        "id": "identifier",
+        "value": "codeno",
+        "line": 79,
+        "column": 134
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 80,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 80,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 80,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 80,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 80,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 80,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 80,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 80,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 80,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".5",
+        "line": 80,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 80,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 81,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D5: MLE RANDOM EFFECTS MODEL w/o WEIGHTS***",
+    "line": 83,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 84,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 8
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 84,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 84,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 84,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 84,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 84,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 84,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 84,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 84,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 84,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "mle",
+        "line": 84,
+        "column": 112
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 85,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 85,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 85,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 85,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 85,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 85,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 85,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 85,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 85,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 85,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 85,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 86,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D6: PANEL-CORRECTED STANDARD ERRORS***",
+    "line": 88,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtpcse",
+      "line": 89,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 8
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 89,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 89,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 89,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 89,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 89,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 89,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 89,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 89,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 89,
+        "column": 96
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 89,
+        "column": 133
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 89,
+        "column": 144
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "YearNo",
+        "line": 89,
+        "column": 115
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 89,
+        "column": 121
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 89,
+        "column": 122
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "iweight",
+        "line": 89,
+        "column": 125
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 90,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 90,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 90,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 90,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 90,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 90,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 90,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 90,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 90,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 90,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 90,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 91,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D7: Number of privatizations as DV***",
+    "line": 93,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 94,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 51
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_no",
+        "line": 94,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 94,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 94,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 94,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 94,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 94,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 94,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 94,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "ALG",
+        "line": 94,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "BEN",
+        "line": 94,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "BF",
+        "line": 94,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "BOT",
+        "line": 94,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "CAM",
+        "line": 94,
+        "column": 104
+      },
+      {
+        "id": "identifier",
+        "value": "CDI",
+        "line": 94,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "ETH",
+        "line": 95,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "GHA",
+        "line": 95,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "KEN",
+        "line": 95,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "LES",
+        "line": 95,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "MAD",
+        "line": 95,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "MLI",
+        "line": 95,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "MLW",
+        "line": 95,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "MOR",
+        "line": 95,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "MOZ",
+        "line": 95,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "MRS",
+        "line": 95,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "NBA",
+        "line": 95,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "NGA",
+        "line": 95,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "NGR",
+        "line": 95,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "RWA",
+        "line": 95,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "SAF",
+        "line": 95,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "SEN",
+        "line": 95,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "SIL",
+        "line": 95,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "TAN",
+        "line": 96,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "TOG",
+        "line": 96,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "TUN",
+        "line": 96,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "UGA",
+        "line": 96,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ZAM",
+        "line": 96,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "y1991",
+        "line": 96,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "y1992",
+        "line": 96,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "y1993",
+        "line": 96,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "y1994",
+        "line": 96,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "y1995",
+        "line": 96,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "y1996",
+        "line": 96,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "y1997",
+        "line": 96,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "y1998",
+        "line": 96,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "y1999",
+        "line": 96,
+        "column": 70
+      },
+      {
+        "id": "identifier",
+        "value": "y2000",
+        "line": 96,
+        "column": 76
+      },
+      {
+        "id": "identifier",
+        "value": "y2001",
+        "line": 96,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "y2002",
+        "line": 96,
+        "column": 88
+      },
+      {
+        "id": "identifier",
+        "value": "y2003",
+        "line": 96,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "y2004",
+        "line": 96,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "y2005",
+        "line": 96,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "y2006",
+        "line": 96,
+        "column": 112
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 96,
+        "column": 139
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 96,
+        "column": 150
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "YearNo",
+        "line": 96,
+        "column": 121
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 96,
+        "column": 127
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 96,
+        "column": 128
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pweight",
+        "line": 96,
+        "column": 131
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 96,
+        "column": 153
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 96,
+        "column": 157
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "fitstat",
+      "line": 97,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 98,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 98,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 98,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 98,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 98,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 98,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 98,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 98,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 98,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 98,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 98,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 99,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D8: MAURITIUS EXCLUDED",
+    "line": 101,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Mauritius is a stable democracy with no privatization agency",
+    "line": 102,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 103,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 51
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 103,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 103,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 103,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 103,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 103,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 103,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 103,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 103,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 103,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "ALG",
+        "line": 103,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "BEN",
+        "line": 103,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "BF",
+        "line": 103,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "BOT",
+        "line": 103,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "CAM",
+        "line": 103,
+        "column": 124
+      },
+      {
+        "id": "identifier",
+        "value": "CDI",
+        "line": 103,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "ETH",
+        "line": 103,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "GHA",
+        "line": 103,
+        "column": 136
+      },
+      {
+        "id": "identifier",
+        "value": "KEN",
+        "line": 103,
+        "column": 140
+      },
+      {
+        "id": "identifier",
+        "value": "LES",
+        "line": 103,
+        "column": 144
+      },
+      {
+        "id": "identifier",
+        "value": "MAD",
+        "line": 103,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "MLI",
+        "line": 103,
+        "column": 152
+      },
+      {
+        "id": "identifier",
+        "value": "MLW",
+        "line": 103,
+        "column": 156
+      },
+      {
+        "id": "identifier",
+        "value": "MOR",
+        "line": 103,
+        "column": 160
+      },
+      {
+        "id": "identifier",
+        "value": "MOZ",
+        "line": 103,
+        "column": 164
+      },
+      {
+        "id": "identifier",
+        "value": "NBA",
+        "line": 103,
+        "column": 168
+      },
+      {
+        "id": "identifier",
+        "value": "NGA",
+        "line": 103,
+        "column": 172
+      },
+      {
+        "id": "identifier",
+        "value": "NGR",
+        "line": 103,
+        "column": 176
+      },
+      {
+        "id": "identifier",
+        "value": "RWA",
+        "line": 103,
+        "column": 180
+      },
+      {
+        "id": "identifier",
+        "value": "SAF",
+        "line": 103,
+        "column": 184
+      },
+      {
+        "id": "identifier",
+        "value": "SEN",
+        "line": 103,
+        "column": 188
+      },
+      {
+        "id": "identifier",
+        "value": "SIL",
+        "line": 103,
+        "column": 192
+      },
+      {
+        "id": "identifier",
+        "value": "TAN",
+        "line": 103,
+        "column": 196
+      },
+      {
+        "id": "identifier",
+        "value": "TOG",
+        "line": 103,
+        "column": 200
+      },
+      {
+        "id": "identifier",
+        "value": "TUN",
+        "line": 103,
+        "column": 204
+      },
+      {
+        "id": "identifier",
+        "value": "UGA",
+        "line": 103,
+        "column": 208
+      },
+      {
+        "id": "identifier",
+        "value": "ZAM",
+        "line": 103,
+        "column": 212
+      },
+      {
+        "id": "identifier",
+        "value": "y1991",
+        "line": 103,
+        "column": 216
+      },
+      {
+        "id": "identifier",
+        "value": "y1992",
+        "line": 103,
+        "column": 222
+      },
+      {
+        "id": "identifier",
+        "value": "y1993",
+        "line": 103,
+        "column": 228
+      },
+      {
+        "id": "identifier",
+        "value": "y1994",
+        "line": 103,
+        "column": 234
+      },
+      {
+        "id": "identifier",
+        "value": "y1995",
+        "line": 103,
+        "column": 240
+      },
+      {
+        "id": "identifier",
+        "value": "y1996",
+        "line": 103,
+        "column": 246
+      },
+      {
+        "id": "identifier",
+        "value": "y1997",
+        "line": 103,
+        "column": 252
+      },
+      {
+        "id": "identifier",
+        "value": "y1998",
+        "line": 103,
+        "column": 258
+      },
+      {
+        "id": "identifier",
+        "value": "y1999",
+        "line": 103,
+        "column": 264
+      },
+      {
+        "id": "identifier",
+        "value": "y2000",
+        "line": 103,
+        "column": 270
+      },
+      {
+        "id": "identifier",
+        "value": "y2001",
+        "line": 103,
+        "column": 276
+      },
+      {
+        "id": "identifier",
+        "value": "y2002",
+        "line": 103,
+        "column": 282
+      },
+      {
+        "id": "identifier",
+        "value": "y2003",
+        "line": 103,
+        "column": 288
+      },
+      {
+        "id": "identifier",
+        "value": "y2004",
+        "line": 103,
+        "column": 294
+      },
+      {
+        "id": "identifier",
+        "value": "y2005",
+        "line": 103,
+        "column": 300
+      },
+      {
+        "id": "identifier",
+        "value": "y2006",
+        "line": 103,
+        "column": 306
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 103,
+        "column": 321
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 103,
+        "column": 332
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "MRS",
+        "line": 103,
+        "column": 337
+      },
+      {
+        "id": "!=",
+        "value": "!=",
+        "line": 103,
+        "column": 340
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 103,
+        "column": 342
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pweight",
+        "line": 103,
+        "column": 313
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 103,
+        "column": 345
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 103,
+        "column": 349
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 104,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 104,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 104,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 104,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 104,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 104,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 104,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 104,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 104,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 104,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 104,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 105,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D9: FIXED EFFECTS MODEL w/NO \"Zero Cases\" AND w/o WEIGHTS***",
+    "line": 107,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Cases with no privatization agency excluded form the model.",
+    "line": 108,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtreg",
+      "line": 109,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 8
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 109,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 109,
+        "column": 19
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 109,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 109,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 109,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 109,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 109,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 109,
+        "column": 85
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 109,
+        "column": 95
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "agency",
+        "line": 109,
+        "column": 114
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 109,
+        "column": 120
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 109,
+        "column": 122
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 109,
+        "column": 125
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 110,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 110,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 110,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 110,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 110,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 110,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 110,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 110,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 110,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 110,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 110,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 111,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***Model D10: 1990-1999 CASES ONLY***",
+    "line": 113,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "reg",
+      "line": 114,
+      "column": 1
+    },
+    "meta": {
+      "predictors": 44
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "priv_cumpct",
+        "line": 114,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 114,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 114,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "c.Zpolity4#c.ZindieX",
+        "line": 114,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "lnpop",
+        "line": 114,
+        "column": 55
+      },
+      {
+        "id": "identifier",
+        "value": "lnGDPpercap",
+        "line": 114,
+        "column": 61
+      },
+      {
+        "id": "identifier",
+        "value": "pctgovGDP",
+        "line": 114,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "electyear",
+        "line": 114,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "priv_cumpct_lag",
+        "line": 114,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "ALG",
+        "line": 114,
+        "column": 109
+      },
+      {
+        "id": "identifier",
+        "value": "BEN",
+        "line": 114,
+        "column": 113
+      },
+      {
+        "id": "identifier",
+        "value": "BF",
+        "line": 114,
+        "column": 117
+      },
+      {
+        "id": "identifier",
+        "value": "BOT",
+        "line": 114,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "CAM",
+        "line": 114,
+        "column": 124
+      },
+      {
+        "id": "identifier",
+        "value": "CDI",
+        "line": 114,
+        "column": 128
+      },
+      {
+        "id": "identifier",
+        "value": "ETH",
+        "line": 115,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "GHA",
+        "line": 115,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "KEN",
+        "line": 115,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "LES",
+        "line": 115,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "MAD",
+        "line": 115,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "MLI",
+        "line": 115,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "MLW",
+        "line": 115,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "MOR",
+        "line": 115,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "MOZ",
+        "line": 115,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "MRS",
+        "line": 115,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "NBA",
+        "line": 115,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "NGA",
+        "line": 115,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "NGR",
+        "line": 115,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "RWA",
+        "line": 115,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "SAF",
+        "line": 115,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "SEN",
+        "line": 115,
+        "column": 62
+      },
+      {
+        "id": "identifier",
+        "value": "SIL",
+        "line": 115,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "TAN",
+        "line": 116,
+        "column": 2
+      },
+      {
+        "id": "identifier",
+        "value": "TOG",
+        "line": 116,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "TUN",
+        "line": 116,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "UGA",
+        "line": 116,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "ZAM",
+        "line": 116,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "y1991",
+        "line": 116,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "y1992",
+        "line": 116,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "y1993",
+        "line": 116,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "y1994",
+        "line": 116,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "y1995",
+        "line": 116,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "y1996",
+        "line": 116,
+        "column": 52
+      },
+      {
+        "id": "identifier",
+        "value": "y1997",
+        "line": 116,
+        "column": 58
+      },
+      {
+        "id": "identifier",
+        "value": "y1998",
+        "line": 116,
+        "column": 64
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "indepWEIGHT",
+        "line": 116,
+        "column": 92
+      },
+      {
+        "id": "]",
+        "value": "]",
+        "line": 116,
+        "column": 103
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "Year",
+        "line": 116,
+        "column": 73
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 116,
+        "column": 77
+      },
+      {
+        "id": "number",
+        "value": "2000",
+        "line": 116,
+        "column": 78
+      }
+    ],
+    "weight": [
+      {
+        "id": "identifier",
+        "value": "pweight",
+        "line": 116,
+        "column": 84
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "vce",
+        "line": 116,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "r",
+        "line": 116,
+        "column": 110
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "fitstat",
+      "line": 117,
+      "column": 2
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "margins",
+      "line": 118,
+      "column": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 118,
+          "column": 1
+        }
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "dydx",
+        "line": 118,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "ZindieX",
+        "line": 118,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "at",
+        "line": 118,
+        "column": 32
+      },
+      {
+        "id": "identifier",
+        "value": "Zpolity4",
+        "line": 118,
+        "column": 35
+      },
+      {
+        "id": "=",
+        "value": "=",
+        "line": 118,
+        "column": 43
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 118,
+        "column": 45
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 118,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": ".25",
+        "line": 118,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 118,
+        "column": 52
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "marginsplot",
+      "line": 119,
+      "column": 1
+    }
+  },
+  {
+    "id": "comment",
+    "value": "***END OF FILE***",
+    "line": 121,
+    "column": 1
+  }
+]

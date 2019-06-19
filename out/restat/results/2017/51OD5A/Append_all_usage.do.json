@@ -1,0 +1,2692 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "program",
+      "line": 1,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "drop",
+        "line": 1,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "_all",
+        "line": 1,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* define program to clean each updated of the energy usage data",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "program",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Clean_usage",
+        "line": 5,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* cleaning file to be called after energy_use_intervals_raw_DATE.dta has been loaded, see Append_all_usage",
+    "line": 7,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* cleans energy usage data, removes people who sell back to the grid, ",
+    "line": 8,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* removes initial observations, tags large users",
+    "line": 9,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Registers that start with B (instead of E or Q) represent energy put back into the grid",
+    "line": 12,
+    "column": 2
+  },
+  {
+    "id": "comment",
+    "value": "* Registers that start with E are controlled load customers.",
+    "line": 13,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 14,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regtype",
+        "line": 14,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "substr",
+        "line": 14,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "register",
+        "line": 14,
+        "column": 21
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 14,
+        "column": 29
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 14,
+        "column": 30
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 14,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 14,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 15,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "controlledload",
+        "line": 15,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "register",
+        "line": 15,
+        "column": 21
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 15,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"E2\"",
+        "line": 15,
+        "column": 31
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 16,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sellback",
+        "line": 16,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "regtype",
+        "line": 16,
+        "column": 16
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 16,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"B\"",
+        "line": 16,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 17,
+      "column": 27
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 17,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "account_number",
+            "line": 17,
+            "column": 5
+          }
+        ],
+        "options": [
+          {
+            "id": "identifier",
+            "value": "sort",
+            "line": 17,
+            "column": 21
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "hh_sellback",
+        "line": 17,
+        "column": 32
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 17,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "sellback",
+        "line": 17,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 18,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "hh_sellback",
+        "line": 18,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 18,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 18,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 20,
+      "column": 2
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "regtype",
+        "line": 20,
+        "column": 10
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 20,
+        "column": 17
+      },
+      {
+        "id": "string",
+        "value": "\"Q\"",
+        "line": 20,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 22,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 22,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "read_date_raw",
+        "line": 22,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 23,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 23,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "date",
+        "line": 23,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "read_date_raw",
+        "line": 23,
+        "column": 21
+      },
+      {
+        "id": ",",
+        "value": ",",
+        "line": 23,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"YMD\"",
+        "line": 23,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 24,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "read_year",
+        "line": 24,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 24,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 24,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 25,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "read_month",
+        "line": 25,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 25,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 25,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 26,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "read_week",
+        "line": 26,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "week",
+        "line": 26,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 26,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "read_dow",
+        "line": 27,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "dow",
+        "line": 27,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 27,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 28,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 28,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "read_dow",
+        "line": 28,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"Day of week\"",
+        "line": 28,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 29,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "define",
+        "line": 29,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "dowvals",
+        "line": 29,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 29,
+        "column": 23
+      },
+      {
+        "id": "string",
+        "value": "\"Sunday\"",
+        "line": 29,
+        "column": 25
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 29,
+        "column": 34
+      },
+      {
+        "id": "string",
+        "value": "\"Monday\"",
+        "line": 29,
+        "column": 36
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 29,
+        "column": 45
+      },
+      {
+        "id": "string",
+        "value": "\"Tuesday\"",
+        "line": 29,
+        "column": 47
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 29,
+        "column": 57
+      },
+      {
+        "id": "string",
+        "value": "\"Wednesday\"",
+        "line": 29,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "4",
+        "line": 29,
+        "column": 71
+      },
+      {
+        "id": "string",
+        "value": "\"Thursday\"",
+        "line": 29,
+        "column": 73
+      },
+      {
+        "id": "number",
+        "value": "5",
+        "line": 29,
+        "column": 84
+      },
+      {
+        "id": "string",
+        "value": "\"Friday\"",
+        "line": 29,
+        "column": 86
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 29,
+        "column": 95
+      },
+      {
+        "id": "string",
+        "value": "\"Saturday\"",
+        "line": 29,
+        "column": 97
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 30,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "values",
+        "line": 30,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "read_dow",
+        "line": 30,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "dowvals",
+        "line": 30,
+        "column": 24
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 32,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 32,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 32,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 34,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 34,
+        "column": 7
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "rowtotal",
+        "line": 34,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "interval1",
+        "line": 34,
+        "column": 27
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 34,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "interval48",
+        "line": 34,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 35,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ones",
+        "line": 35,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 35,
+        "column": 11
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 37,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 37,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 37,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "registers",
+        "line": 37,
+        "column": 26
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "ones",
+        "line": 37,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "controlledload",
+        "line": 37,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 37,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "regtype",
+        "line": 37,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "read_date_raw",
+        "line": 37,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "read_year",
+        "line": 37,
+        "column": 86
+      },
+      {
+        "id": "identifier",
+        "value": "read_month",
+        "line": 37,
+        "column": 96
+      },
+      {
+        "id": "identifier",
+        "value": "read_week",
+        "line": 37,
+        "column": 107
+      },
+      {
+        "id": "identifier",
+        "value": "read_dow",
+        "line": 37,
+        "column": 117
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 37,
+        "column": 127
+      },
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 37,
+        "column": 130
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 37,
+        "column": 145
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 38,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 38,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 38,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"kWh per day\"",
+        "line": 38,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Tag large users (robustness change cut off, 273kWh/day is definition of small users in the NEM)",
+    "line": 40,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 41,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_use1",
+        "line": 41,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 41,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 42,
+      "column": 27
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 42,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "account_number",
+            "line": 42,
+            "column": 5
+          }
+        ],
+        "options": [
+          {
+            "id": "identifier",
+            "value": "sort",
+            "line": 42,
+            "column": 21
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_use1",
+        "line": 42,
+        "column": 35
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 42,
+        "column": 46
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 42,
+        "column": 51
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 42,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "273",
+        "line": 42,
+        "column": 60
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 42,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 42,
+        "column": 66
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 42,
+        "column": 75
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 42,
+        "column": 77
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 43,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 43,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "large_use1",
+        "line": 43,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"Daily usage exceeded 273kWh\"",
+        "line": 43,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Alternative definition of large user",
+    "line": 45,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 46,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_use2",
+        "line": 46,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 46,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 47,
+      "column": 27
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 47,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "account_number",
+            "line": 47,
+            "column": 5
+          }
+        ],
+        "options": [
+          {
+            "id": "identifier",
+            "value": "sort",
+            "line": 47,
+            "column": 21
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_use2",
+        "line": 47,
+        "column": 35
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 47,
+        "column": 46
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 47,
+        "column": 51
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 47,
+        "column": 59
+      },
+      {
+        "id": "number",
+        "value": "50",
+        "line": 47,
+        "column": 60
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 47,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "dailykWh",
+        "line": 47,
+        "column": 65
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 47,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 47,
+        "column": 75
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "label",
+      "line": 48,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 48,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "large_use2",
+        "line": 48,
+        "column": 12
+      },
+      {
+        "id": "string",
+        "value": "\"Daily usage exceeded 50kWh\"",
+        "line": 48,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Large_user has at least one daily usage exceeding the threshold",
+    "line": 50,
+    "column": 2
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_user1",
+        "line": 51,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 51,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 52,
+      "column": 27
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 52,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "account_number",
+            "line": 52,
+            "column": 5
+          }
+        ],
+        "options": [
+          {
+            "id": "identifier",
+            "value": "sort",
+            "line": 52,
+            "column": 21
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 52,
+        "column": 32
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 52,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "large_use1",
+        "line": 52,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 53,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_user1",
+        "line": 53,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 53,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 53,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 53,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 53,
+        "column": 38
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 53,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 53,
+        "column": 42
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 53,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 53,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 55,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 55,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 57,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_user2",
+        "line": 57,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 57,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 58,
+      "column": 27
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 58,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "account_number",
+            "line": 58,
+            "column": 5
+          }
+        ],
+        "options": [
+          {
+            "id": "identifier",
+            "value": "sort",
+            "line": 58,
+            "column": 21
+          }
+        ]
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 58,
+        "column": 32
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sum",
+        "line": 58,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "large_use2",
+        "line": 58,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 59,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "large_user2",
+        "line": 59,
+        "column": 10
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 59,
+        "column": 23
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 59,
+        "column": 28
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 59,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 59,
+        "column": 38
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 59,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 59,
+        "column": 42
+      },
+      {
+        "id": "~=",
+        "value": "~=",
+        "line": 59,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 59,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 61,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ind_large",
+        "line": 61,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 63,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 63,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 63,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 64,
+      "column": 21
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "by",
+          "line": 64,
+          "column": 2
+        },
+        "varlist": [
+          {
+            "id": "identifier",
+            "value": "account_number",
+            "line": 64,
+            "column": 5
+          }
+        ]
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_n",
+        "line": 64,
+        "column": 29
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 64,
+        "column": 31
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 64,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "end",
+      "line": 66,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 122,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 123,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 123,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 123,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******",
+    "line": 125,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* second update of usage file",
+    "line": 126,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 127,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 127,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 127,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "energy_use_intervals_raw_040613",
+        "line": 127,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 127,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "Clean_usage",
+      "line": 128,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 129,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sample",
+        "line": 129,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "3",
+        "line": 129,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 130,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 130,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 130,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "daily_040613",
+        "line": 130,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 130,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******",
+    "line": 132,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* first update of usage file",
+    "line": 133,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 134,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 134,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 134,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "energy_use_intervals_raw_220313",
+        "line": 134,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 134,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "Clean_usage",
+      "line": 135,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 136,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sample",
+        "line": 136,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "2",
+        "line": 136,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 137,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 137,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 137,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "daily_220313",
+        "line": 137,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 137,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******",
+    "line": 140,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* original usage file",
+    "line": 141,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 142,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 142,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 142,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "energy_use_intervals_raw_130213",
+        "line": 142,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 142,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "Clean_usage",
+      "line": 143,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 144,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "sample",
+        "line": 144,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 144,
+        "column": 12
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 145,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 145,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 145,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "daily_130213",
+        "line": 145,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 145,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*******",
+    "line": 147,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* append updates to original",
+    "line": 149,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 150,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 150,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 150,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 150,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "daily_040613",
+        "line": 150,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "append",
+      "line": 151,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 151,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 151,
+        "column": 14
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 151,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "daily_220313",
+        "line": 151,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 153,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 153,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 153,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "daily_all",
+        "line": 153,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 153,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* dailykwh large user status, controlled load or registers can vary between samples - seems to be some typos in earlier data (i.e. missing decimal places)",
+    "line": 155,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* take most recent meter read then second most recent meter read",
+    "line": 157,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 158,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 158,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 158,
+        "column": 12
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sample",
+        "line": 158,
+        "column": 17
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 158,
+        "column": 23
+      },
+      {
+        "id": "number",
+        "value": "3",
+        "line": 158,
+        "column": 25
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 159,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 159,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 159,
+        "column": 13
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "sample",
+        "line": 159,
+        "column": 18
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 159,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "2",
+        "line": 159,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "sort",
+      "line": 161,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 161,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 161,
+        "column": 21
+      },
+      {
+        "id": "identifier",
+        "value": "temp",
+        "line": 161,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "temp2",
+        "line": 161,
+        "column": 36
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 163,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 163,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "daily",
+        "line": 163,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "registers",
+        "line": 163,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "controlledload",
+        "line": 163,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "large_use1",
+        "line": 163,
+        "column": 49
+      },
+      {
+        "id": "identifier",
+        "value": "large_use2",
+        "line": 163,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "large_user1",
+        "line": 163,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "large_user2",
+        "line": 163,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "sample",
+        "line": 163,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 163,
+        "column": 103
+      },
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 163,
+        "column": 106
+      },
+      {
+        "id": "identifier",
+        "value": "read_date",
+        "line": 163,
+        "column": 121
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 165,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 165,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 165,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "temp_daily",
+        "line": 165,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 165,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 167,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 167,
+        "column": 5
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 167,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "energy_use_intervals_raw_040613",
+        "line": 167,
+        "column": 10
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 167,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "collapse",
+      "line": 169,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "first",
+        "line": 169,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "nmi",
+        "line": 169,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 169,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 169,
+        "column": 26
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "merge",
+      "line": 171,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 171,
+        "column": 7
+      },
+      {
+        "id": ":",
+        "value": ":",
+        "line": 171,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "m",
+        "line": 171,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "account_number",
+        "line": 171,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "using",
+        "line": 171,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 171,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 171,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "temp_daily",
+        "line": 171,
+        "column": 37
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 173,
+      "column": 1
+    },
+    "if": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 173,
+        "column": 9
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 173,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 173,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "drop",
+      "line": 175,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "_merge",
+        "line": 175,
+        "column": 6
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 177,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "control2",
+        "line": 177,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "1",
+        "line": 177,
+        "column": 15
+      },
+      {
+        "id": "number",
+        "value": "6102999999",
+        "line": 177,
+        "column": 26
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 177,
+        "column": 37
+      },
+      {
+        "id": "identifier",
+        "value": "nmi",
+        "line": 177,
+        "column": 39
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 177,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "6104000000",
+        "line": 177,
+        "column": 44
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "nmi",
+        "line": 177,
+        "column": 20
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 177,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 178,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "control2",
+        "line": 178,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 178,
+        "column": 18
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "control2",
+        "line": 178,
+        "column": 23
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 178,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": ".",
+        "line": 178,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 180,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 180,
+        "column": 6
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 180,
+        "column": 10
+      },
+      {
+        "id": "identifier",
+        "value": "daily",
+        "line": 180,
+        "column": 11
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 180,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "erase",
+      "line": 182,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "Data",
+        "line": 182,
+        "column": 7
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 182,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "temp_daily.dta",
+        "line": 182,
+        "column": 12
+      }
+    ]
+  }
+]
