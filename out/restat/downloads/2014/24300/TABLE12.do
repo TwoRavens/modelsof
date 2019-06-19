@@ -1,0 +1,77 @@
+clear
+set more off
+set mem 500000
+
+cd ""
+
+cap log close
+log using TABLE12.log, text replace
+
+use "RESTAT_REFORMS.dta", clear
+
+**TABLE 12: all indices of reforms ***
+
+**TR as measure for trade ***
+
+ 
+**A) TR1 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, GENERAL INDEX FOR DOMESTIC FINANCE, GENERAL INDEX FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 TR1 AG1 NW1 DF1 CAP1001 i.ifs i.year, vce(cl ifs)
+
+outreg2 TR1 AG1 NW1 DF1 CAP1001 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) replace
+
+
+**B) TR1 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, TWO SUB-INDICES DOMESTIC FINANCE, GENERAL INDEX FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 TR1 AG1 NW1 BK1 SM1 CAP1001 i.ifs i.year, vce(cl ifs)
+
+outreg2 TR1 AG1 NW1 BK1 SM1 CAP1001 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+
+
+**C) TR1 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, GENERAL INDEX FOR DOMESTIC FINANCE, TWO SUB-INDICES DOMESTIC FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 TR1 AG1 NW1 DF1 CAPRES1 CAPNONRES1 i.ifs i.year, vce(cl ifs)
+
+outreg2 TR1 AG1 NW1 DF1 CAPRES1 CAPNONRES1 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+
+
+**D) TR1 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, GENERAL INDEX FOR DOMESTIC FINANCE, TWO SUB-INDICES DOMESTIC FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 TR1 AG1 NW1 BK1 SM1 CAPRES1 CAPNONRES1 i.ifs i.year, vce(cl ifs)
+
+outreg2 TR1 AG1 NW1 BK1 SM1 CAPRES1 CAPNONRES1 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+
+
+**CUR 100: as measure for trade **
+
+**E) CUR1001 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, GENERAL INDEX FOR DOMESTIC FINANCE, GENERAL INDEX FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 CUR1001 AG1 NW1 DF1 CAP1001 i.ifs i.year, vce(cl ifs)
+
+outreg2 CUR1001 AG1 NW1 DF1 CAP1001 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+  
+
+**F) CUR1001 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, TWO SUB-INDICES DOMESTIC FINANCE, GENERAL INDEX FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 CUR1001 AG1 NW1 BK1 SM1 CAP1001 i.ifs i.year, vce(cl ifs)
+
+outreg2 CUR1001 AG1 NW1 BK1 SM1 CAP1001 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+
+
+
+**G) CUR1001 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, GENERAL INDEX FOR DOMESTIC FINANCE, TWO SUB-INDICES DOMESTIC FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 CUR1001 AG1 NW1 DF1 CAPRES1 CAPNONRES1 i.ifs i.year, vce(cl ifs)
+
+outreg2 CUR1001 AG1 NW1 DF1 CAPRES1 CAPNONRES1 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+
+
+
+**H) TR1 FOR TRADE BARRIERS, AGRICOLTURE, NETWORKS, GENERAL INDEX FOR DOMESTIC FINANCE, TWO SUB-INDICES DOMESTIC FOR EXTERNAL FINANCE**
+
+xi: reg GDP_Gr lGDP1 CUR1001 AG1 NW1 BK1 SM1 CAPRES1 CAPNONRES1 i.ifs i.year, vce(cl ifs)
+
+outreg2 CUR1001 AG1 NW1 BK1 SM1 CAPRES1 CAPNONRES1 lGDP1 using TABLE12, bdec(3) nocon word title(TABLE12. Growth Regressions, All Indices of Reforms) 
+
+
+log close

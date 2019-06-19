@@ -1,0 +1,7 @@
+* Define_Globals
+global DIFF1 "super_prime prime treat_1 treat_2 treat_3 after_change"
+global DIFF2 "treat_1_sub_prime treat_2_sub_prime treat_3_sub_prime treat_1_prime treat_2_prime treat_3_prime after_prime after_sub_prime"
+global DIFF3 "after_Treat_1_super_prime after_Treat_1_prime after_Treat_1_sub_prime after_Treat_2_super_prime after_Treat_2_prime after_Treat_2_sub_prime after_Treat_3_super_prime after_Treat_3_prime after_Treat_3_sub_prime"
+global COVARIATES "amount_1  amount_2 amount_3 amount_4 auction_open_for_duration home amountdelinquent publicrecordslast10years publicrecordslast12months revolvingcreditbalance totalcreditlines inquiries_1 inquiries_2 delinq7_1 delinq7_2 current_delinq_1 current_delinq_2 bankcardutilization_1 bankcardutilization_2 current_lines_1 current_lines_2 current_lines_3 current_lines_4 key_word_* category_dummy_* income_dummy_* employment_dummy_* st_dum_* " 
+global WEEK_DUM " week_dum_* "
+
