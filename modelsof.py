@@ -209,36 +209,27 @@ def plot(path, dist, kinds, horiz=''):
     subprocess.run(['Rscript', 'plots.R', path, horiz], check=True)
 
 def plot_files():
-    dist = OrderedDict()
+    cnt = {} 
     for file in glob.glob(f'out/**/all_files.csv'):
-        counts = Counter()
-        datasets, datasets_stata, datasets_r = set(), set(), set()
+        journal = file.split('/')[1]
         with open(file) as f:
             for row in csv.DictReader(f):
-                year, dataset = row['file'].split('/')[3:5]
-                #if year != '2018':
-                    #continue
-
-                datasets.add(dataset)
+                year, dataset = row['file'].replace('\\', '/').split('/')[3:5]
+                k = (journal, year) 
+                if not cnt.get(k):
+                    cnt[k] = dict(all=set(), r=set(), stata=set())
+                cnt[k]['all'].add(dataset)
                 ext = get_ext(row['file'])
-                if inc(ext, 'stata', counts):
-                    datasets_stata.add(dataset)
-                elif inc(ext, 'r', counts):
-                    datasets_r.add(dataset)
+                for x in ('r', 'stata'):
+                    if ext in exts[x]:
+                        cnt[k][x].add(dataset)
 
-        if not datasets:
-            continue
-
-        journal = update_dist(dist, file, counts)
-        total = len(datasets)
-        dist[journal] = {
-            'stata': len(datasets_stata - datasets_r) / total,
-            'r': len(datasets_r - datasets_stata) / total,
-            'both': len(datasets_stata & datasets_r) / total,
-            'neither': len(datasets - (datasets_stata | datasets_r)) / total
-        }
-
-    plot('files_by_journal', dist, 'stata r both neither'.split())
+    with open('out/files.csv', 'w') as f:
+        w = csv.writer(f)
+        w.writerow('journal year stata r both neither'.split())
+        for k, v in cnt.items(): 
+            all, r, stata = [v[k] for k in 'all r stata'.split()]
+            w.writerow([k[0], k[1], len(stata - r), len(r - stata), len(stata & r), len(all - (stata | r))])
 
 def plot_files_by_year():
     all_sets = dict()
