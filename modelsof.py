@@ -289,19 +289,16 @@ def plot_files_by_year():
     plot('files_by_year', dist, 'stata r both neither'.split())
 
 def plot_commands():
-    dist, reg_dist, cmds = OrderedDict(), OrderedDict(), [set(), set()]
-    for file in glob.glob(f'out/**/stats.json'):
-        with open(file) as f:
-            cnts = json.load(f)[:2]
-            for n, d in enumerate([dist, reg_dist]):
-                journal = update_dist(d, file, cnts[n])
-                top = Counter(d[journal]).most_common()[:20]
-                d[journal] = dict(top)
-                d[journal]['other'] = 1 - sum(v for _, v in top)
-                cmds[n].update(k for k, _ in top)
-
-    plot('commands', dist, sorted(cmds[0]) + ['other'], 'y')
-    plot('reg_commands', reg_dist, sorted(cmds[1]) + ['other'], 'y')
+    with open('out/regressions.csv', 'w') as f:
+        w = csv.writer(f)
+        w.writerow('journal year command count'.split()) 
+        for file in glob.glob(f'out/*/regressions.csv'):
+            journal = file.split('/')[1]
+            with open(file) as f1:
+                r = csv.reader(f1)
+                next(r)
+                for row in r:
+                    w.writerow([journal] + row)
 
 cmd = {
     'get_datasets': get_datasets,
