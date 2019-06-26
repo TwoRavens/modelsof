@@ -1,0 +1,3649 @@
+[
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 1,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 2,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "matrix",
+        "line": 2,
+        "column": 7
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 3,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "maxiter",
+        "line": 3,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 3,
+        "column": 13
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 4,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mem",
+        "line": 4,
+        "column": 5
+      },
+      {
+        "id": "number",
+        "value": "50m",
+        "line": 4,
+        "column": 9
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "set",
+      "line": 5,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "more",
+        "line": 5,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "off",
+        "line": 5,
+        "column": 10
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 7,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"Colgan repl - Oil, democ, civil war - 2014Apr.dta\"",
+        "line": 7,
+        "column": 5
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "clear",
+        "line": 7,
+        "column": 58
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "tsset",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "state_num",
+        "line": 8,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 8,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/****  ANALYSIS\n*****  Table I.  *****  \n** Part 1: Violence is a good way to get regime overthrow and thus ttd\ntable inci_recent if ldem==0, c(m regchange m ttd n regchange)\nttest regchange if ldem==0, by(inci_recent)\nttest ttd if ldem==0, by(inci_recent)\n** Part 2: Violence vs oil as a way to get regime overthrow and thus ttd\ntable inci_recent if ldem==0 & oilstate_1==0, c(m regchange m ttd n regchange)\ntable inci_recent if ldem==0 & oilstate_1==1, c(m regchange m ttd n regchange)\ntable oilstate_1 if ldem==0, c(m ttd n ttd)\n** Selection Effect: Peaceful regime overthrows are different in petrostates **\ntable inci_recent oildichot if regchange==1 & ldem==0, c(m ttd n ttd)\nttest ttd if regchange==1 & ldem==0 & inci_recent==0, by(oildichot)\n** Robustness check of Point 1: Pre- and post-1980\ntable inci_recent if ldem==0 & year>=1980, c(m regchange m ttd n regchange)\ntable inci_recent if ldem==0 & year<1980, c(m regchange m ttd n regchange)\ntable inci_recent if ldem==0 & oilstate_1==0 & year>=1980, c(m regchange m ttd n regchange)\ntable inci_recent if ldem==0 & oilstate_1==1 & year>=1980, c(m regchange m ttd n regchange)\ntable inci_recent if ldem==0 & oilstate_1==0 & year<1980, c(m regchange m ttd n regchange)\ntable inci_recent if ldem==0 & oilstate_1==1 & year<1980, c(m regchange m ttd n regchange)\n\n\n*****  Table II (Regime-Change)  *****  \nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store regchange_basic\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & inci_recent == 1 , nolog\nestimates store regchange_inci\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & inci_recent != 1 , nolog\nestimates store regchange_noinci\nxi: xtlogit regchange oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store reginter \n* Checking results with conflict but without interaction effect\nxi: xtlogit regchange oilstate_1 inci_recent ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates table regchange_basic reginter regchange_inci regchange_noinci , star(0.1 0.05 0.01)\nestimates table regchange_basic reginter regchange_inci regchange_noinci , se\n\n\n*****  Table III (Democratization) *****  \nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** MAGNITUDE OF IMPACT ANALYSIS\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nadjust ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1, by(oilstate_1 inci_recent) pr ci \nadjust ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1, by(oilstate_1 inci_recent) pr \nmargins, over(oilstate_1 inci_recent incioil_1) at((means) *)\n** REPORTING RAW DATA FOR APPENDIX TABLE A-3\ntable oilstate_1 inci_recent, c(sum ttd n ttd)\n\n*/",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/**** ROBUSTNESS ANALYSIS - 2013 AUGUST - NOTE THAT ORDER OF ROBUSTNESS TABLES DOES NOT MATCH APPENDIX\n** basic model, no robustness\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** Table Robust 1 - Using BOIX data \nreplace bmr_ttd = 0 if code==\"ROM\" & year==1991\nreplace bmr_ttd = 1 if code==\"ROM\" & year==1990\n** Main TTD Table USING BOIX DATA\nxi: xtlogit bmr_ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit bmr_ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 \nestimates store interaction\n*Removing the civil war years\nxi: xtlogit bmr_ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit bmr_ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1 & year>1950\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\t\n** Table Robust 2 - prior democracy experience\n  *Using priordem (dichotomous) instead of prevtran (count)\nren prevtran prevtranold \nren priordem prevtran\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\nren prevtran priordem \nren prevtranold prevtran \n\n** Table Robust 3 - restrict time period to 1960-2002 \nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & year>=1960 & year<=2002, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & year>=1960 & year<=2002, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0 & year>=1960 & year<=2002\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1 & year>=1960 & year<=2002\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** Table Robust 4 - 5-YEAR LAGS\nsort code year\nbys code (year): gen oilstate_5 = oilstate[_n-5]\nbys code (year): gen ln_gdp_combo_5 = ln_gdp_combo[_n-5]\nbys code (year): gen gdpgr5 = flgdpen[_n-1] / flgdpen[_n-6]\nreplace gdpgr5 = (gdpgr5 -1)*100\ngen gdpgr_5 = gdpgr5\n** Not lagged by 5 years: inci_recent, prevtran, muslim, royal_1\nxi: xtlogit ttd oilstate_5 ln_gdp_combo_5 gdpgr_5 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_5 inci_recent incioil_1 ln_gdp_combo_5 gdpgr_5 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_5 ln_gdp_combo_5 gdpgr_5 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_5 ln_gdp_combo_5 gdpgr_5 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** Table Robust 6 - regional dummy controls\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.region i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.region  i.year5dum if ldem==0, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.region i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.region i.year5dum if ldem==0 & inci_recent==1\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** Table Robust 7 - MidEast vs rest of world \nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & region!=\"mena\", nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & region!=\"mena\", nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==0 & region!=\"mena\"\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0 & inci_recent==1 & region!=\"mena\"\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** Table Robust 8 - GWF variables \nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0, nolog\nestimates store basic\n* Interaction effect\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0, nolog\nestimates store interaction\n*Removing the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0 & inci_recent==0\nestimates store nowar\n*Only the civil war years\nxi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0 & inci_recent==1\nestimates store war\nestimates table basic interaction war nowar, star(0.1 0.05 0.01)\nestimates table basic interaction war nowar, se\n\n** Table Robust 10 - civil wars instead of civil conflicts \n[Explain that Table 3 cannot be re-produced because there are no TTDs in petrostates with recent civil wars]\ntab warinci_recent ttd if oilstate_1==1\n\n** Table Robust 11 - add new controls: ColdWar dummy, ELF, Colonial/Communist legacy \n*[only model 2 of table 3]\n/*basic model\nxi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\nestimates store interaction\n*/",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* with Cold War",
+    "line": 13,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 14,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 14,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 14,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 14,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 14,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 14,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 14,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 14,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 14,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 14,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 14,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "coldwar",
+        "line": 14,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 14,
+        "column": 105
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 14,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 14,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 14,
+        "column": 125
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 14,
+        "column": 128
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 15,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 15,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cold",
+        "line": 15,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* with EthFrac ELF",
+    "line": 16,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 17,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 17,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 17,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 17,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 17,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 17,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 17,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 17,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 17,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 17,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 17,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 17,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 17,
+        "column": 105
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 17,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 17,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 17,
+        "column": 125
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 17,
+        "column": 128
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 18,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 18,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 18,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* with OECD",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 20,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 20,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 20,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 20,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 20,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 20,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 20,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 20,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 20,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 20,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 20,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "OECD",
+        "line": 20,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 20,
+        "column": 102
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 20,
+        "column": 116
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 20,
+        "column": 120
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 20,
+        "column": 122
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 20,
+        "column": 125
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 21,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 21,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 21,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* with Colonial/Communist legacies",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 23,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 23,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 23,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 23,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 23,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 23,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 23,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 23,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 23,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 23,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 23,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "leg",
+        "line": 23,
+        "column": 97
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 23,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 23,
+        "column": 102
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 23,
+        "column": 116
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 23,
+        "column": 120
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 23,
+        "column": 122
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 23,
+        "column": 125
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 24,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 24,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "legacy",
+        "line": 24,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 25,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 25,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 25,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 25,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 25,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 25,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 25,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 25,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 25,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 25,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 25,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "polariz",
+        "line": 25,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 25,
+        "column": 105
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 25,
+        "column": 119
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 25,
+        "column": 123
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 25,
+        "column": 125
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 25,
+        "column": 128
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 26,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 26,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "polariz",
+        "line": 26,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 27,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 27,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cold",
+        "line": 27,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 27,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 27,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "legacy",
+        "line": 27,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "polariz",
+        "line": 27,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 27,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 27,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 27,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 27,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 28,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 28,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cold",
+        "line": 28,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 28,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 28,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "legacy",
+        "line": 28,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "polariz",
+        "line": 28,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 28,
+        "column": 51
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Table Robust 12 - Fixed Effects",
+    "line": 30,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 31,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 31,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 31,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 31,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 31,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 31,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 31,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 31,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 31,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 31,
+        "column": 75
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 31,
+        "column": 89
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 31,
+        "column": 93
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 31,
+        "column": 95
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 31,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 31,
+        "column": 104
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 32,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 32,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "basic",
+        "line": 32,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* Interaction effect",
+    "line": 33,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 34,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 34,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 34,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 34,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 34,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 34,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 34,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 34,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 34,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 34,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 34,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 34,
+        "column": 97
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 34,
+        "column": 111
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 34,
+        "column": 115
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 34,
+        "column": 117
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 34,
+        "column": 120
+      },
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 34,
+        "column": 126
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 35,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 35,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "interaction",
+        "line": 35,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Removing the civil war years",
+    "line": 36,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 37,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 37,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 37,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 37,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 37,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 37,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 37,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 37,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 37,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 37,
+        "column": 75
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 37,
+        "column": 89
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 37,
+        "column": 93
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 37,
+        "column": 95
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 37,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 37,
+        "column": 99
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 37,
+        "column": 110
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 37,
+        "column": 112
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 37,
+        "column": 115
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 38,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 38,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "nowar",
+        "line": 38,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*Only the civil war years",
+    "line": 39,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 40,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 7
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 40,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 40,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 40,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 40,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 40,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 40,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 40,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 40,
+        "column": 67
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 40,
+        "column": 75
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 40,
+        "column": 89
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 93
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 40,
+        "column": 95
+      },
+      {
+        "id": "&",
+        "value": "&",
+        "line": 40,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 40,
+        "column": 99
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 40,
+        "column": 110
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 40,
+        "column": 112
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "fe",
+        "line": 40,
+        "column": 115
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 41,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 41,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "war",
+        "line": 41,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 42,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 42,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "basic",
+        "line": 42,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "interaction",
+        "line": 42,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "war",
+        "line": 42,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "nowar",
+        "line": 42,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 42,
+        "column": 46
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 42,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 42,
+        "column": 55
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 42,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 43,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 43,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "basic",
+        "line": 43,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "interaction",
+        "line": 43,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "war",
+        "line": 43,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "nowar",
+        "line": 43,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 43,
+        "column": 46
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Table Robust 14 - varying the oil-income threshold of petrostate ",
+    "line": 46,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*[only model 2 of table 3]",
+    "line": 47,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*[create new oilstate_1 and incioil_1 variables using different thresholds; see below]",
+    "line": 48,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 49,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 49,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 49,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 49,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 49,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 49,
+        "column": 40
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 49,
+        "column": 50
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 49,
+        "column": 65
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 49,
+        "column": 73
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 49,
+        "column": 82
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 49,
+        "column": 89
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 49,
+        "column": 97
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 49,
+        "column": 111
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 49,
+        "column": 115
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 49,
+        "column": 117
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 49,
+        "column": 120
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 50,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 50,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "interaction",
+        "line": 50,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 51,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 51,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oil80",
+        "line": 51,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 52,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 52,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oil120",
+        "line": 52,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* For a true linear measure of the interaction variable, use this alternative code\ngen incioilrent = oilrentpc*inci_recent\nbys code (year): gen incioilrent_1 = incioilrent[_n-1]\nxi: xtlogit ttd oilrentpc_1 inci_recent incioilrent_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\n*/",
+    "line": 53,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 54,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 54,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ttd",
+        "line": 54,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilrentpc_1",
+        "line": 54,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 54,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 54,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 54,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 54,
+        "column": 66
+      },
+      {
+        "id": "identifier",
+        "value": "prevtran",
+        "line": 54,
+        "column": 74
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 54,
+        "column": 83
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 54,
+        "column": 90
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 54,
+        "column": 98
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 54,
+        "column": 112
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 54,
+        "column": 116
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 54,
+        "column": 118
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 54,
+        "column": 121
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 55,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 55,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 55,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 56,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 56,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "interaction",
+        "line": 56,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 56,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "oil80",
+        "line": 56,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "oil120",
+        "line": 56,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 56,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 56,
+        "column": 56
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 56,
+        "column": 60
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 56,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 57,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 57,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "interaction",
+        "line": 57,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 57,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "oil80",
+        "line": 57,
+        "column": 36
+      },
+      {
+        "id": "identifier",
+        "value": "oil120",
+        "line": 57,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 57,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/** Oilstate Threshold Modification\nren oilstate oilstate_old\nren oilstate_1 oilstate_1old\ngen oilstate = 0\nreplace oilstate = 1 if oilrentpc > 120 & oilrentpc !=.\nsort code year\nby code: gen oilstate_1=oilstate[_n-1]\nreplace incioil_1 = inci_recent*oilstate_1\nreplace warincioil_1 = warinci_recent*oilstate_1\n*/",
+    "line": 59,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* Reverseing the threshold checks\ndrop oilstate oilstate_1\nren oilstate_old oilstate \nren oilstate_1old oilstate_1 \nreplace incioil_1 = inci_recent*oilstate_1\nreplace warincioil_1 = warinci_recent*oilstate_1\n*/",
+    "line": 60,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*Linear oil measure",
+    "line": 61,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnoilalt_1",
+        "line": 62,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "lnoilalt_1old",
+        "line": 62,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oil_gas_val_1",
+        "line": 63,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "lnoilalt_1",
+        "line": 63,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** run models",
+    "line": 64,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnoilalt_1",
+        "line": 65,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "oil_gas_val_1",
+        "line": 65,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "ren",
+      "line": 66,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "lnoilalt_1old",
+        "line": 66,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "lnoilalt_1",
+        "line": 66,
+        "column": 19
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* SURVIVAL ANALYSIS\n*BASIC XTSET COMMAND: xi: xtlogit ttd oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\n*OTHER XTSET COMMAND: xi: xtlogit ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 i.year5dum if ldem==0, nolog\n\n* Step 1: Eliminate ineligible observations, when state is a democracy\n* might want to create a variable of \"time since last democracy\"\nkeep if ldem == 0\n\n* Step 2: Create ID variable for each new transition to democracy -- use prevtran?\negen obs_id = group(state_num prevtran)\n\n* Step 3: Create a survival time variable\nbys obs_id (year): gen survtime = _N\n\n* Step 4: Collapse\ncollapse ccode (mean) survtime (max) ttd (max) year (mean) oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 , by(obs_id)\n*collapse (sum) survivaltime (max) status x1, by(id)\n\n* Step 5: Create indicator of censored value\ngen cens = 0\nreplace cens = 1 if year == 2004\n\n* Step 6: Set data\n*stset survtime, failure(cens)\nstset survtime, failure(ttd)\n*stset survtime, failure(bmr_ttd)\n\n* Step 7: Create graphs\ngen oilgroup = 0\nreplace oilgroup = 1 if oilstate_1==1\nreplace oilgroup = . if oilstate_1>0 & oilstate_1<1\nsts graph, by(oilgroup) title(\"Democratization\")\n\n* Step 8: Run regression\nstcox oilstate_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 \nestimates store base\nstcox oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran muslim royal_1 \nestimates store inter\nestimates table base inter, se\nestimates table base inter, star(0.1 0.05 0.01)\ntab ccode if e(sample)==1\ntab ttd if e(sample)==1\n*/",
+    "line": 68,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/* ROBUSTNESS OF REGIME CHANGE FOR REVIEWER 1, 2014 FEB\n[BASE MODELS]\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store regchange_basic\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & inci_recent == 1 , nolog\nestimates store regchange_inci\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & inci_recent != 1 , nolog\nestimates store regchange_noinci\nxi: xtlogit regchange oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store reginter \nestimates table regchange_basic reginter regchange_inci regchange_noinci , star(0.1 0.05 0.01)\nestimates table regchange_basic reginter regchange_inci regchange_noinci , se\n\n** Table Robust 1 - Using BOIX data\n*replace bmr_ttd = 0 if code==\"ROM\" & year==1991\n*replace bmr_ttd = 1 if code==\"ROM\" & year==1990\n*gen bmr_trans2 = bmr_trans\n*replace bmr_trans2 = 1 if bmr_trans==-1\nxi: xtlogit bmr_trans oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store regchange_basic\nxi: xtlogit bmr_trans oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & inci_recent == 1 , nolog\nestimates store regchange_inci\nxi: xtlogit bmr_trans oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & inci_recent != 1 , nolog\nestimates store regchange_noinci\nxi: xtlogit bmr_trans oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store reginter \nestimates table regchange_basic reginter regchange_inci regchange_noinci , star(0.1 0.05 0.01)\nestimates table regchange_basic reginter regchange_inci regchange_noinci , se\n\n** Table Robust 2 - prior democracy experience\n *Using priordem (dichotomous) instead of prevtran (count)\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 priordem muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store regchange_basic\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 priordem muslim royal_1 i.year5dum if ldem==0 & inci_recent == 1 , nolog\nestimates store regchange_inci\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 priordem muslim royal_1 i.year5dum if ldem==0 & inci_recent != 1 , nolog\nestimates store regchange_noinci\nxi: xtlogit regchange oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 priordem muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store reginter \nestimates table regchange_basic reginter regchange_inci regchange_noinci , star(0.1 0.05 0.01)\nestimates table regchange_basic reginter regchange_inci regchange_noinci , se\n\n** Table Robust 3 - restrict time period to 1960-2002\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & year>=1960 & year<=2002, nolog\nestimates store regchange_basic\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & year>=1960 & year<=2002 & inci_recent == 1 , nolog\nestimates store regchange_inci\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & year>=1960 & year<=2002 & inci_recent != 1 , nolog\nestimates store regchange_noinci\nxi: xtlogit regchange oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 & year>=1960 & year<=2002, nolog\nestimates store reginter \nestimates table regchange_basic reginter regchange_inci regchange_noinci , star(0.1 0.05 0.01)\nestimates table regchange_basic reginter regchange_inci regchange_noinci , se\n\n** Table Robust 4 - GWF variables\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0 , nolog\nestimates store regchange_basic\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0 & inci_recent == 1 , nolog\nestimates store regchange_inci\nxi: xtlogit regchange oilstate_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0 & inci_recent != 1 , nolog\nestimates store regchange_noinci\nxi: xtlogit regchange oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim gwf_party gwf_military gwf_monarchy gwf_personal i.year5dum if ldem==0 , nolog\nestimates store reginter \nestimates table regchange_basic reginter regchange_inci regchange_noinci , star(0.1 0.05 0.01)\nestimates table regchange_basic reginter regchange_inci regchange_noinci , se\n\n** Table Robust 5 - add new controls: ColdWar dummy, ELF, Colonial/Communist legacy \n*[only model 2 of table 2]\n/*basic model\nxi: xtlogit regchange oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\nestimates store reginter \n*/",
+    "line": 70,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* with Cold War",
+    "line": 71,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 72,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 72,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regchange",
+        "line": 72,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 72,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 72,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 72,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 72,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 72,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "prevregchange",
+        "line": 72,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 72,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 72,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "coldwar",
+        "line": 72,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 72,
+        "column": 116
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 72,
+        "column": 130
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 72,
+        "column": 134
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 72,
+        "column": 136
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 72,
+        "column": 140
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 73,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 73,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cold",
+        "line": 73,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* with EthFrac ELF",
+    "line": 74,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 75,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 75,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regchange",
+        "line": 75,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 75,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 75,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 75,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 75,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 75,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "prevregchange",
+        "line": 75,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 75,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 75,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 75,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 75,
+        "column": 116
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 75,
+        "column": 130
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 75,
+        "column": 134
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 75,
+        "column": 136
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 75,
+        "column": 140
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 76,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 76,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 76,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* with OECD",
+    "line": 77,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 78,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 78,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regchange",
+        "line": 78,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 78,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 78,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 78,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 78,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 78,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "prevregchange",
+        "line": 78,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 78,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 78,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "OECD",
+        "line": 78,
+        "column": 108
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 78,
+        "column": 113
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 78,
+        "column": 127
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 78,
+        "column": 131
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 78,
+        "column": 133
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 78,
+        "column": 137
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 79,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 79,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 79,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "* with Colonial/Communist legacies",
+    "line": 80,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 81,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 81,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regchange",
+        "line": 81,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 81,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 81,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 81,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 81,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 81,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "prevregchange",
+        "line": 81,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 81,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 81,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "leg",
+        "line": 81,
+        "column": 108
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 81,
+        "column": 111
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 81,
+        "column": 113
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 81,
+        "column": 127
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 81,
+        "column": 131
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 81,
+        "column": 133
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 81,
+        "column": 137
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 82,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 82,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "legacy",
+        "line": 82,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 83,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 83,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cold",
+        "line": 83,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 83,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 83,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "legacy",
+        "line": 83,
+        "column": 35
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 83,
+        "column": 43
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 83,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 83,
+        "column": 52
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 83,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 84,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 84,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cold",
+        "line": 84,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "ethfrac",
+        "line": 84,
+        "column": 22
+      },
+      {
+        "id": "identifier",
+        "value": "oecd",
+        "line": 84,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "legacy",
+        "line": 84,
+        "column": 35
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 84,
+        "column": 43
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "** Table Robust 6 - varying the oil-income threshold of petrostate",
+    "line": 86,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*[only model 2 of table 3]",
+    "line": 87,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 88,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 88,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regchange",
+        "line": 88,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilstate_1",
+        "line": 88,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 88,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 88,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 88,
+        "column": 56
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 88,
+        "column": 71
+      },
+      {
+        "id": "identifier",
+        "value": "prevregchange",
+        "line": 88,
+        "column": 79
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 88,
+        "column": 93
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 88,
+        "column": 100
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 88,
+        "column": 108
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 88,
+        "column": 122
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 88,
+        "column": 126
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 88,
+        "column": 128
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 88,
+        "column": 132
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 89,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 89,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reginter",
+        "line": 89,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 90,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 90,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oil80",
+        "line": 90,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 91,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 91,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "oil120",
+        "line": 91,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "/* For a true linear measure of the interaction variable, use this alternative code\ngen incioilrent = oilrentpc*inci_recent\nbys code (year): gen incioilrent_1 = incioilrent[_n-1]\nxi: xtlogit regchange oilrentpc_1 inci_recent incioilrent_1 ln_gdp_combo_1 gdpgr_1 prevregchange muslim royal_1 i.year5dum if ldem==0 , nolog\n*/",
+    "line": 92,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtlogit",
+      "line": 93,
+      "column": 5
+    },
+    "meta": {
+      "predictors": 9
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "xi",
+          "line": 93,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "regchange",
+        "line": 93,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "oilrentpc_1",
+        "line": 93,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "inci_recent",
+        "line": 93,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "incioil_1",
+        "line": 93,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "ln_gdp_combo_1",
+        "line": 93,
+        "column": 57
+      },
+      {
+        "id": "identifier",
+        "value": "gdpgr_1",
+        "line": 93,
+        "column": 72
+      },
+      {
+        "id": "identifier",
+        "value": "prevregchange",
+        "line": 93,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "muslim",
+        "line": 93,
+        "column": 94
+      },
+      {
+        "id": "identifier",
+        "value": "royal_1",
+        "line": 93,
+        "column": 101
+      },
+      {
+        "id": "identifier",
+        "value": "i.year5dum",
+        "line": 93,
+        "column": 109
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "ldem",
+        "line": 93,
+        "column": 123
+      },
+      {
+        "id": "==",
+        "value": "==",
+        "line": 93,
+        "column": 127
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 93,
+        "column": 129
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "nolog",
+        "line": 93,
+        "column": 133
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "store",
+      "line": 94,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 94,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 94,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 95,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 95,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reginter",
+        "line": 95,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 95,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "oil80",
+        "line": 95,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "oil120",
+        "line": 95,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 95,
+        "column": 48
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 95,
+        "column": 53
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 95,
+        "column": 57
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 95,
+        "column": 62
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 96,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 96,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reginter",
+        "line": 96,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 96,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "oil80",
+        "line": 96,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "oil120",
+        "line": 96,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 96,
+        "column": 47
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 97,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 97,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reginter",
+        "line": 97,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 97,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "star",
+        "line": 97,
+        "column": 35
+      },
+      {
+        "id": "number",
+        "value": "0.1",
+        "line": 97,
+        "column": 40
+      },
+      {
+        "id": "number",
+        "value": "0.05",
+        "line": 97,
+        "column": 44
+      },
+      {
+        "id": "number",
+        "value": "0.01",
+        "line": 97,
+        "column": 49
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "table",
+      "line": 98,
+      "column": 11
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "estimates",
+          "line": 98,
+          "column": 1
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "reginter",
+        "line": 98,
+        "column": 17
+      },
+      {
+        "id": "identifier",
+        "value": "linear",
+        "line": 98,
+        "column": 26
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "se",
+        "line": 98,
+        "column": 35
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*/",
+    "line": 99,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/**** OTHER QUESTIONS\n** Checking the GDP per capita completeness \ncount if ldem==0 \ncount if ldem==0 & flgdpen!=.\ncount if ldem==0 & ln_gdp_combo_1!=.\ncorr lgdp ln_gdp_pc\n\n** Table of Petrostate TTDs\nlist code year lnoilalt_1 prevtran inci_recent if (lnoilalt_1>0 & lnoilalt_1!=.) & ttd==1\n\n** Coordination of opposition groups\ntable ttd if oilstate_1==1, c(m relfrac m top20 m wdi_gini m ethfrac) \ntable ttd if oilstate_1==1, c(n relfrac n top20 n wdi_gini n ethfrac) \nttest relfrac if oilstate_1==0 , by(ttd)\nttest top20 if oilstate_1==0 , by(ttd)\nttest wdi_gini if oilstate_1==0 , by(ttd)\ntable ttd if oilstate_1==1 & ldem==0, c(m relfrac m top20 m wdi_gini m ethfrac)\n\n** CINC question\ngen milexpc = milex/tpop if milex>=0\ntable oilstate_1 if ldem==0, c(m milexpc_real n milexpc_real)\n\n** Fixed Effects discussion\ngen oilrentclass = 0\nreplace oilrentclass = 1 if oilrentpc>100\nreplace oilrentclass = 2 if oilrentpc>500\nreplace oilrentclass = 3 if oilrentpc>1000\nreplace oilrentclass = . if oilrentpc==.\nlist code year lnoilalt_1 prevtran inci_recent if (lnoilalt_1>0 & lnoilalt_1!=.) & ttd==1\nlist code year lnoilalt_1 prevtran oilrentpc inci_recent if (lnoilalt_1>0 & lnoilalt_1!=.) & ttd==1\n*/",
+    "line": 102,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "/** DESCRIPTIVE STATISTICS\nsum year regchange ttd oilstate_1 inci_recent incioil_1 ln_gdp_combo_1 gdpgr_1 prevtran prevregchange muslim royal_1 ldem warinci_recent warincioil_1\n*/",
+    "line": 104,
+    "column": 1
+  }
+]

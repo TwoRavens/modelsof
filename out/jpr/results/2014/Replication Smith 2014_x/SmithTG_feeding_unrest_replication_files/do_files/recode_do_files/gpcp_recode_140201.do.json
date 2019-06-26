@@ -1,0 +1,4190 @@
+[
+  {
+    "id": "comment",
+    "value": "*** PREP GPCP DATA *****",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** prepares data for use by MASTER ANALYSIS",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** Todd G. Smith",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*** updated 11 November 2012",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "clear",
+      "line": 7,
+      "column": 1
+    }
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "use",
+      "line": 8,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/raw_data/GPCP_country_precip_data_Africa_only_1979_2008.dta\"",
+        "line": 8,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*collapse (sum) monthprecip (mean) precip_area, by(cow_code year)",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "*rename monthprecip annualprecip",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "xtset",
+      "line": 13,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 13,
+        "column": 7
+      },
+      {
+        "id": "identifier",
+        "value": "centmo",
+        "line": 13,
+        "column": 16
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 14,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "stdprecip",
+        "line": 14,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 14,
+        "column": 18
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 14,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "monthmean",
+        "line": 14,
+        "column": 32
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 14,
+        "column": 43
+      },
+      {
+        "id": "identifier",
+        "value": "monthsd",
+        "line": 14,
+        "column": 45
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 15,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_precip",
+        "line": 15,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "stdprecip",
+        "line": 15,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 16,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_precip",
+        "line": 16,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 16,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stdprecip",
+        "line": 16,
+        "column": 27
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 16,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 16,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 17,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_precip",
+        "line": 17,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 17,
+        "column": 18
+      },
+      {
+        "id": "identifier",
+        "value": "stdprecip",
+        "line": 17,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 18,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_precip",
+        "line": 18,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 18,
+        "column": 22
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "stdprecip",
+        "line": 18,
+        "column": 27
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 18,
+        "column": 37
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 18,
+        "column": 39
+      }
+    ]
+  },
+  {
+    "id": "comment",
+    "value": "*replace stdprecip = abs(stdprecip)",
+    "line": 19,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* generates variables x month cumulatives and \"moving standardized precipitation\" (MSP)",
+    "line": 21,
+    "column": 1
+  },
+  {
+    "id": "comment",
+    "value": "* MSP = standard deviations above (wet_msp) or below (dry_msp) 12 month moving average",
+    "line": 22,
+    "column": 1
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 24,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip1",
+        "line": 24,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 24,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 25,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip2",
+        "line": 25,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 25,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 25,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 25,
+        "column": 32
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 26,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip3",
+        "line": 26,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 26,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 26,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 26,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 26,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 26,
+        "column": 48
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 27,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip4",
+        "line": 27,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 27,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 27,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 27,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 27,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 27,
+        "column": 48
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 27,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 27,
+        "column": 65
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 28,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip5",
+        "line": 28,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 28,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 28,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 28,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 28,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 28,
+        "column": 48
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 28,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 28,
+        "column": 65
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 28,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 28,
+        "column": 82
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 29,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip6",
+        "line": 29,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 29,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 29,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 29,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 29,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 29,
+        "column": 48
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 29,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 29,
+        "column": 65
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 29,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 29,
+        "column": 82
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 29,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 29,
+        "column": 99
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 30,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip7",
+        "line": 30,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 30,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 30,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 30,
+        "column": 48
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 30,
+        "column": 65
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 30,
+        "column": 82
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 30,
+        "column": 99
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 30,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 30,
+        "column": 116
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 31,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip8",
+        "line": 31,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 31,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 31,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 31,
+        "column": 48
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 31,
+        "column": 65
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 31,
+        "column": 82
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 31,
+        "column": 99
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 31,
+        "column": 116
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 31,
+        "column": 131
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 31,
+        "column": 133
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 32,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip9",
+        "line": 32,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 32,
+        "column": 18
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 32,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 46
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 32,
+        "column": 48
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 63
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 32,
+        "column": 65
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 80
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 32,
+        "column": 82
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 97
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 32,
+        "column": 99
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 114
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 32,
+        "column": 116
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 131
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 32,
+        "column": 133
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 32,
+        "column": 148
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 32,
+        "column": 150
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 33,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip10",
+        "line": 33,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 33,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 33,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 33,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 33,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 33,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 33,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 33,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 33,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 33,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 33,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 33,
+        "column": 168
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 34,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip11",
+        "line": 34,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 34,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 34,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 34,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 34,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 34,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 34,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 34,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 34,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 34,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 34,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 34,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 34,
+        "column": 185
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 35,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip12",
+        "line": 35,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 35,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 35,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 35,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 35,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 35,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 35,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 35,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 35,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 35,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 35,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 35,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 35,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 35,
+        "column": 203
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 36,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip13",
+        "line": 36,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 36,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 36,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 36,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 36,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 36,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 36,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 36,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 36,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 36,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 36,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 36,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 36,
+        "column": 203
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 36,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "l12.monthprecip",
+        "line": 36,
+        "column": 221
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 37,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip14",
+        "line": 37,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 37,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 37,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 37,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 37,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 37,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 37,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 37,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 37,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 37,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 37,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 37,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 37,
+        "column": 203
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "l12.monthprecip",
+        "line": 37,
+        "column": 221
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 37,
+        "column": 237
+      },
+      {
+        "id": "identifier",
+        "value": "l13.monthprecip",
+        "line": 37,
+        "column": 239
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 38,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip15",
+        "line": 38,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 38,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 38,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 38,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 38,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 38,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 38,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 38,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 38,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 38,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 38,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 38,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 38,
+        "column": 203
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "l12.monthprecip",
+        "line": 38,
+        "column": 221
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 237
+      },
+      {
+        "id": "identifier",
+        "value": "l13.monthprecip",
+        "line": 38,
+        "column": 239
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 38,
+        "column": 255
+      },
+      {
+        "id": "identifier",
+        "value": "l14.monthprecip",
+        "line": 38,
+        "column": 257
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 39,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip16",
+        "line": 39,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 39,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 39,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 39,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 39,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 39,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 39,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 39,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 39,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 39,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 39,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 39,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 39,
+        "column": 203
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "l12.monthprecip",
+        "line": 39,
+        "column": 221
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 237
+      },
+      {
+        "id": "identifier",
+        "value": "l13.monthprecip",
+        "line": 39,
+        "column": 239
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 255
+      },
+      {
+        "id": "identifier",
+        "value": "l14.monthprecip",
+        "line": 39,
+        "column": 257
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 39,
+        "column": 273
+      },
+      {
+        "id": "identifier",
+        "value": "l15.monthprecip",
+        "line": 39,
+        "column": 275
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 40,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip17",
+        "line": 40,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 40,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 40,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 40,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 40,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 40,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 40,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 40,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 40,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 40,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 40,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 40,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 40,
+        "column": 203
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "l12.monthprecip",
+        "line": 40,
+        "column": 221
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 237
+      },
+      {
+        "id": "identifier",
+        "value": "l13.monthprecip",
+        "line": 40,
+        "column": 239
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 255
+      },
+      {
+        "id": "identifier",
+        "value": "l14.monthprecip",
+        "line": 40,
+        "column": 257
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 273
+      },
+      {
+        "id": "identifier",
+        "value": "l15.monthprecip",
+        "line": 40,
+        "column": 275
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 40,
+        "column": 291
+      },
+      {
+        "id": "identifier",
+        "value": "l16.monthprecip",
+        "line": 40,
+        "column": 293
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 41,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cumprecip18",
+        "line": 41,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 41,
+        "column": 19
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 31
+      },
+      {
+        "id": "identifier",
+        "value": "l.monthprecip",
+        "line": 41,
+        "column": 33
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 47
+      },
+      {
+        "id": "identifier",
+        "value": "l2.monthprecip",
+        "line": 41,
+        "column": 49
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "l3.monthprecip",
+        "line": 41,
+        "column": 66
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 81
+      },
+      {
+        "id": "identifier",
+        "value": "l4.monthprecip",
+        "line": 41,
+        "column": 83
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 98
+      },
+      {
+        "id": "identifier",
+        "value": "l5.monthprecip",
+        "line": 41,
+        "column": 100
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 115
+      },
+      {
+        "id": "identifier",
+        "value": "l6.monthprecip",
+        "line": 41,
+        "column": 117
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 132
+      },
+      {
+        "id": "identifier",
+        "value": "l7.monthprecip",
+        "line": 41,
+        "column": 134
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 149
+      },
+      {
+        "id": "identifier",
+        "value": "l8.monthprecip",
+        "line": 41,
+        "column": 151
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 166
+      },
+      {
+        "id": "identifier",
+        "value": "l9.monthprecip",
+        "line": 41,
+        "column": 168
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 183
+      },
+      {
+        "id": "identifier",
+        "value": "l10.monthprecip",
+        "line": 41,
+        "column": 185
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 201
+      },
+      {
+        "id": "identifier",
+        "value": "l11.monthprecip",
+        "line": 41,
+        "column": 203
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 219
+      },
+      {
+        "id": "identifier",
+        "value": "l12.monthprecip",
+        "line": 41,
+        "column": 221
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 237
+      },
+      {
+        "id": "identifier",
+        "value": "l13.monthprecip",
+        "line": 41,
+        "column": 239
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 255
+      },
+      {
+        "id": "identifier",
+        "value": "l14.monthprecip",
+        "line": 41,
+        "column": 257
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 273
+      },
+      {
+        "id": "identifier",
+        "value": "l15.monthprecip",
+        "line": 41,
+        "column": 275
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 291
+      },
+      {
+        "id": "identifier",
+        "value": "l16.monthprecip",
+        "line": 41,
+        "column": 293
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 41,
+        "column": 309
+      },
+      {
+        "id": "identifier",
+        "value": "l17.monthprecip",
+        "line": 41,
+        "column": 311
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 44,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "n",
+        "line": 44,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 44,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "numlist",
+        "line": 44,
+        "column": 14
+      },
+      {
+        "id": "number",
+        "value": "6",
+        "line": 44,
+        "column": 22
+      },
+      {
+        "id": "number",
+        "value": "9",
+        "line": 44,
+        "column": 24
+      },
+      {
+        "id": "number",
+        "value": "12",
+        "line": 44,
+        "column": 26
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 44,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 45,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 45,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mvg_avg",
+        "line": 45,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 45,
+        "column": 22
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "mean",
+        "line": 45,
+        "column": 28
+      },
+      {
+        "id": "identifier",
+        "value": "cumprecip",
+        "line": 45,
+        "column": 33
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 45,
+        "column": 42
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 45,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 45,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 45,
+        "column": 60
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 46,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 46,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mvg_sd",
+        "line": 46,
+        "column": 15
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 46,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "sd",
+        "line": 46,
+        "column": 27
+      },
+      {
+        "id": "identifier",
+        "value": "cumprecip",
+        "line": 46,
+        "column": 30
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 46,
+        "column": 39
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 46,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 46,
+        "column": 48
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 46,
+        "column": 57
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 47,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 47,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "mvg_std_pre",
+        "line": 47,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 47,
+        "column": 25
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "cumprecip",
+        "line": 47,
+        "column": 32
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 47,
+        "column": 41
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 47,
+        "column": 45
+      },
+      {
+        "id": "identifier",
+        "value": "mvg_avg",
+        "line": 47,
+        "column": 47
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 47,
+        "column": 54
+      },
+      {
+        "id": "/",
+        "value": "/",
+        "line": 47,
+        "column": 59
+      },
+      {
+        "id": "identifier",
+        "value": "mvg_sd",
+        "line": 47,
+        "column": 61
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 47,
+        "column": 67
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 48,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 48,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "msp",
+        "line": 48,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 48,
+        "column": 17
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "abs",
+        "line": 48,
+        "column": 23
+      },
+      {
+        "id": "identifier",
+        "value": "mvg_std_pre",
+        "line": 48,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 48,
+        "column": 38
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 49,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 49,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_msp",
+        "line": 49,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 49,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "msp",
+        "line": 49,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 49,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 50,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 50,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_msp",
+        "line": 50,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 50,
+        "column": 25
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 50,
+        "column": 31
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "mvg_std_pre",
+        "line": 50,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 50,
+        "column": 47
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 50,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 50,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 51,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 51,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_msp",
+        "line": 51,
+        "column": 14
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 51,
+        "column": 21
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "msp",
+        "line": 51,
+        "column": 27
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 51,
+        "column": 30
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 52,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 52,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_msp",
+        "line": 52,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 52,
+        "column": 25
+      }
+    ],
+    "=": [
+      {
+        "id": "number",
+        "value": "0",
+        "line": 52,
+        "column": 31
+      }
+    ],
+    "if": [
+      {
+        "id": "identifier",
+        "value": "mvg_std_pre",
+        "line": 52,
+        "column": 36
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 52,
+        "column": 47
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 52,
+        "column": 51
+      },
+      {
+        "id": "number",
+        "value": "0",
+        "line": 52,
+        "column": 53
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 53,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 53,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 53,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "mvg_std_pre",
+        "line": 53,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 53,
+        "column": 29
+      },
+      {
+        "id": "string",
+        "value": "\"Moving standardized cumulative precipitation over `n' months\"",
+        "line": 53,
+        "column": 33
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 54,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 54,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 54,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "dry_msp",
+        "line": 54,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 54,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"Dry MSCP over `n' months (GPCP)\"",
+        "line": 54,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 55,
+      "column": 10
+    },
+    "pre": [
+      {
+        "command": {
+          "id": "identifier",
+          "value": "quietly",
+          "line": 55,
+          "column": 2
+        }
+      }
+    ],
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 55,
+        "column": 14
+      },
+      {
+        "id": "identifier",
+        "value": "wet_msp",
+        "line": 55,
+        "column": 18
+      },
+      {
+        "id": "`'",
+        "value": "`n'",
+        "line": 55,
+        "column": 25
+      },
+      {
+        "id": "string",
+        "value": "\"Wet MSCP over `n' months (GPCP)\"",
+        "line": 55,
+        "column": 29
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 58,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 58,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "wet_precip",
+        "line": 58,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Wet standardized precipitaiton (GPCP)\"",
+        "line": 58,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 59,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 59,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "dry_precip",
+        "line": 59,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Dry standardized precipitaiton (GPCP)\"",
+        "line": 59,
+        "column": 20
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 61,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q1",
+        "line": 61,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 61,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 61,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 61,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "25",
+        "line": 61,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 61,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 61,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 61,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 62,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "q3",
+        "line": 62,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "pctile",
+        "line": 62,
+        "column": 11
+      },
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 62,
+        "column": 18
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "p",
+        "line": 62,
+        "column": 32
+      },
+      {
+        "id": "number",
+        "value": "75",
+        "line": 62,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 62,
+        "column": 38
+      },
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 62,
+        "column": 41
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 62,
+        "column": 50
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "egen",
+      "line": 63,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "iqr",
+        "line": 63,
+        "column": 6
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "iqr",
+        "line": 63,
+        "column": 12
+      },
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 63,
+        "column": 16
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "by",
+        "line": 63,
+        "column": 30
+      },
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 63,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 63,
+        "column": 42
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 64,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_month",
+        "line": 64,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 64,
+        "column": 17
+      },
+      {
+        "id": ">",
+        "value": ">",
+        "line": 64,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "q3",
+        "line": 64,
+        "column": 32
+      },
+      {
+        "id": "+",
+        "value": "+",
+        "line": 64,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "iqr",
+        "line": 64,
+        "column": 38
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 64,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 64,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 65,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_month",
+        "line": 65,
+        "column": 5
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "monthprecip",
+        "line": 65,
+        "column": 17
+      },
+      {
+        "id": "<",
+        "value": "<",
+        "line": 65,
+        "column": 29
+      },
+      {
+        "id": "identifier",
+        "value": "q1",
+        "line": 65,
+        "column": 32
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 65,
+        "column": 35
+      },
+      {
+        "id": "identifier",
+        "value": "iqr",
+        "line": 65,
+        "column": 38
+      },
+      {
+        "id": "*",
+        "value": "*",
+        "line": 65,
+        "column": 42
+      },
+      {
+        "id": "number",
+        "value": "1",
+        "line": 65,
+        "column": 44
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "keep",
+      "line": 67,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "cow_code",
+        "line": 67,
+        "column": 6
+      },
+      {
+        "id": "identifier",
+        "value": "year",
+        "line": 67,
+        "column": 15
+      },
+      {
+        "id": "identifier",
+        "value": "month",
+        "line": 67,
+        "column": 20
+      },
+      {
+        "id": "identifier",
+        "value": "centmo",
+        "line": 67,
+        "column": 26
+      },
+      {
+        "id": "identifier",
+        "value": "wet_msp6",
+        "line": 67,
+        "column": 33
+      },
+      {
+        "id": "identifier",
+        "value": "dry_msp6",
+        "line": 67,
+        "column": 42
+      },
+      {
+        "id": "identifier",
+        "value": "wet_msp9",
+        "line": 67,
+        "column": 51
+      },
+      {
+        "id": "identifier",
+        "value": "dry_msp9",
+        "line": 67,
+        "column": 60
+      },
+      {
+        "id": "identifier",
+        "value": "wet_msp12",
+        "line": 67,
+        "column": 69
+      },
+      {
+        "id": "identifier",
+        "value": "dry_msp12",
+        "line": 67,
+        "column": 79
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 68,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "centmo",
+        "line": 68,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 68,
+        "column": 15
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 69,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_msp6",
+        "line": 69,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_wet6",
+        "line": 69,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 70,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_msp6",
+        "line": 70,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_dry6",
+        "line": 70,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 71,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_msp9",
+        "line": 71,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_wet9",
+        "line": 71,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 72,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_msp9",
+        "line": 72,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_dry9",
+        "line": 72,
+        "column": 17
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 73,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "wet_msp12",
+        "line": 73,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_wet12",
+        "line": 73,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "rename",
+      "line": 74,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "dry_msp12",
+        "line": 74,
+        "column": 8
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_dry12",
+        "line": 74,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "foreach",
+      "line": 76,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 76,
+        "column": 9
+      },
+      {
+        "id": "identifier",
+        "value": "of",
+        "line": 76,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "varlist",
+        "line": 76,
+        "column": 16
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_wet6",
+        "line": 76,
+        "column": 24
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_dry6",
+        "line": 76,
+        "column": 34
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_wet9",
+        "line": 76,
+        "column": 44
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_dry9",
+        "line": 76,
+        "column": 54
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_wet12",
+        "line": 76,
+        "column": 64
+      },
+      {
+        "id": "identifier",
+        "value": "GPCP_dry12",
+        "line": 76,
+        "column": 75
+      },
+      {
+        "id": "{",
+        "value": "{",
+        "line": 76,
+        "column": 86
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "gen",
+      "line": 77,
+      "column": 2
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "l_",
+        "line": 77,
+        "column": 6
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 77,
+        "column": 8
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "l.",
+        "line": 77,
+        "column": 16
+      },
+      {
+        "id": "`'",
+        "value": "`var'",
+        "line": 77,
+        "column": 18
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 80,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 80,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "l_GPCP_wet6",
+        "line": 80,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Wet MSCP over 6 months (GPCP)\"",
+        "line": 80,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 81,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 81,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "l_GPCP_dry6",
+        "line": 81,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Dry MSCP over 6 months (GPCP)\"",
+        "line": 81,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 82,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 82,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "l_GPCP_wet9",
+        "line": 82,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Wet MSCP over 9 months (GPCP)\"",
+        "line": 82,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 83,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 83,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "l_GPCP_dry9",
+        "line": 83,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Dry MSCP over 9 months (GPCP)\"",
+        "line": 83,
+        "column": 21
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 84,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 84,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "l_GPCP_wet12",
+        "line": 84,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Wet MSCP over 12 months (GPCP)\"",
+        "line": 84,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "lab",
+      "line": 85,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "var",
+        "line": 85,
+        "column": 5
+      },
+      {
+        "id": "identifier",
+        "value": "l_GPCP_dry12",
+        "line": 85,
+        "column": 9
+      },
+      {
+        "id": "string",
+        "value": "\"Dry MSCP over 12 months (GPCP)\"",
+        "line": 85,
+        "column": 22
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "replace",
+      "line": 87,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 87,
+        "column": 9
+      }
+    ],
+    "=": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 87,
+        "column": 16
+      },
+      {
+        "id": "-",
+        "value": "-",
+        "line": 87,
+        "column": 21
+      },
+      {
+        "id": "number",
+        "value": "721",
+        "line": 87,
+        "column": 23
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "format",
+      "line": 88,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "identifier",
+        "value": "time",
+        "line": 88,
+        "column": 8
+      },
+      {
+        "id": "%",
+        "value": "%",
+        "line": 88,
+        "column": 13
+      },
+      {
+        "id": "identifier",
+        "value": "tmMon_CCYY",
+        "line": 88,
+        "column": 14
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "save",
+      "line": 90,
+      "column": 1
+    },
+    "varlist": [
+      {
+        "id": "string",
+        "value": "\"data/gpcp_africa_recode_140201\"",
+        "line": 90,
+        "column": 6
+      }
+    ],
+    "options": [
+      {
+        "id": "identifier",
+        "value": "replace",
+        "line": 90,
+        "column": 40
+      }
+    ]
+  },
+  {
+    "command": {
+      "id": "identifier",
+      "value": "exit",
+      "line": 92,
+      "column": 1
+    }
+  }
+]
