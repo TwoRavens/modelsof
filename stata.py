@@ -317,12 +317,8 @@ def parse(lexer):
 
 def run(file, cmd_cnt, reg_cnt):
     print(file)
-    try:
-        with open(file, encoding='utf8') as f:
-            lexer = Lexer(f.read())
-    except UnicodeError:
-        with open(file, encoding='cp1252') as f:
-            lexer = Lexer(f.read())
+    with open(file, encoding='utf8', errors='ignore') as f:
+        lexer = Lexer(f.read())
     commands = parse(lexer)
     file1 = file.replace('\\', '/').replace('/downloads/', '/results/')
     os.makedirs(os.path.dirname(file1), exist_ok=True)
@@ -335,7 +331,7 @@ def run(file, cmd_cnt, reg_cnt):
         obj[cat] = {}
         obj[f'len_{cat}'] = 0
 
-    year = file1.split('/')[3]
+    year, dataset = file1.split('/')[3:5]
     for command in commands:
         if isinstance(command, Literal) and command.id == 'comment':
             obj['len_comments'] += 1
@@ -350,10 +346,10 @@ def run(file, cmd_cnt, reg_cnt):
         if not cmd_str or '.' in cmd_str:
             continue
 
-        cmd_cnt[(year, cmd_str)] += 1
+        cmd_cnt[(year, dataset, cmd_str)] += 1
         for kind in 'linear nonlinear'.split():
             if command_aliases.get(command.value, command.value) in categories['regression/' + kind]:
-                reg_cnt[(year, cmd_str)] += 1
+                reg_cnt[(year, dataset, cmd_str)] += 1
                 obj[kind + '_regressions'][cmd_str] += 1
         for cmd in [command] + pre:
             if cmd.id != 'identifier':
@@ -396,8 +392,8 @@ if __name__ == '__main__':
                 for cmds in [('commands', cmds), ('regressions', regs)]:
                     with open(f'out/{journal}/{cmds[0]}.csv', 'wt') as f:
                         w = csv.writer(f)
-                        w.writerow(('year', 'command', 'count'))
-                        w.writerows((year, cmd, n) for ((year, cmd), n) in cmds[1].most_common())
+                        w.writerow(('year', 'dataset', 'command', 'count'))
+                        w.writerows((year, dataset, cmd, n) for ((year, dataset, cmd), n) in cmds[1].most_common())
 
             journal = journal1 
             cmds, regs, stats = Counter(), Counter(), []

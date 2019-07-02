@@ -1,4 +1,4 @@
-from collections import Counter, OrderedDict
+from collections import Counter, defaultdict, OrderedDict
 import csv
 import glob
 import json
@@ -280,16 +280,28 @@ def plot_files_by_year():
     plot('files_by_year', dist, 'stata r both neither'.split())
 
 def plot_commands():
+    cnt = Counter()
+    datasets = defaultdict(set)
+    for file in glob.glob(f'out/*/regressions.csv'):
+        journal = file.split('/')[1]
+        with open(file) as f1:
+            r = csv.reader(f1)
+            next(r)
+            for row in r:
+                k = (journal, row[0], row[2])
+                cnt[k] += int(row[3])
+                datasets[k].add(row[1])
     with open('out/regressions.csv', 'w') as f:
         w = csv.writer(f)
         w.writerow('journal year command count'.split()) 
-        for file in glob.glob(f'out/*/regressions.csv'):
-            journal = file.split('/')[1]
-            with open(file) as f1:
-                r = csv.reader(f1)
-                next(r)
-                for row in r:
-                    w.writerow([journal] + row)
+        for k in sorted(cnt):
+            w.writerow(list(k) + [cnt[k]])
+    with open('out/regressions_by_datasets.csv', 'w') as f:
+        w = csv.writer(f)
+        w.writerow('journal year command num_datasets'.split()) 
+        for k in sorted(datasets):
+            w.writerow(list(k) + [len(datasets[k])])
+
 
 cmd = {
     'get_datasets': get_datasets,
